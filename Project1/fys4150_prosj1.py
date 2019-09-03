@@ -101,3 +101,5 @@ if __name__=="__main__":
         print("Time used special: %.3e s" %time2)
         time_diff = time1 - time2
         print("Time diff: %.3e" %time_diff)
+#d)
+    
