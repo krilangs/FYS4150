@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.linalg as scpl
 import time
 
 def f(x):
@@ -16,16 +17,16 @@ def gausselim(n):
     c = np.ones(n-1)*(-1)
 
     h = 1./(n+1)
-    
+
     x = np.zeros(n+2)
     b_tilde = np.zeros(n)
     f_tilde = np.zeros(n)
     f_vec = np.zeros(n)
     v = np.zeros(n+2)
-    
+
     for i in range(0, n+2):
         x[i] = i*h
-        
+
     for i in range(0, n):
         f_vec[i] = f(x[i+1])*h**2
 
@@ -55,9 +56,9 @@ def special_algorithm(n):
     f_tilde = np.zeros(n+1)
     v = np.zeros(n+1)
     x = np.zeros(n+1)
-    
+
     b_tilde[0] = b_tilde[-1] = 2.
-    
+
     for i in range(1, n):
         b_tilde[i] = (i+1.)/i
 
@@ -84,6 +85,27 @@ def special_algorithm(n):
 def rel_error(v, u):
     error = np.max(np.abs((v[1:-1] - u[1:-1])/u[1:-1]))
     return error
+
+def LU(n):
+    """LU-decomposition"""
+    matrix = np.array([[0 for i in range(n)] for j in range(n)])
+    h = 1 / (n+1)
+    x = np.array([i * h for i in range(n)])
+    f = 100*np.exp(-10*x)*h**2
+
+    for i in range(n):
+        matrix[i][i] = 2
+        if i != 0:
+            matrix[i][i-1] = -1
+        if i != n-1:
+            matrix[i][i+1] = -1
+
+    t0 = time.time()
+    A = scpl.lu_solve(scpl.lu_factor(matrix), f)
+    t1 = time.time()
+    timer = t1 - t0
+
+    return A, timer
 
 def task_b():
     N = [10, 100, 1000]
@@ -120,15 +142,21 @@ def task_c():
 
 def task_d():
     """
-    Compute the relative error between the analytical solution and the Thomas 
+    Compute the relative error between the analytical solution and the Thomas
     algorithm, and the special algorithm (Thöpnitz?).
     """
     N = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]
+    error_gen1 = []
+    h_list = []
+    error_spec1 = []
     for n in N:
         n = int(n)
-        x, v_gen, time1 =  gausselim(n)
+        h = 1./(n+1)
+        h_list.append(h)
+        x, v_gen, time1 = gausselim(n)
         u_analytic = analytic(x)
         error_gen = rel_error(v_gen, u_analytic)
+        error_gen1.append(error_gen)
         print("n=%.1e: Error general= %.8e" %(n, error_gen))
 
     for n in N:
@@ -136,13 +164,31 @@ def task_d():
         x, v_spec, time2 = special_algorithm(n)
         u_analytic = analytic(x)
         error_spec = rel_error(v_spec, u_analytic)
+        error_spec1.append(error_spec)
         print("n=%.1e: Error special= %.8e" %(n, error_spec))
 
-def task_e():
-    ...
+    error_arr_gen = np.array(error_gen1)
+    error_arr_spec = np.array(error_spec1)
+    h_arr = np.array(h_list)
+
+    plt.figure()
+    plt.loglog(h_arr, error_arr_gen)
+    plt.xlabel("$log_{10}(h)$")
+    plt.ylabel("$\epsilon$")
+
+    plt.figure()
+    plt.loglog(h_arr, error_arr_spec)
+    plt.xlabel("$log_{10}(h)$")
+    plt.ylabel("$\epsilon$")
+
+def task_e(n):
+    N = [1e1, 1e2, 1e3]
+    for n in N:
+        n = int(n)
 
 if __name__ == "__main__":
     #task_b()
     #task_c()
-    task_d()
-    #task_e()
+    #task_d()
+    task_e()
+
