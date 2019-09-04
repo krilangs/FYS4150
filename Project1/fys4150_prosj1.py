@@ -119,6 +119,10 @@ def task_c():
     """
 
 def task_d():
+    """
+    Compute the relative error between the analytical solution and the Thomas 
+    algorithm, and the special algorithm (Thöpnitz?).
+    """
     N = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]
     for n in N:
         n = int(n)
