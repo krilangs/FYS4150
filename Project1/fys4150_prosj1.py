@@ -9,53 +9,57 @@ def f(x):
     return 100.*np.exp(-10*x)
 
 def analytic(x):
+    """Analytic solution"""
     return 1 - (1 - np.exp(-10))*x - np.exp(-10*x)
 
 def gausselim(n):
+    """Solve a general tridiagonal matrix using the Thomas alogrithm for
+    Gaussian elimination of a set of linear equations,
+    and take the CPU time of the algorithm."""
     a = np.ones(n-1)*(-1)
     b = np.ones(n)*2
     c = np.ones(n-1)*(-1)
 
-    h = 1./(n+1)
+    h = 1./(n)  # Stepsize
 
-    x = np.zeros(n+2)
+    x = np.array([i * h for i in range(n+1)])
     b_tilde = np.zeros(n)
     f_tilde = np.zeros(n)
     f_vec = np.zeros(n)
-    v = np.zeros(n+2)
-
-    for i in range(0, n+2):
-        x[i] = i*h
+    v = np.zeros(n+1)
 
     for i in range(0, n):
         f_vec[i] = f(x[i+1])*h**2
 
+    # Initial conditions
     b_tilde[0] = b[0]
     f_tilde[0] = f_vec[0]
 
     # Forward substitution
-    t0 = time.time()
+    t0 = time.time()   # Start timer
     for i in range(1, n):
         b_tilde[i] = b[i] - (a[i-1]*c[i-1])/b_tilde[i-1]
         f_tilde[i] = f_vec[i] - (f_tilde[i-1]*a[i-1])/b_tilde[i-1]
 
     # Backward substitution
-    v[n] = f_tilde[n-1]/b_tilde[n-1]
-    for i in range(n-1, 0, -1):
+    v[n-1] = f_tilde[n-1]/b_tilde[n-1]
+    for i in range(n-2, 0, -1):
         v[i] = (f_tilde[i-1] - c[i-1]*v[i+1])/b_tilde[i-1]
 
-    t1 = time.time()
-    timer = t1 - t0
+    t1 = time.time()   # Stop timer
+    timer = t1 - t0    # Time of running the algorithm [s]
 
     return x, v, timer
 
 def special_algorithm(n):
-    h = 1./(n)
+    """Solve the special tridiagonal Töplitz matrix using Gaussian elimination,
+    and take the CPU time of the alogrithm."""
+    h = 1./(n)    # Step size
 
     b_tilde = np.zeros(n+1)
     f_tilde = np.zeros(n+1)
     v = np.zeros(n+1)
-    x = np.zeros(n+1)
+    x = np.array([i * h for i in range(n+1)])
 
     b_tilde[0] = b_tilde[-1] = 2.
 
@@ -63,11 +67,10 @@ def special_algorithm(n):
         b_tilde[i] = (i+1.)/i
 
     for i in range(0, n+1):
-        x[i] = i*h
-        f_tilde[i] = f(i*h)*h**2
+        f_tilde[i] = f(x[i])*h**2
 
     # Forward substitution
-    t0 = time.time()
+    t0 = time.time()   # Start timer
     for i in range(2, n):
         f_tilde[i] = f_tilde[i] + f_tilde[i-1]/b_tilde[i-1]
 
@@ -76,49 +79,67 @@ def special_algorithm(n):
     for i in range(n-2, 0, -1):
         v[i] = (f_tilde[i] + v[i+1])/b_tilde[i]
 
-    t1 = time.time()
-    timer = t1 - t0
+    t1 = time.time()    # Stop timer
+    timer = t1 - t0     # Time of running the algorithm [s]
     #print("Time used special: %s s" %timer )
 
     return x, v, timer
 
 def rel_error(v, u):
+    """Calculate the relative error in the given data set
+    as function of log10(h)."""
     error = np.max(np.abs((v[1:-1] - u[1:-1])/u[1:-1]))
     return error
 
 def LU(n):
-    """LU-decomposition"""
-    matrix = np.array([[0 for i in range(n)] for j in range(n)])
-    h = 1 / (n+1)
-    x = np.array([i * h for i in range(n)])
-    f = 100*np.exp(-10*x)*h**2
-
-    for i in range(n):
+    """Calculate the LU-decomposition of the tridiagonal matrix,
+    and take the CPU time of the calculation."""
+    # Create a matrix filled with zeros
+    matrix = np.array([[0 for i in range(n-1)] for j in range(n-1)])
+    h = 1 / (n)   # Step size
+    x = np.array([i * h for i in range(n-1)])
+    func = f(x)*h**2
+    # Fill in the diagonal and the elements along the diagonal in the matrix
+    for i in range(0, n-1):
         matrix[i][i] = 2
         if i != 0:
             matrix[i][i-1] = -1
-        if i != n-1:
+        if i != n-2:
             matrix[i][i+1] = -1
 
-    t0 = time.time()
-    A = scpl.lu_solve(scpl.lu_factor(matrix), f)
-    t1 = time.time()
-    timer = t1 - t0
+    t0 = time.time()    # Start timer
+    A = scpl.lu_solve(scpl.lu_factor(matrix), func)
+    t1 = time.time()    # Stop timer
+    timer = t1 - t0     # Time of running the algorithm [s]
 
-    return A, timer
+    v = np.zeros(n+1)
+    v[1:-1] = A
+
+    return x, v, timer
 
 def task_b():
+    """
+    Compare the solution from the general tridiagonal matrix with the
+    analytical solution, and plot for different sizes of the matrices and
+    number of grid points.
+    """
     N = [10, 100, 1000]
     for n in N:
         plt.figure()
         x, v, time1 = gausselim(n)
         print("Time used general: %s s" %time1)
+        plt.title("Gaussian elimination with different grid points\n \
+                  compared with the analytical solution")
         plt.plot(x, v, label="Numerical for n=%s" %n)
         plt.plot(x, analytic(x), "--r", label="Analytical for n=%s" %n)
         plt.xlabel("x"); plt.ylabel("u(x)")
         plt.legend()
 
 def task_c():
+    """
+    Compare the CPU time of the special algorithm with the CPU time of the
+    Thomas algorithm up to n=1e6 grid points.
+    """
     N = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
     for n in N:
         n = int(n)
@@ -133,6 +154,9 @@ def task_c():
     N = [10, 100, 1000]
     for n in N:
         plt.figure()
+        plt.title("Special case of Gaussian elimination with 
+                  different grid points\n
+                  compared with the analytical solution")
         x, v, time2 = special_algorithm(n)
         plt.plot(x, v, label="Numerical for n=%s" %n)
         plt.plot(x, analytic(x), "--r", label="Analytical for n=%s" %n)
@@ -143,7 +167,8 @@ def task_c():
 def task_d():
     """
     Compute the relative error between the analytical solution and the Thomas
-    algorithm, and the special algorithm (Thöpnitz?).
+    algorithm, and the special algorithm (Töplitz).
+    Then plot the relative errors.
     """
     N = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]
     error_gen1 = []
@@ -172,23 +197,52 @@ def task_d():
     h_arr = np.array(h_list)
 
     plt.figure()
+    plt.title("Relative error with use of the Thomas algorithm")
     plt.loglog(h_arr, error_arr_gen)
     plt.xlabel("$log_{10}(h)$")
-    plt.ylabel("$\epsilon$")
-
+    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$")
     plt.figure()
+    plt.title("Relative error with use of the Töplitz algorithm")
     plt.loglog(h_arr, error_arr_spec)
     plt.xlabel("$log_{10}(h)$")
-    plt.ylabel("$\epsilon$")
+    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$")
 
-def task_e(n):
-    N = [1e1, 1e2, 1e3]
+def task_e():
+    """
+    Calcualte the LU decomposition of the matrix for different grid points,
+    and compare the CPU time and relative error with the previously used
+    algorithms.
+    """
+    N = [10, 100, 1000]
+    error_gen1 = []
+    error_LU1 = []
+    time_gen1 = []
+    time_LU1 = []
     for n in N:
-        n = int(n)
+        x, v, time_gen = gausselim(n)
+        u_analytic = analytic(x)
+        error_gen = rel_error(v, u_analytic)
+        error_gen1.append(error_gen)
+        time_gen1.append(time_gen)
+
+        x_, A, time_LU = LU(n)
+        u_analytic = analytic(x)
+        error_LU = rel_error(A, u_analytic)
+        error_LU1.append(error_LU)
+        time_LU1.append(time_LU)
+        plt.figure()
+        plt.title("Gaussian elemination vs LU decomposition\n \
+                  with different grid points")
+        plt.plot(x, v, "--r", label="Numerical n=%s" %n)
+        plt.plot(x, A, label="LU n=%s" %n)
+
+    print(error_gen1)
+    print(error_LU1)
+    print(time_gen1)
+    print(time_LU1)  
 
 if __name__ == "__main__":
     #task_b()
     #task_c()
     #task_d()
     task_e()
-
