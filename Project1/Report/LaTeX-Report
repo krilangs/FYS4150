@@ -11,6 +11,7 @@
 \usepackage{float}
 \usepackage{subfig} 
 \usepackage[colorlinks]{hyperref}
+\usepackage[hyphenbreaks]{breakurl}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{textcomp}
 \definecolor{listinggray}{gray}{0.9}
@@ -48,12 +49,73 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 }
 \end{center}
 
-\section*{Introduction}
+\section{Introduction}
+Differential equations very powerful tools for explaining and calculating physical problems. Most of these are unfortunately difficult to solve analytically. So we have to use numerics to solve them. Solving them numerically is much easier and much more efficient than trying to solve them analytically. The use of these differential equations in numerics are becoming more and more important today. So to study these are very important to further understand physics.
+
 In this project we are trying to solve the one-dimensional Poisson equation, which is a second order differential equation $-u^{\prime\prime}(x)=f(x)$, numerically. For us to solve this equation we rewrite Poisson's equation as a set of linear equations with Dirichlet boundary conditions. In the program we use memory allocation when we work with matrices with different dimensions to speed up the programing time. To solve the set of linear equations we will use Gaussian elimination and LU-decomposition, and compare the solutions we get from them. Then we compare with a known analytical solution. We also look at the number of floating point operations (FLOPS) for the different algorithms, which have a major effect on the run time of the program. 
 
 First we discretize and derive a finite difference scheme to approximate the second derivative. Then we derive the algorithms to be used and implement them into our program with the necessary boundary and initial conditions. The results we get are then compared to each other for different number of grid points $n$ to see which algorithm has the fastest CPU time and best accuracy in relation to the analytical solution. Then we analyze the results and discuss them. Lastly we come up with a conclusion to the project.
 
 
-\section*{Methods}
+\section{Methods}
+\subsection{Poisson equation}
+In three dimensions we have Poisson's equation for the electrostatic potential $\Phi$ as 
+\begin{equation}
+\label{eq:3D_poisson}
+\nabla^2\Phi = -4\pi\rho(\textbf{r}),
+\end{equation}
+where $\rho(\textbf{r})$ is a localized charge distribution. We are looking at a one-dimensional case for a spherically symmetric $\Phi$ and $\rho(\textbf{r})$. Equation \ref{eq:3D_poisson} can then be written as 
+\begin{equation}
+\label{eq:1D_poisson}
+\frac{1}{r^2}\frac{d}{dr}\left(r^2\frac{d\Phi}{dr}\right)=-4\pi\rho(r).
+\end{equation}
+This can then be rewritten with a substitution $\Phi(r)=\frac{\phi(r)}{r}$ as 
+\begin{equation}
+\label{eq:rewrite}
+\frac{d^2\phi}{dr^2}=-4\pi r\rho(r).
+\end{equation}
+Then we let $\phi\rightarrow u$ and $r\rightarrow x$ so our one-dimensional Poisson equation can be written as
+\begin{equation}
+\label{eq:1DPoisson}
+-u^{\prime\prime}=f(x),
+\end{equation}
+where $f(x)=-4\pi r\rho(r)$ is an inhomogeneous source term. The equation we are solving in this project is the one-dimensional Poisson equation (\ref{eq:1DPoisson}) with $x\in(0,1)$ and Dirichlet boundary conditions $u(0)=u(1)=0$.
+
+\subsection{Gaussian elimination}
+Poisson's equation (\ref{eq:1DPoisson}) need to be discretized. We start be approximating the second derivative with discretization of $u \rightarrow v_i$ as
+\begin{equation}
+\label{eq:approx}
+-\frac{v_{i+1}-2v_i+v_{i-1}}{h^2}+\mathcal{O}(h^2)=f(x_i)=f_i,
+\end{equation}
+where $h=\frac{1}{n+1}$ is the step length and $i=1,...,n$. Define grid points as $x_i=ih$ from $x_0=0$ to $x_{n+1}=1$. We also set boundary conditions $v_0=v_{n+1}=0$. The approximation can further be expressed generally as:
+\begin{equation*}
+2v_i-v_{i+1}-v_{i-1}=h^2f_i
+\end{equation*}
+From the boundary conditions we get that for $i=0$ and $i=n+1$ we get 0. For the other elements we get:
+\begin{align*}
+i=1:&\quad 2v_1-v_{2}-v_{0}=h^2f_1\\
+i=2:&\quad 2v_2-v_{3}-v_{1}=h^2f_2\\
+&\qquad\cdots\\
+i=n:&\quad 2v_n-v_{n+1}-v_{n-1}=h^2f_n
+\end{align*}
+This is a set of linear equations which can be written as
+\begin{equation}
+\label{eq:lin_eq}
+\textbf{A}\textbf{v}=\tilde{\textbf{b}}.
+\end{equation}
+Here ...
+
+\section{Results}
+
+\section{Conclusion}
+
+\section{Appendix}
+Link to GitHub repository:
+
+\begin{thebibliography}{}
+\bibitem[1]{notes} 
+Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
+
+\end{thebibliography}
 
 \end{document}
