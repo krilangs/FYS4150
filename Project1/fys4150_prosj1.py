@@ -108,7 +108,7 @@ def LU(n):
             matrix[i][i+1] = -1
 
     t0 = time.time()    # Start timer
-    A = scpl.lu_solve(scpl.lu_factor(matrix), func)
+    A = scpl.lu_solve(scpl.lu_factor(matrix), func)  # LU-decomposition solver
     t1 = time.time()    # Stop timer
     timer = t1 - t0     # Time of running the algorithm [s]
 
@@ -129,11 +129,14 @@ def task_b():
         x, v, time1 = gausselim(n)
         print("Time used general: %s s" %time1)
         plt.title("Gaussian elimination with different grid points\n \
-                  compared with the analytical solution")
-        plt.plot(x, v, label="Numerical for n=%s" %n)
-        plt.plot(x, analytic(x), "--r", label="Analytical for n=%s" %n)
-        plt.xlabel("x"); plt.ylabel("u(x)")
+        compared with the analytical solution", size=14)
+        plt.plot(x, v, label="Numerical for n=%s" %n, markersize=14)
+        plt.plot(x, analytic(x), "--r", label="Analytical for n=%s" %n,\
+                 markersize=14)
+        plt.xlabel("x", size=14); plt.ylabel("u(x)", size=14)
         plt.legend()
+        #plt.savefig("Gaussian_n=%s.png" %n)
+    plt.show()
 
 def task_c():
     """
@@ -150,24 +153,11 @@ def task_c():
         print("Time used special: %.3e s" %time_spec)
         time_diff = time_gen - time_spec
         print("Time diff: %.3e" %time_diff)
-    """
-    N = [10, 100, 1000]
-    for n in N:
-        plt.figure()
-        plt.title("Special case of Gaussian elimination with 
-                  different grid points\n
-                  compared with the analytical solution")
-        x, v, time2 = special_algorithm(n)
-        plt.plot(x, v, label="Numerical for n=%s" %n)
-        plt.plot(x, analytic(x), "--r", label="Analytical for n=%s" %n)
-        plt.xlabel("x"); plt.ylabel("u(x)")
-        plt.legend()
-    """
 
 def task_d():
     """
     Compute the relative error between the analytical solution and the Thomas
-    algorithm, and the special algorithm (Töplitz).
+    algorithm, and the special algorithm of the Töplitz matrix.
     Then plot the relative errors.
     """
     N = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]
@@ -197,15 +187,18 @@ def task_d():
     h_arr = np.array(h_list)
 
     plt.figure()
-    plt.title("Relative error with use of the Thomas algorithm")
+    plt.title("Relative error with use of the Thomas algorithm", size=14)
     plt.loglog(h_arr, error_arr_gen)
-    plt.xlabel("$log_{10}(h)$")
-    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$")
+    plt.xlabel("$log_{10}(h)$", size=14)
+    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$", size=14)
+    #plt.savefig("Error_general.png")
     plt.figure()
-    plt.title("Relative error with use of the Töplitz algorithm")
+    plt.title("Relative error with use of the specialized algorithm", size=14)
     plt.loglog(h_arr, error_arr_spec)
-    plt.xlabel("$log_{10}(h)$")
-    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$")
+    plt.xlabel("$log_{10}(h)$", size=14)
+    plt.ylabel("$\epsilon=log_{10}(|\\frac{v-u}{u}|)$", size=14)
+    #plt.savefig("Error_special.png")
+    plt.show()
 
 def task_e():
     """
@@ -232,14 +225,17 @@ def task_e():
         time_LU1.append(time_LU)
         plt.figure()
         plt.title("Gaussian elemination vs LU decomposition\n \
-                  with different grid points")
-        plt.plot(x, v, "--r", label="Numerical n=%s" %n)
-        plt.plot(x, A, label="LU n=%s" %n)
+                  with different grid points", size=14)
+        plt.plot(x, v, "--r", label="Numerical n=%s" %n, markersize=14)
+        plt.plot(x, A, label="LU n=%s" %n, markersize=14)
+        plt.legend()
+        #plt.savefig("Gaussian_vs_LU_n=%s.png" %n)
 
     print(error_gen1)
     print(error_LU1)
     print(time_gen1)
-    print(time_LU1)  
+    print(time_LU1)
+    plt.show()
 
 if __name__ == "__main__":
     #task_b()
