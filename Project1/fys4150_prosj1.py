@@ -224,7 +224,7 @@ def task_e():
         error_LU1.append(error_LU)
         time_LU1.append(time_LU)
         plt.figure()
-        plt.title("Gaussian elemination vs LU decomposition\n \
+        plt.title("Gaussian elimination vs LU decomposition\n \
                   with different grid points", size=14)
         plt.plot(x, v, "--r", label="Numerical n=%s" %n, markersize=14)
         plt.plot(x, A, label="LU n=%s" %n, markersize=14)
