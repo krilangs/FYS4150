@@ -82,7 +82,7 @@ Then we let $\phi\rightarrow u$ and $r\rightarrow x$ so our one-dimensional Pois
 where $f(x)=-4\pi r\rho(r)$ is an inhomogeneous source term. The equation we are solving in this project is the one-dimensional Poisson equation (\ref{eq:1DPoisson}) with $x\in(0,1)$ and Dirichlet boundary conditions $u(0)=u(1)=0$.
 
 \subsection{Gaussian elimination}
-Poisson's equation (\ref{eq:1DPoisson}) need to be discretized. We start be approximating the second derivative with discretization of $u \rightarrow v_i$ as
+Poisson's equation (\ref{eq:1DPoisson}) need to be discretized. We start be approximating the second derivative with a Taylor expansion and discretization of $u \rightarrow v_i$ as
 \begin{equation}
 \label{eq:approx}
 -\frac{v_{i+1}-2v_i+v_{i-1}}{h^2}+\mathcal{O}(h^2)=f(x_i)=f_i,
@@ -204,6 +204,20 @@ for i in range(n-2, 0, -1):
 We then run the program (both the general and the special case) for matrices up to $n=10^6$ number of grid points, and compare the CPU times for running the algorithms to each other. The CPU times that are compared are averages over a set number of times run. This is since the CPU times are not the same every time.
 
 \subsection{Numerical uncertainties}
+Numerical calculations will have uncertainties. In this project we look at the relative error we get when the step size $h$ becomes very small. Here we will look closer to where this limit is for our algorithms and compare them.
+
+We will calculate the relative error as
+\begin{equation}
+\label{eq:rel_error}
+\varepsilon_i=\log_{10}\left(\begin{vmatrix}
+\frac{v_i-u_i}{u_i}
+\end{vmatrix}\right)\quad i=1,...,n.
+\end{equation}
+This is function of $\log_{10}(h)$ for function values $u_i$ and $v_i$. The $u_i$ values are from the analytical solution (\ref{eq:analytic}) which is compared separately to the numerical solutions $v_i$ from equations \ref{eq:v_back} and \ref{eq:v_special} for grid points up to $n=10^7$.
+
+From the Taylor expansion in equation \ref{eq:approx} we would expect the error to scale as $h^2$. As the step size decrease we would expect to see the affect of the underflow, and be able to see where the step size is too small such that the error would increase.
+
+\subsection{LU-decomposition}
 
 \section{Results}
 
