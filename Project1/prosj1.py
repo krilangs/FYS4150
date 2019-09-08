@@ -23,8 +23,8 @@ def gausselim(n):
     h = 1./(n)  # Stepsize
 
     x = np.array([i * h for i in range(n+1)])
-    b_tilde = np.zeros(n)
-    f_tilde = np.zeros(n)
+    d = np.zeros(n)
+    y_tilde = np.zeros(n)
     f_vec = np.zeros(n)
     v = np.zeros(n+1)
 
@@ -32,19 +32,20 @@ def gausselim(n):
         f_vec[i] = f(x[i+1])*h**2
 
     # Initial conditions
-    b_tilde[0] = b[0]
-    f_tilde[0] = f_vec[0]
+    d[0] = b[0]
+    y_tilde[0] = f_vec[0]
 
-    # Forward substitution
     t0 = time.time()   # Start timer
+    # Forward substitution
     for i in range(1, n):
-        b_tilde[i] = b[i] - (a[i-1]*c[i-1])/b_tilde[i-1]
-        f_tilde[i] = f_vec[i] - (f_tilde[i-1]*a[i-1])/b_tilde[i-1]
+        factor = a[i-1]/d[i-1]
+        d[i] = b[i] - (c[i-1]*factor)
+        y_tilde[i] = f_vec[i] - (y_tilde[i-1]*factor)
 
     # Backward substitution
-    v[n-1] = f_tilde[n-1]/b_tilde[n-1]
+    v[n-1] = y_tilde[n-1]/d[n-1]
     for i in range(n-2, 0, -1):
-        v[i] = (f_tilde[i-1] - c[i-1]*v[i+1])/b_tilde[i-1]
+        v[i] = (y_tilde[i-1] - c[i-1]*v[i+1])/d[i-1]
 
     t1 = time.time()   # Stop timer
     timer = t1 - t0    # Time of running the algorithm [s]
@@ -56,28 +57,28 @@ def special_algorithm(n):
     and take the CPU time of the alogrithm."""
     h = 1./(n)    # Step size
 
-    b_tilde = np.zeros(n+1)
-    f_tilde = np.zeros(n+1)
+    d = np.zeros(n+1)
+    y_tilde = np.zeros(n+1)
     v = np.zeros(n+1)
     x = np.array([i * h for i in range(n+1)])
 
-    b_tilde[0] = b_tilde[-1] = 2.
+    d[0] = d[-1] = 2.
 
     for i in range(1, n):
-        b_tilde[i] = (i+1.)/i
+        d[i] = (i+1.)/i
 
     for i in range(0, n+1):
-        f_tilde[i] = f(x[i])*h**2
+        y_tilde[i] = f(x[i])*h**2
 
-    # Forward substitution
     t0 = time.time()   # Start timer
+    # Forward substitution
     for i in range(2, n):
-        f_tilde[i] = f_tilde[i] + f_tilde[i-1]/b_tilde[i-1]
+        y_tilde[i] = y_tilde[i] + y_tilde[i-1]/d[i-1]
 
     # Backward substitution
-    v[n-1] = f_tilde[n-1]/b_tilde[n-1]
+    v[n-1] = y_tilde[n-1]/d[n-1]
     for i in range(n-2, 0, -1):
-        v[i] = (f_tilde[i] + v[i+1])/b_tilde[i]
+        v[i] = (y_tilde[i] + v[i+1])/d[i]
 
     t1 = time.time()    # Stop timer
     timer = t1 - t0     # Time of running the algorithm [s]
