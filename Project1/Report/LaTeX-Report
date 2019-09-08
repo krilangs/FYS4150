@@ -16,7 +16,7 @@
 \usepackage{textcomp}
 \definecolor{listinggray}{gray}{0.9}
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
-\lstset{backgroundcolor=\color{lbcolor},tabsize=4,rulecolor=,language=python,basicstyle=\scriptsize,upquote=true,aboveskip={1.5\baselineskip},columns=fixed,numbers=left,showstringspaces=false,extendedchars=true,breaklines=true,
+\lstset{backgroundcolor=\color{lbcolor},tabsize=4,rulecolor=,language=python,basicstyle=\scriptsize,upquote=true,aboveskip={1.5\baselineskip},columns=fixed,numbers=none,showstringspaces=false,extendedchars=true,breaklines=true,
 prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,showtabs=false,showspaces=false,showstringspaces=false,identifierstyle=\ttfamily,keywordstyle=\color[rgb]{0,0,1},commentstyle=\color[rgb]{0.133,0.545,0.133},stringstyle=\color[rgb]{0.627,0.126,0.941},literate={å}{{\r a}}1 {Å}{{\r A}}1 {ø}{{\o}}1}
 
 % Use for references
@@ -91,7 +91,7 @@ where $h=\frac{1}{n+1}$ is the step length and $i=1,...,n$. Define grid points a
 \begin{equation*}
 2v_i-v_{i+1}-v_{i-1}=h^2f_i
 \end{equation*}
-From the boundary conditions we get that for $i=0$ and $i=n+1$ we get 0. For the other elements we get:
+From the boundary conditions we get that for $i=0$ and $i=n+1$,which are the end points, we get 0. For the other elements we get:
 \begin{align*}
 i=1:&\quad 2v_1-v_{2}-v_{0}=h^2f_1\\
 i=2:&\quad 2v_2-v_{3}-v_{1}=h^2f_2\\
@@ -101,9 +101,109 @@ i=n:&\quad 2v_n-v_{n+1}-v_{n-1}=h^2f_n
 This is a set of linear equations which can be written as
 \begin{equation}
 \label{eq:lin_eq}
-\textbf{A}\textbf{v}=\tilde{\textbf{b}}.
+\textbf{A}\textbf{v}=\tilde{\textbf{y}}.
 \end{equation}
-Here ...
+Here \textbf{A} is a tridiagonal $n\times n$ matrix where $v_i$ are the diagonal elements, and $v_{i+1}$ and $v_{i-1}$ are the elements along the diagonal both above and below. \textbf{v} is a vector of length $n$ and is what we want to find. $\tilde{y}_i=h^2f_i$ is a vector of length $n$ with known elements. The set of linear equations from equation \ref{eq:lin_eq} we have to solve is then written as:
+\begin{equation}
+\label{eq:matrix_lin_eq}
+\begin{bmatrix}
+2 & -1 & 0 & \cdots & 0\\
+-1 & 2 & -1 &\ddots & \vdots\\
+0 & -1 & 2 & \ddots & 0\\
+\vdots & \ddots & \ddots & \ddots & -1\\
+0 & \cdots & 0 & -1 & 2
+\end{bmatrix}
+\begin{bmatrix}
+v_1\\
+v_2\\
+\vdots\\
+v_n
+\end{bmatrix} = 
+\begin{bmatrix}
+\tilde{\textbf{y}}_1\\
+\tilde{\textbf{y}}_2\\
+\vdots\\
+\tilde{\textbf{y}}_n
+\end{bmatrix}
+\end{equation}
+Then we rewrite the matrix \textbf{A} in terms of one-dimensional vectors $a$, $b$ and $c$. The diagonal elements are $b_i$ of length $n$, while $a_i$ and $c_i$ are the below and above elements of lengths $n-1$ respectively.
+We solve this new linear equation by doing a Gaussian elimination, which is more thoroughly explained in the class Lecture notes \cite{notes} (sect:6.4.1). What we do are to do a sequence of operations that reduces the matrix \textbf{A} to a upper-triangular matrix. This method is called forward substitution. Then we do what is called a backward substitution to find a solution to the vector \textbf{v}. Mathematically this looks like this:
+\begin{equation}
+\label{eq:backward}
+v_m = \frac{1}{d_{mm}}\left(\tilde{y}_m-\sum^{n}_{k=m+1}d_{mk}v_k\right)\quad m=n-1, n-2, ..., 1
+\end{equation}
+We will denote $d$ as the changed elements in the upper-triangular matrix.
+
+We assume a source term as $f(x)=100e^{-10x}$ in our calculations of the linear equations (\ref{eq:lin_eq}). We also assume different elements of $a$, $b$ and $c$ in \textbf{A}. Then we use the forward substitution to find equations for the numerical algorithms of:
+\begin{align}
+\label{eq:d_num}
+d_i=b_i-\frac{a_{i-1}c_{i-1}}{d_{i-1}}\\
+\label{eq:y_tilde}
+\tilde{y}_i = y_i-\frac{a_{i-1}\tilde{y}_{i-1}}{d_{i-1}}
+\end{align}
+Here we see that both equation \ref{eq:d_num} and \ref{eq:y_tilde} have a common factor $a_{i-1}/d_{i-1}$. We pre-calculate this factor to reduce the number of FLOPS in the forward substitution from 6n to 5n, since the common factor is now just calculated once per iteration. Reducing the number of FLOPS reduces the CPU time of the algorithm calculation.
+
+Then we do the backward substitution of \textbf{v}, which in vector notation becomes:
+\begin{equation}
+\label{eq:v_back}
+v_{i-1} = \frac{\tilde{y}_{i-1}-c_{i-1}v_i}{d_{i-1}}
+\end{equation}
+The endpoint can be found by 
+\[v_n=\frac{\tilde{y}_n}{d_n}.\]
+The backward substitution calculation requires 3n FLOPS. So in total this general algorithm, also called Thomas algorithm, requires 8n number of FLOPS. In our program, this algorithm is implemented as:
+\begin{lstlisting}
+# Forward substitution
+for i in range(1, n):
+	factor = a[i-1]/d[i-1]
+	d[i] = b[i] - (c[i-1]*factor)
+	y_tilde[i] = f_vec[i] - (y_tilde[i-1]*factor)
+
+# Backward substitution
+v[n-1] = y_tilde[n-1]/d[n-1]
+for i in range(n-2, 0, -1):
+	v[i] = (y_tilde[i-1] - c[i-1]*v[i+1])/d[i-1]
+\end{lstlisting}
+
+The program is run for different sizes of matrices of $10\times 10$, $100\times100$ and $1000\times1000$. The results are then compared to an analytical solution of the differential equation (\ref{eq:1DPoisson})
+\begin{equation}
+\label{eq:analytic}
+u(x) = 1-(1-e^{-10})x-e^{-10x}
+\end{equation}
+
+\subsection{Special case}
+Next we assume that the off-diagonal vectors in \textbf{A}, \textbf{a} and \textbf{c}, are identical to each other and different from \textbf{b}, and that all the elements in the vectors are identical. This creates a special case with a tridiagonal Töplitz matrix. This means that we specialize our previous algorithm to this special case. Now we can reduce the number of FLOPS in the algorithm, since we can pre-calculate more elements.
+
+The diagonal elements $b_i$ are equal to 2, while the off-diagonal elements $a_i$ and $c_i$ are identical and equal to -1. This means that the $d_i$ elements in equation \ref{eq:d_num}, with new boundary conditions and $d_1=b_1=2$, can be pre-calculated as
+\begin{equation}
+\label{eq:d_special}
+d_i = 2-\frac{1}{d_{i-1}}=\frac{i+1}{i}.
+\end{equation}
+Equation \ref{eq:y_tilde} for the right hand side can also be reduced since we know $d_i$ to
+\begin{equation}
+\label{eq:y_special}
+\tilde{y}_i = y_i+\frac{(i-1)\tilde{y}_{i-1}}{i}.
+\end{equation}
+This requires only 2n FLOPS for the forward substitution.
+
+The backward substitution in equation \ref{eq:v_back} can be reduced in the same way to 
+\begin{equation}
+\label{eq:v_special}
+v_{i-1} = \frac{i-1}{i}(\tilde{y}_{i-1}+v_i).
+\end{equation}
+The endpoint is calculated as for the general case. This backward substitution also only requires 2n FLOPS. So in total we now only need 4n FLOPS when calculating the special case algorithm. So in this special case we only need half the number of FLOPS as in the previous general case. The new specialized algorithm with pre-calculated diagonal elements $d_i$ is now implemented as:
+\begin{lstlisting}
+# Forward substitution
+for i in range(2, n):
+	y_tilde[i] = y_tilde[i] + y_tilde[i-1]/d[i-1]
+
+# Backward substitution
+v[n-1] = y_tilde[n-1]/d[n-1]
+for i in range(n-2, 0, -1):
+	v[i] = (y_tilde[i] + v[i+1])/d[i]
+\end{lstlisting}
+We then run the program (both the general and the special case) for matrices up to $n=10^6$ number of grid points, and compare the CPU times for running the algorithms to each other. The CPU times that are compared are averages over a set number of times run. This is since the CPU times are not the same every time.
+
+\subsection{Numerical uncertainties}
 
 \section{Results}
 
