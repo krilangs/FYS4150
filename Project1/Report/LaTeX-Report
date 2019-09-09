@@ -134,7 +134,12 @@ v_m = \frac{1}{d_{mm}}\left(\tilde{y}_m-\sum^{n}_{k=m+1}d_{mk}v_k\right)\quad m=
 \end{equation}
 We will denote $d$ as the changed elements in the upper-triangular matrix.
 
-We assume a source term as $f(x)=100e^{-10x}$ in our calculations of the linear equations (\ref{eq:lin_eq}). We also assume different elements of $a$, $b$ and $c$ in \textbf{A}. Then we use the forward substitution to find equations for the numerical algorithms of:
+We assume a source term as 
+\begin{equation}
+\label{eq:source}
+f(x)=100e^{-10x}
+\end{equation} 
+in our calculations of the linear equations (\ref{eq:lin_eq}). We also assume different elements of $a$, $b$ and $c$ in \textbf{A}. Then we use the forward substitution to find equations for the numerical algorithms of:
 \begin{align}
 \label{eq:d_num}
 d_i=b_i-\frac{a_{i-1}c_{i-1}}{d_{i-1}}\\
@@ -201,6 +206,7 @@ v[n-1] = y_tilde[n-1]/d[n-1]
 for i in range(n-2, 0, -1):
 	v[i] = (y_tilde[i] + v[i+1])/d[i]
 \end{lstlisting}
+
 We then run the program (both the general and the special case) for matrices up to $n=10^6$ number of grid points, and compare the CPU times for running the algorithms to each other. The CPU times that are compared are averages over a set number of times run. This is since the CPU times are not the same every time.
 
 \subsection{Numerical uncertainties}
@@ -218,6 +224,59 @@ This is function of $\log_{10}(h)$ for function values $u_i$ and $v_i$. The $u_i
 From the Taylor expansion in equation \ref{eq:approx} we would expect the error to scale as $h^2$. As the step size decrease we would expect to see the affect of the underflow, and be able to see where the step size is too small such that the error would increase.
 
 \subsection{LU-decomposition}
+Another form of Gaussian elimination is the LU-decomposition. This is a method which splits our matrix \textbf{A} into a product of a lower (L) triangular matrix and a upper (U) triangular matrix on the form as seen for a $4\times4$ matrix in the Lecture notes \cite{notes} (sect: 6.4.2) as:
+\begin{equation}
+\label{eq:LU}
+\textbf{A}=\textbf{LU}=
+\begin{bmatrix}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}\\
+a_{31} & a_{32} & a_{33} & a_{34}\\
+a_{41} & a_{42} & a_{43} & a_{44}
+\end{bmatrix}=
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+l_{21} & 1 & 0 & 0\\
+l_{31} & l_{32} & 1 & 0\\
+l_{41} & l_{42} & l_{43} & 1
+\end{bmatrix}
+\begin{bmatrix}
+u_{11} & u_{12} & u_{13} & u_{14}\\
+0 & u_{22} & u_{23} & u_{24}\\
+0 & 0 & u_{33} & u_{34}\\
+0 & 0 & 0 & u_{44}
+\end{bmatrix}
+\end{equation}
+A requirement for the LU-decomposition is that the  determinant of our matrix \textbf{A} is non-zero, and \textbf{A} has dimensions $n\times n$.
+
+The LU-decomposition will be solved as 
+\begin{equation}
+\textbf{Ax}=\textbf{y},
+\end{equation}
+where \textbf{A} and \textbf{y} are known and \textbf{x} is the solution we want. We then rewrite the equation to
+\begin{equation}
+\textbf{LUx}= \textbf{y}.
+\end{equation}
+This equation is further solved in two steps:
+\begin{equation}
+\label{eq:2_step_LU}
+\textbf{Lz}=\textbf{y}\quad \bigwedge\quad \textbf{Ux}=\textbf{z}
+\end{equation}
+We can easily from equation \ref{eq:LU} see that det(\textbf{L})=1. This further implies that \textbf{L} has an inverse, and we can then solve for \textbf{x} in equation \ref{eq:2_step_LU} as:
+\begin{equation}
+\label{eq:inv_L}
+\textbf{Ux}=\text{L}^{-1}\textbf{z}=\textbf{y}
+\end{equation}
+
+To solve the LU-decomposition numerically in Python, we use the library called \textit{scipy.linalg}. The function that solves the LU-decomposition now takes the full matrix \textbf{A} as an argument. This will affect the number of FLOPS. The LU-decomposition of the set of linear equations requires $\frac{2}{3}n^3$ FLOPS. The LU-decomposition is implemented numerically as:
+\begin{lstlisting}
+import scipy.linalg as scpl
+...
+LU = scpl.lu_solve(scpl.lu_factor(matrix), func)
+\end{lstlisting}
+\textit{matrix} is the full matrix \textbf{A} as in equation \ref{eq:matrix_lin_eq}, and \textit{func} is the source function (\ref{eq:source}) multiplied with the step size squared.
+
+Then we compare the mean-time the calculation takes for the LU-decomposition and the relative error, with the mean-times and relative errors for the Thomas and special algorithms for up to $n=10^7$ grid points.
 
 \section{Results}
 
