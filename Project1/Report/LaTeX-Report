@@ -44,13 +44,9 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 
 \begin{document}%\layout
 \maketitle
-%\begin{center}
-%\section*{Abstract}
 \begin{abstract}
-\textit{In this project we look at different numerical algorithms to solve the one-dimensional Poisson equation with Dirichlet boundary conditions. We solve this equation by approximating through a Taylor expansion to a set of linear equations. This is then solved with two different algorithms; using Gaussian elimination and LU-decomposition on a tridiagonal matrix. We also look at two different cases for the Gaussian elimination method. The end goal is to see how the CPU time and relative error, compared to an analytical solution, changes when using different algorithms and step sizes. Normally we expect that with decreasing step size $h$, the numerical solution would converge closer to the analytical solution. This is not the case here as we get the best results for a step size of $h\approx10^{-6}$ for the Gaussian elimination method. For the LU-decomposition we ran out of memory when computing with a step size larger than $10^{4}$. The Gaussian elimination is also more CPU friendly since the number of floating point operations (FLOPS) for the general algorithm goes as $\mathcal{O}(9n)$, and the special algorithm goes as $\mathcal{O}(4n)$. The LU-decomposition on the other hand goes as $\mathcal{O}(\frac{2}{3}n^3)$ and takes a lot of CPU usage.
-}
+In this project we look at different numerical algorithms to solve the one-dimensional Poisson equation with Dirichlet boundary conditions. We solve this equation by approximating through a Taylor expansion to a set of linear equations. This is then solved with two different algorithms; using Gaussian elimination and LU-decomposition on a tridiagonal matrix. We also look at two different cases for the Gaussian elimination method. The end goal is to see how the CPU time and relative error, compared to an analytical solution, changes when using different algorithms and step sizes. Normally we expect that with decreasing step size $h$, the numerical solution would converge closer to the analytical solution. This is not the case here as we get the best results for a step size of $h\approx10^{-6}$ for the Gaussian elimination method. For the LU-decomposition we ran out of memory when computing with a step size larger than $10^{4}$. The Gaussian elimination is also more CPU friendly since the number of floating point operations (FLOPS) for the general algorithm goes as $\mathcal{O}(9n)$, and the special algorithm goes as $\mathcal{O}(4n)$. The LU-decomposition on the other hand goes as $\mathcal{O}(\frac{2}{3}n^3)$ and takes a lot of CPU usage.
 \end{abstract}
-%\end{center}
 
 \section{Introduction}
 Differential equations very powerful tools for explaining and calculating physical problems. Most of these are unfortunately difficult to solve analytically. So we have to use numerics to solve them. Solving them numerically is much easier and much more efficient than trying to solve them analytically. The use of these differential equations in numerics are becoming more and more important today. So to study these are very important to further understand physics.
@@ -356,12 +352,28 @@ In Table \ref{tab:times} we see the measured mean times of running the three men
 	\caption{Table with the maximum relative errors for the three algorithms calculated from equation \ref{eq:rel_error}.}
 	\label{tab:error}
 \end{table}
+In Table \ref{tab:error} we see the maximum relative errors for the three algorithms used compared to the analytical solution. For all three algorithms we see that for increasing $n$, which means decreasing step size $h$, we see that the relative error decreases. This is as expected. When we go higher than $n=10^6$ we see that the relative error starts to increase. This means that there is a limit for how small step size we can use. The reason for this is that on computers there are limitations for how high and low numbers can be represented. So when we approach to this limit, we get round off errors that affect our results. In Figure \ref{fig:rel_error} we have plotted the relative error as a function of $\log_{10}(h)$ for the general and special algorithms. There we see that for decreasing step size up until $n=10^6$ the relative error decreases. After that the relative error increases.
 
+From Table \ref{tab:error} for the LU-decomposition we see that the relative error is much bigger than for the others, especially for $n=10$. We can also see this from Figure \ref{fig:gauss_LU} where the curve for the LU-decomposition is much further apart from the analytical than in Figure \ref{fig:gauss}. We would expect that the LU-decomposition would be more or less as good the other algorithms. So there might be something wrong with the code for the LU-decomposition.
+\begin{figure}[htbp]
+	%\hspace*{-2.5cm}
+	\subfloat[]{\includegraphics[width=0.5\linewidth]{Error_general.png}}
+	\subfloat[]{\includegraphics[width=0.5\linewidth]{Error_special.png}}
+	\caption{Relative error as functions of $\log_{10}(h)$ .\label{fig:rel_error}}
+\end{figure}
 
 \section{Conclusion}
+The reason for this project was to solve the Poisson equation by first discretization and then to solve it with different Gaussian elimination methods, and compare the results from these algorithms. We have studied the effect different step sizes have on our numerical results by looking at the CPU time of the calculations, and the relative error between the algorithms and the analytical solution. 
+
+We have come to the conclusion that for numerical calculations on the computer there exists a limit for how small step sizes we can use until the results are negatively affected. For each algorithm we have used we have seen that the CPU time is dependent on the required number of FLOPS. With $n$ bigger than $10^4$ we saw that LU-decomposition is no longer useful, since all we got was memory error. So arithmetic underflow may cause loss of precision and be have influence on our results.
+
+For the comparison with the analytical solution we see that for even smaller $n$ we get good precision with short CPU time. Specially in Figure \ref{fig:gauss} we see that for not so big $n$ the curves stay more or less on top of each other, at least be eye.
+
+An improvement for later use could be to do the main code in C++, which will most likely have aa good affect on the calculations we are going to do later in the course.
 
 \section{Appendix}
 Link to GitHub repository:
+\url{https://github.com/krilangs/FYS4150/tree/master/Project1}
 
 \begin{thebibliography}{}
 \bibitem[1]{notes} 
