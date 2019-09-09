@@ -35,7 +35,7 @@ def gausselim(n):
     d[0] = b[0]
     y_tilde[0] = f_vec[0]
 
-    t0 = time.time()   # Start timer
+    t0 = time.perf_counter()   # Start timer
     # Forward substitution
     for i in range(1, n):
         factor = a[i-1]/d[i-1]
@@ -47,7 +47,7 @@ def gausselim(n):
     for i in range(n-2, 0, -1):
         v[i] = (y_tilde[i-1] - c[i-1]*v[i+1])/d[i-1]
 
-    t1 = time.time()   # Stop timer
+    t1 = time.perf_counter()   # Stop timer
     timer = t1 - t0    # Time of running the algorithm [s]
 
     return x, v, timer
@@ -70,7 +70,7 @@ def special_algorithm(n):
     for i in range(0, n+1):
         y_tilde[i] = f(x[i])*h**2
 
-    t0 = time.time()   # Start timer
+    t0 = time.perf_counter()   # Start timer
     # Forward substitution
     for i in range(2, n):
         y_tilde[i] = y_tilde[i] + y_tilde[i-1]/d[i-1]
@@ -80,7 +80,7 @@ def special_algorithm(n):
     for i in range(n-2, 0, -1):
         v[i] = (y_tilde[i] + v[i+1])/d[i]
 
-    t1 = time.time()    # Stop timer
+    t1 = time.perf_counter()    # Stop timer
     timer = t1 - t0     # Time of running the algorithm [s]
     #print("Time used special: %s s" %timer )
 
@@ -108,9 +108,9 @@ def LU_decomposition(n):
         if i != n-2:
             matrix[i][i+1] = -1
 
-    t0 = time.time()    # Start timer
+    t0 = time.perf_counter()    # Start timer
     LU = scpl.lu_solve(scpl.lu_factor(matrix), func)  # LU-decomposition solver
-    t1 = time.time()    # Stop timer
+    t1 = time.perf_counter()    # Stop timer
     timer = t1 - t0     # Time of running the algorithm [s]
 
     v = np.zeros(n+1)
@@ -128,7 +128,6 @@ def task_b():
     for n in N:
         plt.figure()
         x, v, time1 = gausselim(n)
-        print("Time used general: %s s" %time1)
         plt.title("Gaussian elimination with different grid points\n \
         compared with the analytical solution", size=14)
         plt.plot(x, v, label="Numerical for n=%s" %n, markersize=14)
@@ -173,7 +172,7 @@ def task_d():
         u_analytic = analytic(x)
         error_gen = rel_error(v_gen, u_analytic)
         error_gen1.append(error_gen)
-        print("n=%.1e: Error general= %.8e" %(n, error_gen))
+        print("n=%.1e: Error general= %.5e" %(n, error_gen))
 
     for n in N:
         n = int(n)
@@ -181,7 +180,7 @@ def task_d():
         u_analytic = analytic(x)
         error_spec = rel_error(v_spec, u_analytic)
         error_spec1.append(error_spec)
-        print("n=%.1e: Error special= %.8e" %(n, error_spec))
+        print("n=%.1e: Error special= %.5e" %(n, error_spec))
 
     error_arr_gen = np.array(error_gen1)
     error_arr_spec = np.array(error_spec1)
@@ -207,7 +206,7 @@ def task_e():
     and compare the CPU time and relative error with the previously used
     algorithms.
     """
-    N = [10, 100, 1000]
+    N = [10, 100, 1000, 10000]
     for n in N:
         h = 1 / (n)
         x = np.array([i * h for i in range(n+1)])
@@ -217,16 +216,16 @@ def task_e():
 
         print("n=%.1e" %n)
         print("Time used LU: %.3e s" %time_LU)
-        print("Error LU= %.8g" % error_LU)
+        print("Error LU= %.5e" % error_LU)
 
         plt.figure()
         plt.title("Gaussian elimination vs LU decomposition\n \
                   with different grid points", size=14)
         plt.plot(x, u_analytic, "--r", label="Numerical n=%s" %n, markersize=14)
         plt.plot(x, A, label="LU n=%s" %n, markersize=14)
+        plt.xlabel("x", size=14); plt.ylabel("u(x)", size=14)
         plt.legend()
         #plt.savefig("Gaussian_vs_LU_n=%s.png" %n)
-
     plt.show()
 
 if __name__ == "__main__":
