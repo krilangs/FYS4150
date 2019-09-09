@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{epsfig,floatflt}
 \usepackage{subfig} 
 \usepackage[colorlinks]{hyperref}
 \usepackage[hyphenbreaks]{breakurl}
@@ -43,11 +44,13 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 
 \begin{document}%\layout
 \maketitle
-\begin{center}
-\section*{Abstract}
+%\begin{center}
+%\section*{Abstract}
+\begin{abstract}
 \textit{In this project we look at different numerical algorithms to solve the one-dimensional Poisson equation with Dirichlet boundary conditions. We solve this equation by approximating through a Taylor expansion to a set of linear equations. This is then solved with two different algorithms; using Gaussian elimination and LU-decomposition on a tridiagonal matrix. We also look at two different cases for the Gaussian elimination method. The end goal is to see how the CPU time and relative error, compared to an analytical solution, changes when using different algorithms and step sizes. Normally we expect that with decreasing step size $h$, the numerical solution would converge closer to the analytical solution. This is not the case here as we get the best results for a step size of $h\approx10^{-6}$ for the Gaussian elimination method. For the LU-decomposition we ran out of memory when computing with a step size larger than $10^{4}$. The Gaussian elimination is also more CPU friendly since the number of floating point operations (FLOPS) for the general algorithm goes as $\mathcal{O}(9n)$, and the special algorithm goes as $\mathcal{O}(4n)$. The LU-decomposition on the other hand goes as $\mathcal{O}(\frac{2}{3}n^3)$ and takes a lot of CPU usage.
 }
-\end{center}
+\end{abstract}
+%\end{center}
 
 \section{Introduction}
 Differential equations very powerful tools for explaining and calculating physical problems. Most of these are unfortunately difficult to solve analytically. So we have to use numerics to solve them. Solving them numerically is much easier and much more efficient than trying to solve them analytically. The use of these differential equations in numerics are becoming more and more important today. So to study these are very important to further understand physics.
@@ -88,9 +91,10 @@ Poisson's equation (\ref{eq:1DPoisson}) need to be discretized. We start be appr
 -\frac{v_{i+1}-2v_i+v_{i-1}}{h^2}+\mathcal{O}(h^2)=f(x_i)=f_i,
 \end{equation}
 where $h=\frac{1}{n+1}$ is the step length and $i=1,...,n$. Define grid points as $x_i=ih$ from $x_0=0$ to $x_{n+1}=1$. We also set boundary conditions $v_0=v_{n+1}=0$. The approximation can further be expressed generally as:
-\begin{equation*}
+\begin{equation}
+\label{eq:approx_gen}
 2v_i-v_{i+1}-v_{i-1}=h^2f_i
-\end{equation*}
+\end{equation}
 From the boundary conditions we get that for $i=0$ and $i=n+1$,which are the end points, we get 0. For the other elements we get:
 \begin{align*}
 i=1:&\quad 2v_1-v_{2}-v_{0}=h^2f_1\\
@@ -279,6 +283,80 @@ LU = scpl.lu_solve(scpl.lu_factor(matrix), func)
 Then we compare the mean-time the calculation takes for the LU-decomposition and the relative error, with the mean-times and relative errors for the Thomas and special algorithms for up to $n=10^7$ grid points.
 
 \section{Results}
+In Figure \ref{fig:gauss} we see the comparison between the numerical solution with the general Thomas algorithm of the discretized Poisson equation (\ref{eq:approx_gen}) and the analytical solution (\ref{eq:analytic}) for different number of grid points. From that figure we can see by eye that with increasing $n$ (in this case), the numerical solution converges towards the analytical solution. The curves also becomes much smoother with increasing $n$, which means with decreasing step size $h$.
+
+\begin{figure}[htbp]
+	\hspace*{-2.5cm}
+	\subfloat[Comparison for $n=10$]{\includegraphics[width=0.45\linewidth]{Gaussian_n=10.png}}
+	\subfloat[Comparison for $n=100$]{\includegraphics[width=0.45\linewidth]{Gaussian_n=100.png}}
+	\subfloat[Comparison for $n=1000$]{\includegraphics[width=0.45\linewidth]{Gaussian_n=1000.png}}
+	\caption{Figures comparing the numerical solution of the Poisson equation (\ref{eq:approx_gen}) to the analytical solution (\ref{eq:analytic}) for different grid points $n=10, 100, 1000$.\label{fig:gauss}}
+\end{figure}
+
+In Figure \ref{fig:gauss_LU} we see the comparison between the Gaussian elimination with the Thomas algorithm and the LU-decomposition for different grid points. As for the comparison in Figure \ref{fig:gauss} we see that for increasing $n\in[10,1000]$, the LU-decomposition converges towards the Gaussian solution. The LU-decomposition does not seem to be as good as the Gaussian elimination with the Thomas algorithm, since we see that the Gaussian elimination is much closer to the analytical solution in Figure \ref{fig:gauss}. 
+
+\begin{figure}[htbp]
+	\hspace*{-2.5cm}
+	\subfloat[Comparison for $n=10$]{\includegraphics[width=0.45\linewidth]{Gaussian_vs_LU_n=10.png}}
+	\subfloat[Comparison for $n=100$]{\includegraphics[width=0.45\linewidth]{Gaussian_vs_LU_n=100.png}}
+	\subfloat[Comparison for $n=1000$]{\includegraphics[width=0.45\linewidth]{Gaussian_vs_LU_n=1000.png}}
+	\caption{Figures comparing the numerical Thomas algorithm with the LU-decomposition of the Poisson equation for different grid points $n=10, 100, 1000$.\label{fig:gauss_LU}}
+\end{figure}
+
+The two figures are only running for $n$ up to 1000. The general and special algorithms of the Gaussian elimination are running for $n$ up to $10^7$, while the LU-decomposition are running for $n$ up to only $10^4$ as we will see when comparing the CPU times and relative errors in Table \ref{tab:times} and \ref{tab:error}. For running the LU-decomposition for $n>10^4$ our computer freezes. This happens since the computer runs out of memory. As we have discussed in the Methods section, we know that the LU-decomposition requires a much higher number of FLOPS than the two other algorithms. This happens since we are using the entire $n\times n$ \textbf{A} matrix and not only some of the elements in \textbf{A}. That means the CPU will use longer to do the decomposition. The FLOPS go as $\frac{2}{3}n^3$ and when we try for $n=5$ we end up with a big matrix. The original computer used have a 8GB memory. So for a matrix of $10^5\times10^5$ matrix we get $10^10\times 8$ bytes which is approximately 100GB. This is much much bigger than the computer memory, which causes memory error.
+
+\begin{table}[h!]
+%\centering
+%\hspace{-1cm}
+\begin{tabular}{ |c|c|c|c| }
+	\hline \rule{0pt}{13pt}
+	Value of n&General [s]&Special [s]&LU-decomposition [s]\\
+	\hline \rule{0pt}{13pt}
+	$10$&$2.152\cdot10^{-5}$& $9.846\cdot10^{-6}$ & $1.216\cdot10^{-2}$\\
+	\hline \rule{0pt}{13pt}
+	$10^2$ & $1.904\cdot10^{-4}$ & $9.153\cdot10^{-5}$ & $1.391\cdot10^{-2}$ \\
+	\hline \rule{0pt}{13pt}
+	$10^3$ & $2.235\cdot10^{-3}$ & $1.156\cdot10^{-3}$ & $2.807\cdot10^{-2}$\\
+	\hline \rule{0pt}{13pt}
+	$10^4$ & $2.286\cdot10^{-2}$ & $1.056\cdot10^{-2}$ & 7.783\\
+	\hline \rule{0pt}{13pt}
+	$10^5$ & $2.256\cdot10^{-1}$ & $1.109\cdot10^{-1}$ & $\cdots$\\
+	\hline \rule{0pt}{13pt}
+	$10^6$ & $2.266$ & $1.054$ & $\cdots$\\
+	\hline
+\end{tabular}	
+\caption{Table with the mean measured times of the different algorithms in seconds for the different grid points.}
+\label{tab:times}
+\end{table}
+
+In Table \ref{tab:times} we see the measured mean times of running the three mentioned algorithms. We have measured the mean of the times since each time we run the algorithms the single times will be different each time. This is because the CPU usage will change each time a algorithm is ran. This comes from that the CPU may be doing other things in the background that will affect the run times. From the time-table we see that the specialized algorithm of the Töplitz matrix is the fastest as expected, while the LU-decomposition is the slowest. This corresponds well with the number of FLOPS required for each algorithm. The specialized have the least amount of required FLOPS (4n), while the LU-decomposition requires the most FLOPS ($\frac{2}{3}n^3$). So we clearly see that the number of FLOPS in an algorithm will affect the CPU run time. For the LU-decomposition we got memory error with $n=5$ and bigger. Already at $n=4$ we see in Table \ref{tab:times} that the time have increased a lot compared to the two other algorithms at this stage.
+
+\begin{table}[h!]
+	%\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Value of n&General &Special &LU-decomposition \\
+		\hline \rule{0pt}{13pt}
+		$10$&$1.62611\cdot10^{-1}$& $7.93264\cdot10^{-2}$ & $1.50265$\\
+		\hline \rule{0pt}{13pt}
+		$10^2$ & $1.06807\cdot10^{-2}$ & $8.32917\cdot10^{-4}$ & $1.04250\cdot10^{-1}$ \\
+		\hline \rule{0pt}{13pt}
+		$10^3$ & $1.00279\cdot10^{-3}$ & $8.33329\cdot10^{-6}$ & $1.00418\cdot10^{-2}$\\
+		\hline \rule{0pt}{13pt}
+		$10^4$ & $9.96191\cdot10^{-5}$ & $8.33337\cdot10^{-8}$ & $1.00042\cdot10^{-3}$\\
+		\hline \rule{0pt}{13pt}
+		$10^5$ & $9.95577\cdot10^{-6}$ & $8.33680\cdot10^{-10}$ & $\cdots$\\
+		\hline \rule{0pt}{13pt}
+		$10^6$ & $8.40358\cdot10^{-7}$ & $6.67281\cdot10^{-11}$ & $\cdots$\\
+		\hline \rule{0pt}{13pt}
+		$10^7$ & $2.98380\cdot10^{-6}$ & $2.22126\cdot10^{-10}$ & $\cdots$\\
+		\hline
+	\end{tabular}	
+	\caption{Table with the maximum relative errors for the three algorithms calculated from equation \ref{eq:rel_error}.}
+	\label{tab:error}
+\end{table}
+
 
 \section{Conclusion}
 
