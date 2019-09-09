@@ -92,7 +92,7 @@ def rel_error(v, u):
     error = np.max(np.abs((v[1:-1] - u[1:-1])/u[1:-1]))
     return error
 
-def LU(n):
+def LU_decomposition(n):
     """Calculate the LU-decomposition of the tridiagonal matrix,
     and take the CPU time of the calculation."""
     # Create a matrix filled with zeros
@@ -109,12 +109,12 @@ def LU(n):
             matrix[i][i+1] = -1
 
     t0 = time.time()    # Start timer
-    A = scpl.lu_solve(scpl.lu_factor(matrix), func)  # LU-decomposition solver
+    LU = scpl.lu_solve(scpl.lu_factor(matrix), func)  # LU-decomposition solver
     t1 = time.time()    # Stop timer
     timer = t1 - t0     # Time of running the algorithm [s]
 
     v = np.zeros(n+1)
-    v[1:-1] = A
+    v[1:-1] = LU
 
     return x, v, timer
 
@@ -219,7 +219,7 @@ def task_e():
         error_gen1.append(error_gen)
         time_gen1.append(time_gen)
 
-        x_, A, time_LU = LU(n)
+        x_, A, time_LU = LU_decomposition(n)
         u_analytic = analytic(x)
         error_LU = rel_error(A, u_analytic)
         error_LU1.append(error_LU)
