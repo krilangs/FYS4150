@@ -116,7 +116,7 @@ def LU_decomposition(n):
     v = np.zeros(n+1)
     v[1:-1] = LU
 
-    return x, v, timer
+    return v, timer
 
 def task_b():
     """
@@ -208,34 +208,25 @@ def task_e():
     algorithms.
     """
     N = [10, 100, 1000]
-    error_gen1 = []
-    error_LU1 = []
-    time_gen1 = []
-    time_LU1 = []
     for n in N:
-        x, v, time_gen = gausselim(n)
-        u_analytic = analytic(x)
-        error_gen = rel_error(v, u_analytic)
-        error_gen1.append(error_gen)
-        time_gen1.append(time_gen)
-
-        x_, A, time_LU = LU_decomposition(n)
+        h = 1 / (n)
+        x = np.array([i * h for i in range(n+1)])
+        A, time_LU = LU_decomposition(n)
         u_analytic = analytic(x)
         error_LU = rel_error(A, u_analytic)
-        error_LU1.append(error_LU)
-        time_LU1.append(time_LU)
+
+        print("n=%.1e" %n)
+        print("Time used LU: %.3e s" %time_LU)
+        print("Error LU= %.8g" % error_LU)
+
         plt.figure()
         plt.title("Gaussian elimination vs LU decomposition\n \
                   with different grid points", size=14)
-        plt.plot(x, v, "--r", label="Numerical n=%s" %n, markersize=14)
+        plt.plot(x, u_analytic, "--r", label="Numerical n=%s" %n, markersize=14)
         plt.plot(x, A, label="LU n=%s" %n, markersize=14)
         plt.legend()
         #plt.savefig("Gaussian_vs_LU_n=%s.png" %n)
 
-    print(error_gen1)
-    print(error_LU1)
-    print(time_gen1)
-    print(time_LU1)
     plt.show()
 
 if __name__ == "__main__":
