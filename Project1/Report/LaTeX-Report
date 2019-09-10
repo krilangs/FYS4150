@@ -45,11 +45,11 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%\layout
 \maketitle
 \begin{abstract}
-In this project we look at different numerical algorithms to solve the one-dimensional Poisson equation with Dirichlet boundary conditions. We solve this equation by approximating through a Taylor expansion to a set of linear equations. This is then solved with two different algorithms; using Gaussian elimination and LU-decomposition on a tridiagonal matrix. We also look at two different cases for the Gaussian elimination method. The end goal is to see how the CPU time and relative error, compared to an analytical solution, changes when using different algorithms and step sizes. Normally we expect that with decreasing step size $h$, the numerical solution would converge closer to the analytical solution. This is not the case here as we get the best results for a step size of $h\approx10^{-6}$ for the Gaussian elimination method. For the LU-decomposition we ran out of memory when computing with a step size larger than $10^{4}$. The Gaussian elimination is also more CPU friendly since the number of floating point operations (FLOPS) for the general algorithm goes as $\mathcal{O}(9n)$, and the special algorithm goes as $\mathcal{O}(4n)$. The LU-decomposition on the other hand goes as $\mathcal{O}(\frac{2}{3}n^3)$ and takes a lot of CPU usage.
+In this project we look at different numerical algorithms to solve the one-dimensional Poisson equation with Dirichlet boundary conditions. We solve this equation by approximating through a Taylor expansion to a set of linear equations. This is then solved with two different algorithms; using Gaussian elimination and LU-decomposition on a tridiagonal matrix. We also look at two different cases for the Gaussian elimination method. The end goal is to see how the CPU time and relative error, compared to an analytical solution, changes when using different algorithms and step sizes. Normally we expect that with decreasing step size $h$, the numerical solution would converge closer to the analytical solution. This is not the case here as we get the best results for a step size of $h\approx10^{-6}$ for the Gaussian elimination method. For the LU-decomposition we ran out of memory when computing with a step size larger than $10^{4}$. The Gaussian elimination is also more CPU friendly since the number of floating point operations (FLOPS) for the general algorithm goes as $\mathcal{O}(8n)$, and the special algorithm goes as $\mathcal{O}(4n)$. The LU-decomposition on the other hand goes as $\mathcal{O}(\frac{2}{3}n^3)$ and takes a lot of CPU usage.
 \end{abstract}
 
 \section{Introduction}
-Differential equations very powerful tools for explaining and calculating physical problems. Most of these are unfortunately difficult to solve analytically. So we have to use numerics to solve them. Solving them numerically is much easier and much more efficient than trying to solve them analytically. The use of these differential equations in numerics are becoming more and more important today. So to study these are very important to further understand physics.
+Differential equations are very powerful tools for explaining and calculating physical problems. Most of these are unfortunately difficult to solve analytically. So we have to use numerics to solve them. Solving them numerically is much easier and much more efficient than trying to solve them analytically. The use of these differential equations in numerics are becoming more and more important today. So to study these are very important to further understand physics.
 
 In this project we are trying to solve the one-dimensional Poisson equation, which is a second order differential equation $-u^{\prime\prime}(x)=f(x)$, numerically. For us to solve this equation we rewrite Poisson's equation as a set of linear equations with Dirichlet boundary conditions. In the program we use memory allocation when we work with matrices with different dimensions to speed up the programing time. To solve the set of linear equations we will use Gaussian elimination and LU-decomposition, and compare the solutions we get from them. Then we compare with a known analytical solution. We also look at the number of floating point operations (FLOPS) for the different algorithms, which have a major effect on the run time of the program. 
 
@@ -78,10 +78,10 @@ Then we let $\phi\rightarrow u$ and $r\rightarrow x$ so our one-dimensional Pois
 \label{eq:1DPoisson}
 -u^{\prime\prime}=f(x),
 \end{equation}
-where $f(x)=-4\pi r\rho(r)$ is an inhomogeneous source term. The equation we are solving in this project is the one-dimensional Poisson equation (\ref{eq:1DPoisson}) with $x\in(0,1)$ and Dirichlet boundary conditions $u(0)=u(1)=0$.
+where $f(x)=-4\pi x\rho(x)$ is an inhomogeneous source term. The equation we are solving in this project is the one-dimensional Poisson equation (\ref{eq:1DPoisson}) with $x\in(0,1)$ and Dirichlet boundary conditions $u(0)=u(1)=0$.
 
 \subsection{Gaussian elimination}
-Poisson's equation (\ref{eq:1DPoisson}) need to be discretized. We start be approximating the second derivative with a Taylor expansion and discretization of $u \rightarrow v_i$ as
+Poisson's equation (\ref{eq:1DPoisson}) needs to be discretized. We start be approximating the second derivative with a Taylor expansion and discretization of $u \rightarrow v_i$ as
 \begin{equation}
 \label{eq:approx}
 -\frac{v_{i+1}-2v_i+v_{i-1}}{h^2}+\mathcal{O}(h^2)=f(x_i)=f_i,
@@ -126,20 +126,20 @@ v_n
 \tilde{\textbf{y}}_n
 \end{bmatrix}
 \end{equation}
-Then we rewrite the matrix \textbf{A} in terms of one-dimensional vectors $a$, $b$ and $c$. The diagonal elements are $b_i$ of length $n$, while $a_i$ and $c_i$ are the below and above elements of lengths $n-1$ respectively.
+Then we rewrite the matrix \textbf{A} in terms of one-dimensional vectors \textbf{a}, \textbf{b} and \textbf{c}. The diagonal elements are $b_i$ of length $n$, while $a_i$ and $c_i$ are the below and above elements of lengths $n-1$ respectively.
 We solve this new linear equation by doing a Gaussian elimination, which is more thoroughly explained in the class Lecture notes \cite{notes} (sect:6.4.1). What we do are to do a sequence of operations that reduces the matrix \textbf{A} to a upper-triangular matrix. This method is called forward substitution. Then we do what is called a backward substitution to find a solution to the vector \textbf{v}. Mathematically this looks like this:
 \begin{equation}
 \label{eq:backward}
 v_m = \frac{1}{d_{mm}}\left(\tilde{y}_m-\sum^{n}_{k=m+1}d_{mk}v_k\right)\quad m=n-1, n-2, ..., 1
 \end{equation}
-We will denote $d$ as the changed elements in the upper-triangular matrix.
+We will denote $d$ as the changed diagonal elements in the upper-triangular matrix.
 
 We assume a source term as 
 \begin{equation}
 \label{eq:source}
 f(x)=100e^{-10x}
 \end{equation} 
-in our calculations of the linear equations (\ref{eq:lin_eq}). We also assume different elements of $a$, $b$ and $c$ in \textbf{A}. Then we use the forward substitution to find equations for the numerical algorithms of:
+in our calculations of the linear equations (\ref{eq:lin_eq}). We also assume different elements of \textbf{a}, \textbf{b} and \textbf{c} in \textbf{A}. Then we use the forward substitution to find equations for the numerical algorithms:
 \begin{align}
 \label{eq:d_num}
 d_i=b_i-\frac{a_{i-1}c_{i-1}}{d_{i-1}}\\
@@ -153,7 +153,7 @@ Then we do the backward substitution of \textbf{v}, which in vector notation bec
 \label{eq:v_back}
 v_{i-1} = \frac{\tilde{y}_{i-1}-c_{i-1}v_i}{d_{i-1}}
 \end{equation}
-The endpoint can be found by 
+The endpoint is calculated as
 \[v_n=\frac{\tilde{y}_n}{d_n}.\]
 The backward substitution calculation requires 3n FLOPS. So in total this general algorithm, also called Thomas algorithm, requires 8n number of FLOPS. In our program, this algorithm is implemented as:
 \begin{lstlisting}
@@ -169,14 +169,14 @@ for i in range(n-2, 0, -1):
 	v[i] = (y_tilde[i-1] - c[i-1]*v[i+1])/d[i-1]
 \end{lstlisting}
 
-The program is run for different sizes of matrices of $10\times 10$, $100\times100$ and $1000\times1000$. The results are then compared to an analytical solution of the differential equation (\ref{eq:1DPoisson})
+The program is run for different sizes of matrices of $10\times 10$, $100\times100$ and $1000\times1000$. The results are then plotted and compared to an analytical solution of the differential equation (\ref{eq:1DPoisson}):
 \begin{equation}
 \label{eq:analytic}
 u(x) = 1-(1-e^{-10})x-e^{-10x}
 \end{equation}
 
 \subsection{Special case}
-Next we assume that the off-diagonal vectors in \textbf{A}, \textbf{a} and \textbf{c}, are identical to each other and different from \textbf{b}, and that all the elements in the vectors are identical. This creates a special case with a tridiagonal Töplitz matrix. This means that we specialize our previous algorithm to this special case. Now we can reduce the number of FLOPS in the algorithm, since we can pre-calculate more elements.
+Next we assume that the off-diagonal vectors in \textbf{A}, \textbf{a} and \textbf{c}, are identical to each other and different from \textbf{b}, and that all the elements in the vectors are identical. This creates a special case with a tridiagonal Töplitz matrix. This means that we can specialize our previous algorithm to this special case. Now we can reduce the number of FLOPS in the algorithm, since we can pre-calculate more elements.
 
 The diagonal elements $b_i$ are equal to 2, while the off-diagonal elements $a_i$ and $c_i$ are identical and equal to -1. This means that the $d_i$ elements in equation \ref{eq:d_num}, with new boundary conditions and $d_1=b_1=2$, can be pre-calculated as
 \begin{equation}
@@ -207,7 +207,7 @@ for i in range(n-2, 0, -1):
 	v[i] = (y_tilde[i] + v[i+1])/d[i]
 \end{lstlisting}
 
-We then run the program (both the general and the special case) for matrices up to $n=10^6$ number of grid points, and compare the CPU times for running the algorithms to each other. The CPU times that are compared are averages over a set number of times run. This is since the CPU times are not the same every time.
+We then run the program (both the general and the special case) for matrices up to $n=10^6$ number of grid points, and compare the CPU times for running the algorithms to each other. The CPU times that are compared are averages over a set number of times run. This is because the CPU times may be different for each calculation.
 
 \subsection{Numerical uncertainties}
 Numerical calculations will have uncertainties. In this project we look at the relative error we get when the step size $h$ becomes very small. Here we will look closer to where this limit is for our algorithms and compare them.
@@ -221,7 +221,7 @@ We will calculate the relative error as
 \end{equation}
 This is function of $\log_{10}(h)$ for function values $u_i$ and $v_i$. The $u_i$ values are from the analytical solution (\ref{eq:analytic}) which is compared separately to the numerical solutions $v_i$ from equations \ref{eq:v_back} and \ref{eq:v_special} for grid points up to $n=10^7$.
 
-From the Taylor expansion in equation \ref{eq:approx} we would expect the error to scale as $h^2$. As the step size decrease we would expect to see the affect of the underflow, and be able to see where the step size is too small such that the error would increase.
+From the Taylor expansion in equation \ref{eq:approx} we would expect the error to scale as $h^2$. As the step size decrease we would expect to see the affect of the underflow, and be able to see where the step size is too small such that the error would start to increase.
 
 \subsection{LU-decomposition}
 Another form of Gaussian elimination is the LU-decomposition. This is a method which splits our matrix \textbf{A} into a product of a lower (L) triangular matrix and a upper (U) triangular matrix on the form as seen for a $4\times4$ matrix in the Lecture notes \cite{notes} (sect: 6.4.2) as:
@@ -299,7 +299,7 @@ In Figure \ref{fig:gauss_LU} we see the comparison between the Gaussian eliminat
 	\caption{Figures comparing the numerical Thomas algorithm with the LU-decomposition of the Poisson equation for different grid points $n=10, 100, 1000$.\label{fig:gauss_LU}}
 \end{figure}
 
-The two figures are only running for $n$ up to 1000. The general and special algorithms of the Gaussian elimination are running for $n$ up to $10^7$, while the LU-decomposition are running for $n$ up to only $10^4$ as we will see when comparing the CPU times and relative errors in Table \ref{tab:times} and \ref{tab:error}. For running the LU-decomposition for $n>10^4$ our computer freezes. This happens since the computer runs out of memory. As we have discussed in the Methods section, we know that the LU-decomposition requires a much higher number of FLOPS than the two other algorithms. This happens since we are using the entire $n\times n$ \textbf{A} matrix and not only some of the elements in \textbf{A}. That means the CPU will use longer to do the decomposition. The FLOPS go as $\frac{2}{3}n^3$ and when we try for $n=5$ we end up with a big matrix. The original computer used have a 8GB memory. So for a matrix of $10^5\times10^5$ matrix we get $10^10\times 8$ bytes which is approximately 100GB. This is much much bigger than the computer memory, which causes memory error.
+The two figures are only running for $n$ up to 1000. The general and special algorithms of the Gaussian elimination are running for $n$ up to $10^7$, while the LU-decomposition are running for $n$ up to only $10^4$ as we will see when comparing the CPU times and relative errors in Table \ref{tab:times} and \ref{tab:error}. For running the LU-decomposition for $n>10^4$ our computer freezes. This happens since the computer runs out of memory. As we have discussed in the Methods section, we know that the LU-decomposition requires a much higher number of FLOPS than the two other algorithms. This happens since we are using the entire $n\times n$ \textbf{A} matrix and not only some of the elements in \textbf{A}. That means the CPU will use longer to do the decomposition. The FLOPS go as $\frac{2}{3}n^3$ and when we try for $n=5$ we end up with a big matrix. The original computer used have a 8GB memory. So for a matrix of $10^5\times10^5$ matrix we get $10^{10}\times 8$ bytes which is approximately 100GB. This is much much bigger than the computer memory, which causes memory error.
 
 \begin{table}[h!]
 %\centering
@@ -365,11 +365,11 @@ From Table \ref{tab:error} for the LU-decomposition we see that the relative err
 \section{Conclusion}
 The reason for this project was to solve the Poisson equation by first discretization and then to solve it with different Gaussian elimination methods, and compare the results from these algorithms. We have studied the effect different step sizes have on our numerical results by looking at the CPU time of the calculations, and the relative error between the algorithms and the analytical solution. 
 
-We have come to the conclusion that for numerical calculations on the computer there exists a limit for how small step sizes we can use until the results are negatively affected. For each algorithm we have used we have seen that the CPU time is dependent on the required number of FLOPS. With $n$ bigger than $10^4$ we saw that LU-decomposition is no longer useful, since all we got was memory error. So arithmetic underflow may cause loss of precision and be have influence on our results.
+We have come to the conclusion that for numerical calculations on the computer there exists a limit for how small step sizes we can use until the results are negatively affected. For each algorithm we have seen that the CPU time is dependent on the required number of FLOPS. With $n$ bigger than $10^4$ we saw that LU-decomposition is no longer useful, since all we got was memory error. So arithmetic underflow may cause loss of precision and may have influence on our results.
 
 For the comparison with the analytical solution we see that for even smaller $n$ we get good precision with short CPU time. Specially in Figure \ref{fig:gauss} we see that for not so big $n$ the curves stay more or less on top of each other, at least be eye.
 
-An improvement for later use could be to do the main code in C++, which will most likely have aa good affect on the calculations we are going to do later in the course.
+An improvement for later use could be to do the main code in C++, which will most likely have a greater affect on the calculations we are going to do later in the course.
 
 \section{Appendix}
 Link to GitHub repository:
