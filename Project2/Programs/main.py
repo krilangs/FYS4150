@@ -1,16 +1,20 @@
 from __future__ import division
 import numpy as np
+from numba import jit
 import time
 
 
-def matrix_b(n, omega, max_rho):
+def matrix_b(n, omega, max_rho, test=False):
     """Construct the matrix for b)"""
     rho_0 = 0
     rho_max = max_rho
     rho = np.linspace(rho_0, rho_max, n+1)
-    h = rho[1] - rho[0]
-    V = np.zeros(n+1)
-    V[1:] = omega**2*rho[1:]**2
+    h = rho_max/(n+1)
+    if test is True:
+        V = np.zeros(n+1)
+    else:
+        V = np.zeros(n+1)
+        V[1:] = omega**2*rho[1:]**2
     d = 2./h**2 + V
     a = -1./h**2
     A = np.zeros(shape=(n, n), dtype=np.float64)
@@ -18,10 +22,10 @@ def matrix_b(n, omega, max_rho):
     A[range(n), range(n)] = d[1:]
     A[range(1, n), range(n-1)] = a
     A[range(n-1), range(1, n)] = a
-    print(A)
 
     return A, rho
 
+@jit(nopython=True)
 def Jacobi_rotate(matrix, vec, k, l):
     """Finding the new matrix elements by a Jacobi rotation"""
     n = len(matrix)
@@ -35,10 +39,10 @@ def Jacobi_rotate(matrix, vec, k, l):
     c = 1./np.sqrt(1. + t**2)   # cos(theta)
     s = t*c                     # sin(theta)
 
-    a_kk = matrix[k][k]
-    a_ll = matrix[l][l]
+    a_kk = matrix[k,k]
+    a_ll = matrix[l,l]
     matrix[k,k] = a_kk*c**2 - 2.*matrix[k,l]*c*s + a_ll*s**2
-    matrix[l,l] = a_kk*c**2 + 2.*matrix[k,l]*c*s + a_ll*s**2
+    matrix[l,l] = a_kk*s**2 + 2.*matrix[k,l]*c*s + a_ll*c**2
     matrix[k,l] = 0
     matrix[l,k] = 0
 
@@ -59,10 +63,13 @@ def Jacobi_rotate(matrix, vec, k, l):
 
     return matrix, vec
 
+@jit(nopython=True)
 def offdiag(matrix):
     """Finding the maximum non-diagonal element """
     n = len(matrix)
-    max_elem = 1e-12
+    max_elem = 0
+    #max_k = 0
+    #max_l = 1
     for i in range(n):
         for j in range(i+1, n):
             if abs(matrix[i,j]) > max_elem:
@@ -100,6 +107,7 @@ def solve(matrix, tol, time_take=False):
     if time_take is True:   # Stop timer, and calculate the time of operations
         stop_time = time.perf_counter()
         final_time = stop_time - start_time
+        print("Time used on the algorithm: %s s" %final_time)
 
     eig_val = np.zeros(n)  # Eigenvalues
     for i in range(n):
