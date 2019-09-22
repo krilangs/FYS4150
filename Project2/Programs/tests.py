@@ -96,5 +96,6 @@ if __name__ == "__main__":
     print("Running the tests:")
     test_offdiag()
     test_eigenvalues()
-    test_Jacobi()
+    test_Jacobi()    # Test for several n (dims)
     print("All the tests are passed.")
+
