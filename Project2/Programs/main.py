@@ -5,14 +5,14 @@ import matplotlib.pyplot as plt
 import time
 
 
-def Matrix(n, max_rho, pot):
+def Matrix(n, omega, max_rho, pot):
     """Construct the matrix for b)"""
     rho_0 = 0
     rho_max = max_rho
     rho = np.linspace(rho_0, rho_max, n+1)
     h = rho_max/(n+1)
     V = np.zeros(n+1)
-    V[1:] = potentials(rho[1:], pot)
+    V[1:] = potentials(rho[1:], omega, pot)
 
     d = 2./h**2 + V
     a = -1./h**2
@@ -78,12 +78,14 @@ def offdiag(matrix):
 
     return max_k, max_l
 
-def potentials(rho, pot):
+def potentials(rho, omega, pot):
     """Define the different potentials used in the different exercises"""
-    if pot == "pot1":
+    if pot == "pot1":  # Exercise b) and c)
         V = 0
-    if pot == "pot2":
+    if pot == "pot2":  # Exercise d)
         V = rho**2
+    if pot == "pot3":  # Exercise e)
+        V = omega**2*rho**2 + 1./rho
     return V
         
 
@@ -154,7 +156,7 @@ def ex_c(show):
     time_taken = []
     
     for n in list_n:
-        M, rho = Matrix(n, 1, pot="pot1")
+        M, rho = Matrix(n, 1, 1, pot="pot1")
         M_val, M_vec, iterations, time = solve(M, tol, time_take=True)
         n_iterations = np.append(n_iterations, iterations)
         time_taken = np.append(time_taken, time)
@@ -195,7 +197,7 @@ def ex_d(show):
     rho_max = 10
     plot = show
     
-    M, rho = Matrix(N, rho_max, pot="pot2")
+    M, rho = Matrix(N, 1, rho_max, pot="pot2")
     M_val, M_vec = solve(M, tol=1e-8, time_take=False)
     
     permute = M_val.argsort()
@@ -214,13 +216,34 @@ def ex_d(show):
     
     print(M_val[:4])
 
-def ex_e():
-    
-    return
+def ex_e(show):
+    N = 400
+    rho_max = 10
+    plot = show
+    omega_r = [0.01, 0.5, 1., 5.]
 
+    plt.figure(figsize=[5, 5])
+
+    for w in omega_r:
+        M, rho = Matrix(N, w, rho_max, pot="pot3")
+        M_val, M_vec = solve(M, tol=1e-8, time_take=False)
+    
+        permute = M_val.argsort()
+        M_val = M_val[permute]
+        M_vec = M_vec[:, permute]
+        
+        #print(M_val[:4])
+        
+        plt.plot(rho[1:], M_vec[:, 0], label="$\\omega=$%.2f" %w)
+    
+    figsetup(title="Dimensionless wavefunction for first eigenstates",
+             xlab="$\\rho$", ylab="$u(\\rho)$", fname="question2d%i" % N,
+             show=plot)
+
+    
 if __name__ == "__main__":
     #ex_c(show=True)   
-    ex_d(show=True)
-    ex_e()
+    #ex_d(show=True)
+    ex_e(show=True)
     
     
