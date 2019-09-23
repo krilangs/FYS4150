@@ -239,11 +239,9 @@ def ex_e(show):
     figsetup(title="Dimensionless wavefunction for first eigenstates",
              xlab="$\\rho$", ylab="$u(\\rho)$", fname="question2d%i" % N,
              show=plot)
-
     
 if __name__ == "__main__":
     #ex_c(show=True)   
     #ex_d(show=True)
     ex_e(show=True)
-    
     
