@@ -149,7 +149,7 @@ def figsetup(title, xlabel, ylabel, fname, show=False):
 def ex_c(show):
     plot = show
     tol = 1e-8
-    list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500, 1000]
+    list_n = [5, 10, 20, 50]#, 70, 100, 150, 200, 300, 400, 500, 800]
     n_iterations = []   # List for number of iterations
     time_taken = []     # List for time taken for the algorithm
     
@@ -187,12 +187,12 @@ def ex_c(show):
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, n_iterations, "o--")
-    figsetup(title="No. Iterations for solution of N-step Buckling beam\n Normal plot",
+    figsetup(title="# Iterations for solution of N-step Buckling beam\n Normal plot",
              xlabel="N", ylabel="# Iterations", fname="Iterations_plot", show=plot)
 
 def ex_d(show):
     N = 600
-    rho_max = 10
+    rho_max = 60
     plot = show
     
     M, rho = Matrix(N, 1, rho_max, pot="pot2")
@@ -206,11 +206,10 @@ def ex_d(show):
 
     for n in [0, 1, 2]:
         plt.plot(rho[1:], M_vec[:, n]**2, label="$\\lambda=$%.4f" % M_val[n])
-        #plt.axis([0, 15, 0.0, 0.025])
+        plt.axis([0, 8, 0.0, 0.1])
 
     figsetup(title="Dimensionless wavefunction for first 3 eigenstates",
-             xlab="$\\rho$", ylab="$u(\\rho)$", fname="question2d%i" % N,
-             show=plot)
+             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Eigenvalues", show=plot)
     
     print(M_val[:4])
 
@@ -229,17 +228,15 @@ def ex_e(show):
         permute = M_val.argsort()
         M_val = M_val[permute]
         M_vec = M_vec[:, permute]
-        
-        #print(M_val[:4])
-        
+
         plt.plot(rho[1:], M_vec[:, 0], label="$\\omega=$%.2f" %w)
     
     figsetup(title="Dimensionless wavefunction for first eigenstates",
-             xlab="$\\rho$", ylab="$u(\\rho)$", fname="question2d%i" % N,
+             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Frequency" % N,
              show=plot)
     
 if __name__ == "__main__":
-    ex_c(show=True)   
-    #ex_d(show=True)
+    #ex_c(show=True)   
+    ex_d(show=True)   # Testing
     #ex_e(show=True)
     
