@@ -139,6 +139,7 @@ def figsetup(title, xlab, ylab, fname, show=False):
     plt.title(fname)
     plt.tight_layout()
     plt.title(title)
+    plt.legend()
     #plt.savefig("../figs/" + fname + ".png", dpi=250)
     if show is False:
         plt.close()
@@ -146,6 +147,7 @@ def figsetup(title, xlab, ylab, fname, show=False):
         plt.show()
 
 def ex_c(show):
+    plot = show
     tol = 1e-8
     list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500]
     n_iterations = []
@@ -158,48 +160,67 @@ def ex_c(show):
         time_taken = np.append(time_taken, time)
     list_n = np.array(list_n)
 
-    
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, time_taken, "o--")
     figsetup(title="Time taken for solution of N-step Buckling beam\n Semilogy-plot",
-             xlab="N", ylab="Time elapsed [s]", fname="q2c_time", show)
+            xlab="N", ylab="Time elapsed [s]", fname="q2c_time", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, n_iterations, "o--")
     figsetup(title="No. Iterations for solution of N-step Buckling beam\n Semilogy-plot",
-             xlab="N", ylab="No. Iterations", fname="q2c_count", show)
+             xlab="N", ylab="No. Iterations", fname="q2c_count", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, time_taken, "o--")
     figsetup(title="Time taken for solution of N-step Buckling beam\n Loglog-plot",
-             xlab="N", ylab="Time elapsed [s]", fname="q2c_timeloglog", show)
+             xlab="N", ylab="Time elapsed [s]", fname="q2c_timeloglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, n_iterations, "o--")
     figsetup(title="No. Iterations for solution of N-step Buckling beam\n Loglog-plot",
-             xlab="N", ylab="No. Iterations", fname="q2c_countloglog", show)
+             xlab="N", ylab="No. Iterations", fname="q2c_countloglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, time_taken, "o--")
     figsetup(title="Time taken for solution of N-step Buckling beam\n Normal plot",
-             xlab="N", ylab="Time elapsed [s]", fname="q2c_timenormal", show)
+             xlab="N", ylab="Time elapsed [s]", fname="q2c_timenormal", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, n_iterations, "o--")
     figsetup(title="No. Iterations for solution of N-step Buckling beam\n Normal plot",
-             xlab="N", ylab="No. Iterations", fname="q2c_countnormal", show)
+             xlab="N", ylab="No. Iterations", fname="q2c_countnormal", show=plot)
 
-#def ex_d():
+def ex_d(show):
+    N = 600
+    rho_max = 10
+    plot = show
     
+    M, rho = Matrix(N, rho_max, pot="pot2")
+    M_val, M_vec = solve(M, tol=1e-8, time_take=False)
+    
+    permute = M_val.argsort()
+    M_val = M_val[permute]
+    M_vec = M_vec[:, permute]
+    
+    plt.figure(figsize=[5, 5])
 
+    for n in [0, 1, 2]:
+        plt.plot(rho[1:], M_vec[:, n]**2, label="$\\lambda=$%.4f" % M_val[n])
+        #plt.axis([0, 15, 0.0, 0.025])
 
+    figsetup(title="Dimensionless wavefunction for first 3 eigenstates",
+             xlab="$\\rho$", ylab="$u(\\rho)$", fname="question2d%i" % N,
+             show=plot)
+    
+    print(M_val[:4])
 
-
-
+def ex_e():
+    
+    return
 
 if __name__ == "__main__":
-    ex_c(show=True)   
-    
-    
+    #ex_c(show=True)   
+    ex_d(show=True)
+    ex_e()
     
     
