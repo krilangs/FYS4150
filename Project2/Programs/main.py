@@ -1,20 +1,19 @@
 from __future__ import division
 import numpy as np
 from numba import jit
+import matplotlib.pyplot as plt
 import time
 
 
-def matrix_b(n, omega, max_rho, test=False):
+def Matrix(n, max_rho, pot):
     """Construct the matrix for b)"""
     rho_0 = 0
     rho_max = max_rho
     rho = np.linspace(rho_0, rho_max, n+1)
     h = rho_max/(n+1)
-    if test is True:
-        V = np.zeros(n+1)
-    else:
-        V = np.zeros(n+1)
-        V[1:] = omega**2*rho[1:]**2
+    V = np.zeros(n+1)
+    V[1:] = potentials(rho[1:], pot)
+
     d = 2./h**2 + V
     a = -1./h**2
     A = np.zeros(shape=(n, n), dtype=np.float64)
@@ -47,7 +46,7 @@ def Jacobi_rotate(matrix, vec, k, l):
     matrix[l,k] = 0
 
     for i in range(n):
-        if i != k & i != l:
+        if i != k and i != l:
             a_ik = matrix[i,k]
             a_il = matrix[i,l]
             matrix[i,k] = a_ik*c - a_il*s
@@ -68,8 +67,6 @@ def offdiag(matrix):
     """Finding the maximum non-diagonal element """
     n = len(matrix)
     max_elem = 0
-    #max_k = 0
-    #max_l = 1
     for i in range(n):
         for j in range(i+1, n):
             if abs(matrix[i,j]) > max_elem:
@@ -81,6 +78,14 @@ def offdiag(matrix):
 
     return max_k, max_l
 
+def potentials(rho, pot):
+    """Define the different potentials used in the different exercises"""
+    if pot == "pot1":
+        V = 0
+    if pot == "pot2":
+        V = rho**2
+    return V
+        
 
 def solve(matrix, tol, time_take=False):
     """
@@ -91,6 +96,7 @@ def solve(matrix, tol, time_take=False):
     """
     M = np.copy(matrix)
     n = len(M)
+    print("Dim %i x %i:" %(n,n))
     iterations = 0     # Number of transformations
     eig_vec = np.identity(n)  # Eigenvectors
 
@@ -119,3 +125,81 @@ def solve(matrix, tol, time_take=False):
         return eig_val, eig_vec, iterations, final_time
     else:
         return eig_val, eig_vec
+
+def figsetup(title, xlab, ylab, fname, show=False):
+    """
+    Sets up and saves figure for usage in report
+    usage:
+    plot(...)
+    plot(...)
+    figsetup("filename")
+    """
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.title(fname)
+    plt.tight_layout()
+    plt.title(title)
+    #plt.savefig("../figs/" + fname + ".png", dpi=250)
+    if show is False:
+        plt.close()
+    else:
+        plt.show()
+
+def ex_c(show):
+    tol = 1e-8
+    list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500]
+    n_iterations = []
+    time_taken = []
+    
+    for n in list_n:
+        M, rho = Matrix(n, 1, pot="pot1")
+        M_val, M_vec, iterations, time = solve(M, tol, time_take=True)
+        n_iterations = np.append(n_iterations, iterations)
+        time_taken = np.append(time_taken, time)
+    list_n = np.array(list_n)
+
+    
+    plt.figure(figsize=[5, 5])
+    plt.semilogy(list_n, time_taken, "o--")
+    figsetup(title="Time taken for solution of N-step Buckling beam\n Semilogy-plot",
+             xlab="N", ylab="Time elapsed [s]", fname="q2c_time", show)
+
+    plt.figure(figsize=[5, 5])
+    plt.semilogy(list_n, n_iterations, "o--")
+    figsetup(title="No. Iterations for solution of N-step Buckling beam\n Semilogy-plot",
+             xlab="N", ylab="No. Iterations", fname="q2c_count", show)
+
+    plt.figure(figsize=[5, 5])
+    plt.loglog(list_n, time_taken, "o--")
+    figsetup(title="Time taken for solution of N-step Buckling beam\n Loglog-plot",
+             xlab="N", ylab="Time elapsed [s]", fname="q2c_timeloglog", show)
+
+    plt.figure(figsize=[5, 5])
+    plt.loglog(list_n, n_iterations, "o--")
+    figsetup(title="No. Iterations for solution of N-step Buckling beam\n Loglog-plot",
+             xlab="N", ylab="No. Iterations", fname="q2c_countloglog", show)
+
+    plt.figure(figsize=[5, 5])
+    plt.plot(list_n, time_taken, "o--")
+    figsetup(title="Time taken for solution of N-step Buckling beam\n Normal plot",
+             xlab="N", ylab="Time elapsed [s]", fname="q2c_timenormal", show)
+
+    plt.figure(figsize=[5, 5])
+    plt.plot(list_n, n_iterations, "o--")
+    figsetup(title="No. Iterations for solution of N-step Buckling beam\n Normal plot",
+             xlab="N", ylab="No. Iterations", fname="q2c_countnormal", show)
+
+#def ex_d():
+    
+
+
+
+
+
+
+if __name__ == "__main__":
+    ex_c(show=True)   
+    
+    
+    
+    
