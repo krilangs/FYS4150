@@ -16,7 +16,7 @@ def test_offdiag():
     i, j = main.offdiag(matrix)
     n = matrix.shape[0]
     max_off_diag = np.max(as_strided(matrix, (n-1,n+1),\
-                        (matrix.itemsize*(n+1), matrix.itemsize))[:,1:])
+                        (matrix.itemsize*(n+1), matrix.itemsize))[:, 1:])
     
     if i == j:
         raise ValueError("Got a diagonal element")
@@ -31,7 +31,7 @@ def test_eigenvalues():
     """
     print("Test eigenvalues of matrix")
     n = 8
-    M, rho = main.Matrix(n, 1, pot="pot1")
+    M, rho = main.Matrix(n, 1, 1, pot="pot1")
     
     num_val, num_vec = np.linalg.eig(M)
     num_val = np.sort(num_val)
@@ -58,7 +58,7 @@ def test_Jacobi():
     n = 5
     tol = 1e-8
     time_take = False
-    M, rho = main.Matrix(n, 1, pot="pot1")
+    M, rho = main.Matrix(n, 1, 1, pot="pot1")
     
     if time_take is True:
         num_val, num_vec, iterations, final_time = main.solve(M, tol, time_take)
