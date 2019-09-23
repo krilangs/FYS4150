@@ -65,9 +65,9 @@ def test_Jacobi():
     else: 
         num_val, num_vec = main.solve(M, tol, time_take)
 
-    ind = num_val.argsort()
-    num_val = num_val[ind]
-    num_vec = num_vec[:, ind]
+    permute = num_val.argsort()
+    num_val = num_val[permute]
+    num_vec = num_vec[:, permute]
     
     np_val, np_vec = np.linalg.eig(M)
     np_val = np.sort(np_val)
@@ -97,3 +97,4 @@ if __name__ == "__main__":
     test_eigenvalues()
     test_Jacobi()
     print("All the tests are passed.")
+
