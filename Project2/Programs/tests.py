@@ -31,7 +31,7 @@ def test_eigenvalues():
     """
     print("Test eigenvalues of matrix")
     n = 8
-    M, rho = main.matrix_b(n, 1, 1, test=True)
+    M, rho = main.Matrix(n, 1, pot="pot1")
     
     num_val, num_vec = np.linalg.eig(M)
     num_val = np.sort(num_val)
@@ -58,15 +58,16 @@ def test_Jacobi():
     n = 5
     tol = 1e-8
     time_take = False
-    M, rho = main.matrix_b(n, 1, 1, test=False)
+    M, rho = main.Matrix(n, 1, pot="pot1")
     
     if time_take is True:
         num_val, num_vec, iterations, final_time = main.solve(M, tol, time_take)
     else: 
         num_val, num_vec = main.solve(M, tol, time_take)
 
-    num_val = np.sort(num_val)
-    num_vec = np.sort(num_vec)
+    ind = num_val.argsort()
+    num_val = num_val[ind]
+    num_vec = num_vec[:, ind]
     
     np_val, np_vec = np.linalg.eig(M)
     np_val = np.sort(np_val)
@@ -74,20 +75,18 @@ def test_Jacobi():
     
     # Check the numerical eigenpairs against the analytical eigenpairs
     for i in range(n):
-        print(num_val[i])
-        print(np_val[i])
-        #if abs(num_val[i] - np_val[i]) > tol:
-        #    raise ValueError("Numerical eigenvalues does not match the analytical")
-    """  
+        if abs(num_val[i] - np_val[i]) > tol:
+            raise ValueError("Numerical eigenvalues does not match the analytical")
+ 
     # Check that the eigenvectors are orthogonal
     for i in range(n):
         for j in range(n):
-            inner_prod = np.matmul(num_vec[:,i].T, num_vec[:,j])
+            inner_prod = np.matmul(np.transpose(num_vec[:,i]), num_vec[:,j])
             if i != j and inner_prod > tol:
                 raise ValueError("Orthogonality not preserved")
             if i == j and abs(inner_prod - 1) > tol:
                 raise ValueError("Orthogonality not preserved")
-    """
+
 if __name__ == "__main__":
     """
     Running all the tests.
@@ -98,4 +97,3 @@ if __name__ == "__main__":
     test_eigenvalues()
     test_Jacobi()    # Test for several n (dims)
     print("All the tests are passed.")
-
