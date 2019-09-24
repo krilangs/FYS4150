@@ -4,7 +4,6 @@ import numpy as np
 from numba import jit
 import time
 
-
 def Matrix(n, omega, max_rho, pot):
     """Construct the tri-diagonal matrix."""
     rho_0 = 0
@@ -90,7 +89,6 @@ def potentials(rho, omega, pot):
     if pot == "pot3":  # Exercise e)
         V = omega**2*rho**2 + 1./rho
     return V
-        
 
 def solve(matrix, tol, time_take=False):
     """
@@ -149,7 +147,7 @@ def figsetup(title, xlabel, ylabel, fname, show=False):
 def ex_c(show):
     plot = show
     tol = 1e-8
-    list_n = [5, 10, 20, 50]#, 70, 100, 150, 200, 300, 400, 500, 800]
+    list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500, 800]
     n_iterations = []   # List for number of iterations
     time_taken = []     # List for time taken for the algorithm
     
@@ -191,12 +189,12 @@ def ex_c(show):
              xlabel="N", ylabel="# Iterations", fname="Iterations_plot", show=plot)
 
 def ex_d(show):
-    N = 600
-    rho_max = 60
+    N = 800
+    rho_max = 50
     plot = show
     
     M, rho = Matrix(N, 1, rho_max, pot="pot2")
-    M_val, M_vec = solve(M, tol=1e-8, time_take=False)
+    M_val, M_vec, iterations, time = solve(M, tol=1e-8, time_take=True)
     
     permute = M_val.argsort()
     M_val = M_val[permute]
@@ -206,7 +204,7 @@ def ex_d(show):
 
     for n in [0, 1, 2]:
         plt.plot(rho[1:], M_vec[:, n]**2, label="$\\lambda=$%.4f" % M_val[n])
-        plt.axis([0, 8, 0.0, 0.1])
+        plt.axis([0, 8, 0.0, 0.06])
 
     figsetup(title="Dimensionless wavefunction for first 3 eigenstates",
              xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Eigenvalues", show=plot)
@@ -214,8 +212,8 @@ def ex_d(show):
     print(M_val[:4])
 
 def ex_e(show):
-    N = 400
-    rho_max = 10
+    N = 500
+    rho_max = 50
     plot = show
     omega_r = [0.01, 0.5, 1., 5.]
 
@@ -228,15 +226,21 @@ def ex_e(show):
         permute = M_val.argsort()
         M_val = M_val[permute]
         M_vec = M_vec[:, permute]
+        
+        np_val, np_vec = np.linalg.eig(M)
+        np_val = np.sort(np_val)
+        np_vec = np.sort(np_vec)
 
         plt.plot(rho[1:], M_vec[:, 0], label="$\\omega=$%.2f" %w)
-    
+        print(M_val[0])
+        print(np_val[0])
+
     figsetup(title="Dimensionless wavefunction for first eigenstates",
-             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Frequency" % N,
+             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Frequency",
              show=plot)
     
 if __name__ == "__main__":
     #ex_c(show=True)   
-    ex_d(show=True)   # Testing
-    #ex_e(show=True)
+    #ex_d(show=True)
+    ex_e(show=False)   # Maa ha analytiske foerst
     
