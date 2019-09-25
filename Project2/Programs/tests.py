@@ -24,13 +24,12 @@ def test_offdiag():
         raise ValueError("Got incorrect element %i, should have got %i"\
                          %(matrix[i,j], max_off_diag))
     
-def test_eigenvalues():
+def test_eigenvalues(n):
     """
     Check that the matrix is constructed correctly such that numpy gives
     us the same eigenvalues as the analytical within a tolerance.
     """
     print("Test eigenvalues of matrix")
-    n = 8
     M, rho = main.Matrix(n, 1, 1, pot="pot1")
     
     num_val, num_vec = np.linalg.eig(M)
@@ -48,14 +47,13 @@ def test_eigenvalues():
         if abs(num_val[i] - lamb_j[i]) > 1e-10:
             raise ValueError("Numerical eigenvalues does not match the analytical")
 
-def test_Jacobi():
+def test_Jacobi(n):
     """
     Test that the Jacobi solver gives the same results as for numpy:
     1) Test the eigenpairs
     2) Test the orthogonality of eigenvectors
     """
     print("Test Jacobi:")
-    n = 5
     tol = 1e-8
     time_take = False
     M, rho = main.Matrix(n, 1, 1, pot="pot1")
@@ -94,7 +92,6 @@ if __name__ == "__main__":
     """
     print("Running the tests:")
     test_offdiag()
-    test_eigenvalues()
-    test_Jacobi()
+    test_eigenvalues(n=8)
+    test_Jacobi(n=5)
     print("All the tests are passed.")
-
