@@ -75,7 +75,11 @@ Then we take:
 This is clearly orthogonal, which means that a unitary transformation preserves both the orthogonality and the dot product of the basis vector.
 
 We can also check that the eigenvalues are preserved under a unitary transformation as seen in the Lecture notes for Computational Physics (7.3) \cite{lectures}:\\
-Start with the eigenvalue problem and a similarity transformed matrix \textbf{B}. \[\textbf{Ax}=\lambda\textbf{x}\quad \text{and}\quad \textbf{B}=\textbf{U}^T\textbf{A}\textbf{U}\]
+Start with the eigenvalue problem and a similarity transformed matrix \textbf{B}. 
+\begin{equation}
+\label{eq:sim_transf}
+\textbf{Ax}=\lambda\textbf{x}\quad \text{and}\quad \textbf{B}=\textbf{U}^T\textbf{A}\textbf{U}
+\end{equation}
 Multiply with \textbf{U}$^T$ and use that \textbf{U}$^T$\textbf{U}=$\mathcal{I}$:
 \begin{align*}
 \rightarrow (\textbf{U}^T\textbf{A}\textbf{U})(\textbf{U}^T\textbf{x})=\lambda\textbf{U}^T\textbf{x}\\
@@ -148,7 +152,41 @@ without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ an
 \label{sect:Jacobi}
 Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. Then we make a check of the matrix implementation where we compare the eigenvalues we get from the analytical eigenvalues in equation \ref{eq:analytic_eigenval} for a small Töplitz matrix (dimensions 5 or so) with Python's numpy.linalg.eig() for finding eigenpairs of the Töplitz matrix.
 
-We are now going to solve the Töplitz matrix with Jacobi's method. For simplification we define:
+We are now going to solve the Töplitz matrix with Jacobi's method. The main idea with Jacobi's method is to do several similarity (unitary) transformations on the eigenvalue matrix in equation \ref{eq:eigen_prob}, till it is transformed to a diagonal matrix containing only the eigenvalues. The Jacobi rotation matrix 
+\begin{equation}
+\label{eq:jacobi_rotate}
+\begin{bmatrix}
+1 & 0 & \cdots & 0 & \cdots & 0\\
+0 & \ddots & \vdots &\vdots & \vdots & \vdots\\
+0 & \cdots & \cos\theta & \vdots & \sin\theta & \vdots\\
+\vdots & \vdots & \cdots & 1 & 0 & \vdots\\
+\vdots & \cdots & -\sin\theta & 0 & \cos\theta & 0 \\
+0 & \cdots & 0 & \cdots & 0 & 1
+\end{bmatrix}
+\end{equation}
+is an orthogonal ($n\times n$) transformation matrix that performs a plane rotation around the angle $\theta$ in Euclidean $n$-dimensional space \cite{lectures}(7.4). The angle $\theta$ is arbitrary and chosen such that all off-diagonal elements in \textbf{B} in equation \ref{eq:sim_transf} is zero. To do this we calculate the Frobenius norm of the matrix \textbf{A}, since the Frobenius norm is conserved under unitary transformations:
+\begin{equation}
+\label{eq:Frobenius}
+||\textbf{A}||_F^2 = ||\textbf{B}||_F^2=\sum_{ij}|a_{ij}|^2=\sum_{ij}|b_{ij}|^2
+\end{equation}
+After taking the Frobenius norm we find the off-diagonal elements in \textbf{B} as:
+\begin{equation}
+\label{eq:off_diag}
+off(\textbf{B})^2=||\textbf{B}||_F^2-\sum_{i=1}^{n}b_{ii}^2=off(\textbf{A})^2-2a_{kl}^2
+\end{equation}
+For each similarity transformation we can see that the matrix moves closer to diagonal form for each step. To do this numerically we implement a function for finding the maximum non-diagonal element value to start with, and this returns the position of the element to be used in the Jacobi rotation matrix. After one transformation the function finds the next maximum element. This continues until we are left with the diagonal matrix we want containing only the eigenvalues (or at least has non-diagonal elements smaller than a given tolerance $1e-8$). This function is implemented as:
+\begin{lstlisting}
+max_elem = 0
+for i in range(n):
+	for j in range(i+1, n):
+		if abs(matrix[i,j]) > max_elem:
+			max_elem = abs(matrix[i,j])
+			max_k = i
+			max_l = j
+		else:
+			pass
+\end{lstlisting}
+For simplification we define:
 \begin{align*}
 s = \sin\theta,\quad c=\cos\theta, \quad t=\tan\theta=\frac{s}{c}\quad \tau=\cot2\theta=\frac{a_{ll}-a_{kk}}{2a_{kl}}
 \end{align*}
@@ -156,17 +194,38 @@ Here we define $\theta$ such that $a_{kl}\neq0$ for the non-diagonal elements of
 \[t^2+2\tau t-1=0.\]
 Where we easily find
 \[t=-\tau\pm\sqrt{1+\tau^2},\quad c=\frac{1}{\sqrt{1+t^2}},\quad s=tc.\]
-Jacobi's rotation matrix will look something like:
-\begin{equation}
-\label{eq:jacobi_rotate}
-\begin{bmatrix}
-d & a & 0 & \cdots & 0\\
-a & d & a &\ddots & \vdots\\
-0 & a & d & \ddots & 0\\
-\vdots & \ddots & \ddots & \ddots & a\\
-0 & \cdots & 0 & a & d
-\end{bmatrix}
-\end{equation}
+If we get a large value for $\tau$ we would get wrong results when calculating $t$. For large $\tau$ we could get a situation with $t\approx-\tau\pm\sqrt{\tau^2}$ which the computer would have to solve. This can give round-off errors. So we have to make a change that takes this case into consideration. We rewrite $t$ by its conjugate and implement it as:
+\begin{lstlisting}
+tau = (matrix[l,l] - matrix[k,k])/(2.*matrix[k,l])  # cot(2*theta)
+
+if tau >= 0:   # tan(theta)
+	t = 1./(tau + np.sqrt(1. + tau**2))
+else:
+	t = -1./(-tau + np.sqrt(1. + tau**2))
+
+c = 1./np.sqrt(1. + t**2)   # cos(theta)
+s = t*c                     # sin(theta)
+\end{lstlisting}
+For a similarity transformation like the one in equation \ref{eq:sim_transf}, where \textbf{U} is the rotation matrix in equation \ref{eq:jacobi_rotate} with the non-zero elements 
+\begin{align*}
+u_{kk} = u_{ll} &= c\\
+u_{kl} = -u_{lk} &= -s\\
+u_{ii} = -u{ii} &= 1\quad i\neq k\quad i\neq l,
+\end{align*}
+we can rewrite it as:
+\begin{align*}
+b_{kk} &= a_{kk} c^2 - 2a_{kl}cs + a_{ll} s^2\\
+b_{ll} &= a_{kk} s^2 - 2a_{kl}cs + a_{ll} c^2\\
+b_{kl} &= (a_{kk} - a_{ll})cs + a_{kl}(c^2-s^2)\\
+b_{ik} &= a_{ik}c - a_{il}s, \quad i\neq k\quad i\neq l\\
+b_{il} &= a_{ll}c + a_{ik}s, \quad i\neq k\quad i\neq l\\
+b_{ii} &= a_{ii}, \quad i\neq k\quad i\neq l
+\end{align*}
+Here we have to choose the angle $\theta$ such that all $b_{kl}=0$, which is what we do with the function for the maximum non-diagonal elements and the Jacobi rotation matrix. For the solver for finding the eigenvalues we also take the time and number of transformations of the Jacobi rotation/maximum off-diagonal algorithm to compare for different matrix dimensions.
+
+\subsection{Testing algorithms}
+\label{sect:testing}
+
 
 
 \section{Results}
