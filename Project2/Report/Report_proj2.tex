@@ -146,7 +146,27 @@ without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ an
 
 \subsection{Jacobi's method}
 \label{sect:Jacobi}
-Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. 
+Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. Then we make a check of the matrix implementation where we compare the eigenvalues we get from the analytical eigenvalues in equation \ref{eq:analytic_eigenval} for a small Töplitz matrix (dimensions 5 or so) with Python's numpy.linalg.eig() for finding eigenpairs of the Töplitz matrix.
+
+We are now going to solve the Töplitz matrix with Jacobi's method. For simplification we define:
+\begin{align*}
+s = \sin\theta,\quad c=\cos\theta, \quad t=\tan\theta=\frac{s}{c}\quad \tau=\cot2\theta=\frac{a_{ll}-a_{kk}}{2a_{kl}}
+\end{align*}
+Here we define $\theta$ such that $a_{kl}\neq0$ for the non-diagonal elements of the transformed matrix. This yields the quadratic equation
+\[t^2+2\tau t-1=0.\]
+Where we easily find
+\[t=-\tau\pm\sqrt{1+\tau^2},\quad c=\frac{1}{\sqrt{1+t^2}},\quad s=tc.\]
+Jacobi's rotation matrix will look something like:
+\begin{equation}
+\label{eq:jacobi_rotate}
+\begin{bmatrix}
+d & a & 0 & \cdots & 0\\
+a & d & a &\ddots & \vdots\\
+0 & a & d & \ddots & 0\\
+\vdots & \ddots & \ddots & \ddots & a\\
+0 & \cdots & 0 & a & d
+\end{bmatrix}
+\end{equation}
 
 
 \section{Results}
@@ -159,4 +179,3 @@ Link to GitHub repository:
 Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
 \end{thebibliography}
 \end{document}
-
