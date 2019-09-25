@@ -78,7 +78,7 @@ def test_Jacobi():
         if abs(num_val[i] - np_val[i]) > tol:
             raise ValueError("Numerical eigenvalues does not match the analytical")
  
-    # Check that the eigenvectors are orthogonal
+    # Check that the eigenvectors are orthogonal after transformations
     for i in range(n):
         for j in range(n):
             inner_prod = np.matmul(np.transpose(num_vec[:,i]), num_vec[:,j])
@@ -97,3 +97,4 @@ if __name__ == "__main__":
     test_eigenvalues()
     test_Jacobi()
     print("All the tests are passed.")
+
