@@ -50,7 +50,7 @@ def test_eigenvalues(n):
 def test_Jacobi(n):
     """
     Test that the Jacobi solver gives the same results as for numpy:
-    1) Test the eigenpairs
+    1) Test the eigenvalues
     2) Test the orthogonality of eigenvectors
     """
     print("Test Jacobi:")
@@ -71,7 +71,7 @@ def test_Jacobi(n):
     np_val = np.sort(np_val)
     np_vec = np.sort(np_vec)
     
-    # Check the numerical eigenpairs against the analytical eigenpairs
+    # Check the Jacobi eigenvalues against the numerical eigenvalues from numpy
     for i in range(n):
         if abs(num_val[i] - np_val[i]) > tol:
             raise ValueError("Numerical eigenvalues does not match the analytical")
