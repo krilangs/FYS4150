@@ -45,7 +45,7 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%layout
 \maketitle
 \begin{abstract}
-In this project we want to solve eigenvalue problems of a tridiagonal Toeplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also check that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[3.0025, 7.0026, 10.9988]$ for the first three eigenvalues, with 555'255 transformations for a $800\times800$ matrix and a $\rho_{max}=50$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. For these frequencies there are analytical solutions that we compare with...NOT DONE
+In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also check that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[3.0025, 7.0026, 10.9988]$ for the first three eigenvalues, with 555'255 transformations for a $800\times800$ matrix and a $\rho_{max}=50$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. For these frequencies there are analytical solutions that we compare with...NOT DONE
 \end{abstract}
 
 \section{Introduction}
@@ -53,10 +53,11 @@ A hot topic in todays physics is what we call quantum dots where we look at elec
 
 In our case we will use methods from linear algebra and look at eigenvalue problems. These are widely used to solve physical problems, so to understand how they work and how they are solved is important. Another powerful tool is to scale the equations. This means that we can solve an equation for one case, and then scale the equation to be able to solve it for another. This is one of the steps that we do in this project where we start with the wave equation for a buckling beam in one dimension, and then expand for a quantum mechanics case with the Schrödinger equation for the one and two electrons (quantum dots) in three dimensions case.
 
-In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the endpoints with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now a eigenvalue problem that we will solve by solving a tridiagonal Toeplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$. Lastly we come up with a conclusion to the project.
+In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the endpoints with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now a eigenvalue problem that we will solve by solving a tridiagonal Töplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$. Lastly we come up with a conclusion to the project.
 
 \section{Methods}
 \subsection{Unitary transformation}
+\label{sect_unitary_transf}
 Consider a basis of vectors 
 \[\textbf{v}_i = \begin{bmatrix}
 v_{i1}\\
@@ -69,10 +70,18 @@ which is orthogonal. This means that $\textbf{v}_j^T\textbf{v}_i=\delta_{ij}$. T
 \end{equation*}
 Then we take:
 \begin{equation*}
-\textbf{w}^T_j\textbf{w}_i=(\textbf{U}\textbf{v}_j)^T\textbf{U}\textbf{v}_i=\textbf{v}_j^T\textbf{v}_i\textbf{U}^T\textbf{U}=\delta_{ij}
+\textbf{w}^T_j\textbf{w}_i=(\textbf{U}\textbf{v}_j)^T\textbf{U}\textbf{v}_i=\textbf{v}_j^T\textbf{v}_i\textbf{U}^T\textbf{U}=\textbf{v}_j^T\textbf{v}_i=\delta_{ij}
 \end{equation*}
-This is clearly orthogonal, which means that a unitary transformation preserves the orthogonality of the basis vector.
+This is clearly orthogonal, which means that a unitary transformation preserves both the orthogonality and the dot product of the basis vector.
 
+We can also check that the eigenvalues are preserved under a unitary transformation as seen in the Lecture notes for Computational Physics (7.3) \cite{lectures}:\\
+Start with the eigenvalue problem and a similarity transformed matrix \textbf{B}. \[\textbf{Ax}=\lambda\textbf{x}\quad \text{and}\quad \textbf{B}=\textbf{U}^T\textbf{A}\textbf{U}\]
+Multiply with \textbf{U}$^T$ and use that \textbf{U}$^T$\textbf{U}=$\mathcal{I}$:
+\begin{align*}
+\rightarrow (\textbf{U}^T\textbf{A}\textbf{U})(\textbf{U}^T\textbf{x})=\lambda\textbf{U}^T\textbf{x}\\
+\Rightarrow \textbf{B}(\textbf{U}^T\textbf{x})=\lambda(\textbf{U}^T\textbf{x})
+\end{align*}
+Here we see that the eigenvalues are the same, but the eigenvectors have changed.
 
 \subsection{Buckling Beam}
 \label{sect:Beam}
@@ -135,9 +144,9 @@ without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ an
 \lambda_j = d+2a\cos(\frac{j\pi}{N+1}),\quad j=1,2,\cdots,N.
 \end{equation}
 
-
-
-
+\subsection{Jacobi's method}
+\label{sect:Jacobi}
+Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. 
 
 
 \section{Results}
@@ -145,5 +154,9 @@ without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ an
 \section{Appendix}
 Link to GitHub repository:
 
+\begin{thebibliography}{}
+\bibitem[1]{lectures}
+Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
+\end{thebibliography}
 \end{document}
 
