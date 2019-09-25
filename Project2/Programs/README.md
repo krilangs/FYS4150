@@ -1,4 +1,5 @@
-tests.py:\
-imports functions from main.py to be able to run the unit tests
+tests.py:
+Imports functions from main.py to be able to run the unit tests.
 
-main.py
+main.py:
+Here we do the rest of the main calculations.
