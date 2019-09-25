@@ -221,16 +221,43 @@ b_{ik} &= a_{ik}c - a_{il}s, \quad i\neq k\quad i\neq l\\
 b_{il} &= a_{ll}c + a_{ik}s, \quad i\neq k\quad i\neq l\\
 b_{ii} &= a_{ii}, \quad i\neq k\quad i\neq l
 \end{align*}
-Here we have to choose the angle $\theta$ such that all $b_{kl}=0$, which is what we do with the function for the maximum non-diagonal elements and the Jacobi rotation matrix. For the solver for finding the eigenvalues we also take the time and number of transformations of the Jacobi rotation/maximum off-diagonal algorithm to compare for different matrix dimensions.
+Here we have to choose the angle $\theta$ such that all $b_{kl}=0$ or smaller than a tolerance, which is what we do with the function for the maximum non-diagonal elements and the Jacobi rotation matrix. We also compute the eigenvectors for the matrix. For the solver for finding the eigenvalues we also take the time and number of transformations of the Jacobi rotation/maximum off-diagonal algorithm to compare for different matrix dimensions.
 
 \subsection{Testing algorithms}
 \label{sect:testing}
+The main algorithms are found in the program \textit{main.py} in a GitHub-folder as found in Appendix \ref{sect:appendix} by following the link there. The programs for the testing of the algorithms we are about to explain are found in the same folder with name \textit{tests.py}.
+
+The first test we implement is a test of our matrix and the maximum non-diagonal element function. For this test we manually make a $5\times5$ matrix we random numbers. This is to easily check that the function can find the maximum non-diagonal element in the matrix. We also use a numpy function called \textbf{numpy.lib.stride\_tricks.as\_strided} to numerically find the maximum element in the matrix, and is only used to cross-check our function. Then we implement an error-call for if our function finds a diagonal element, or if finds another element which is not the same as for the numpy function.
+
+Next we want to test that the eigenvalues we get from out constructed matrix in equation \ref{eq:eigen_prob} is correct. We calculate the analytical eigenvalues of the eigenvalue problem which is given in equation \ref{eq:analytic_eigenval}, and compare it with Python's \textbf{numpy.linalg.eig} of our constructed matrix. If they do not match within a tolerance of $1e-10$, we assert an error.
+
+The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. The test test of orthogonality is successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ and if the element $i=j$. This can be seen in the following pseudo code:
+\begin{lstlisting}
+for i in range(n):
+	for j in range(n):
+		inner_prod = np.matmul(np.transpose(num_vec[:,i]), num_vec[:,j])
+		if i != j and inner_prod > tol:
+			raise ValueError("Orthogonality not preserved")
+		if i == j and abs(inner_prod - 1) > tol:
+			raise ValueError("Orthogonality not preserved")
+\end{lstlisting} 
+If the tests fails, then we assert an error.
+
+\subsection{Quantum dots, one electron}
+\label{sect:quantum_one}
 
 
 
+
+
+\subsection{Quantum dots, two electrons}
+\label{sect:quantum_two}
 \section{Results}
 \section{Conclusion}
+
+\appendix
 \section{Appendix}
+\label{sect:appendix}
 Link to GitHub repository:
 
 \begin{thebibliography}{}
@@ -238,3 +265,4 @@ Link to GitHub repository:
 Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
 \end{thebibliography}
 \end{document}
+
