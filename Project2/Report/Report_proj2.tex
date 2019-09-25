@@ -53,9 +53,90 @@ A hot topic in todays physics is what we call quantum dots where we look at elec
 
 In our case we will use methods from linear algebra and look at eigenvalue problems. These are widely used to solve physical problems, so to understand how they work and how they are solved is important. Another powerful tool is to scale the equations. This means that we can solve an equation for one case, and then scale the equation to be able to solve it for another. This is one of the steps that we do in this project where we start with the wave equation for a buckling beam in one dimension, and then expand for a quantum mechanics case with the Schrödinger equation for the one and two electrons (quantum dots) in three dimensions case.
 
-In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the end points with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now a eigenvalue problem that we will solve by solving a tridiagonal Toeplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$. Lastly we come up with a conclusion to the project.
+In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the endpoints with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now a eigenvalue problem that we will solve by solving a tridiagonal Toeplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$. Lastly we come up with a conclusion to the project.
 
 \section{Methods}
+\subsection{Unitary transformation}
+Consider a basis of vectors 
+\[\textbf{v}_i = \begin{bmatrix}
+v_{i1}\\
+\vdots\\
+v_{in}
+\end{bmatrix}\]
+which is orthogonal. This means that $\textbf{v}_j^T\textbf{v}_i=\delta_{ij}$. Then we define a unitary matrix $\textbf{U}$ such that $\textbf{U}\textbf{U}^T=\mathcal{I}$. A unitary transformation of the basis vector \textbf{v}$_i$ is then:
+\begin{equation*}
+\textbf{w}_i=\textbf{U}\textbf{v}_i
+\end{equation*}
+Then we take:
+\begin{equation*}
+\textbf{w}^T_j\textbf{w}_i=(\textbf{U}\textbf{v}_j)^T\textbf{U}\textbf{v}_i=\textbf{v}_j^T\textbf{v}_i\textbf{U}^T\textbf{U}=\delta_{ij}
+\end{equation*}
+This is clearly orthogonal, which means that a unitary transformation preserves the orthogonality of the basis vector.
+
+
+\subsection{Buckling Beam}
+\label{sect:Beam}
+First we have the classical wave equation in one dimension for the buckling beam problem with Dirichlet boundary conditions:
+\begin{equation}
+\label{eq:beam}
+\gamma\frac{d^2u(x)}{dx^2}=-Fu(x), \quad x\in[0,L], \quad u(0)=u(L)=0
+\end{equation}
+$\gamma$ is a constant depending on properties of the beam with length $L$, $u(x)$ is the vertical displacement of the beam in $y$-direction and $F$ is the force acting on the beam. Then we introduce a dimensionless variable
+\begin{equation*}
+\rho=\frac{x}{L},\quad \rho\in[0,1],
+\end{equation*}
+into the differential equation \ref{eq:beam}. The new differential equation then looks like this:
+\begin{equation}
+\label{eq:beam_scale}
+\frac{d^2u(\rho)}{d\rho^2}=-\frac{FL^2}{\gamma}u(\rho)=-\lambda u(\rho)
+\end{equation}
+This we discretize to an eigenvalue problem by using the second derivative of the function $u$ as
+\begin{equation*}
+\label{eq:u_2deriv}
+u^{\prime\prime}=\frac{u(\rho+h)-2u(\rho)+u(\rho-h)}{h^2}+\mathcal{O}(h^2),
+\end{equation*}
+where $h$ is the step length defined, from the minimum value $\rho_{min}=\rho_0$ and maximum value $\rho_{max}=\rho_N$ for a given number of mesh points N, as
+\begin{equation*}
+h = \frac{\rho_N-\rho_0}{N}.
+\end{equation*}
+For a value of $\rho$ at a point $i$ we have $\rho_i=\rho_0+ih$ with $i=1,2,\cdots,N$. The differential equation \ref{eq:beam_scale} can now be rewritten with the second derivative $u^{\prime\prime}$, $\rho_i$ and $u(\rho_i)=u_i$ on compact form as
+\begin{equation}
+\label{eq:beam_discr}
+-\frac{u_{i+1}-2u_i+u_{i-1}}{h^2}=\lambda u_i
+\end{equation} 
+As an eigenvalue problem we get
+\begin{equation}
+\label{eq:eigen_prob}
+\begin{bmatrix}
+d & a & 0 & \cdots & 0\\
+a & d & a &\ddots & \vdots\\
+0 & a & d & \ddots & 0\\
+\vdots & \ddots & \ddots & \ddots & a\\
+0 & \cdots & 0 & a & d
+\end{bmatrix}
+\begin{bmatrix}
+u_1\\
+u_2\\
+\vdots\\
+u_{N-2}\\
+u_{N-1}
+\end{bmatrix} = \lambda
+\begin{bmatrix}
+u_1\\
+u_2\\
+\vdots\\
+u_{N-2}\\
+u_{N-1}
+\end{bmatrix},
+\end{equation}
+without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ and $a=-\frac{1}{h^2}$. This eigenvalue problem has analytical eigenpairs with eigenvalues as
+\begin{equation}
+\label{eq:analytic_eigenval}
+\lambda_j = d+2a\cos(\frac{j\pi}{N+1}),\quad j=1,2,\cdots,N.
+\end{equation}
+
+
+
 
 
 
@@ -65,3 +146,4 @@ In the methods section we look at the theory we use and the implementation of th
 Link to GitHub repository:
 
 \end{document}
+
