@@ -231,7 +231,7 @@ def ex_e(show):
         np_val = np.sort(np_val)
         np_vec = np.sort(np_vec)
 
-        plt.plot(rho[1:], M_vec[:, 0], label="$\\omega=$%.2f" %w)
+        plt.plot(rho[1:], M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
         print(M_val[0])
         print(np_val[0])
 
