@@ -5,3 +5,5 @@ Folder "Programs" contains all the code for the project (Python 3.7):\
   -tests.py
 
 Folder "Figures" contians all the plots we make with the program main.py.
+
+Folder "Report" contians the final report as .pdf and .tex format.
