@@ -194,17 +194,12 @@ Here we define $\theta$ such that $a_{kl}\neq0$ for the non-diagonal elements of
 \[t^2+2\tau t-1=0.\]
 Where we easily find
 \[t=-\tau\pm\sqrt{1+\tau^2},\quad c=\frac{1}{\sqrt{1+t^2}},\quad s=tc.\]
-If we get a large value for $\tau$ we would get wrong results when calculating $t$. For large $\tau$ we could get a situation with $t\approx-\tau\pm\sqrt{\tau^2}$ which the computer would have to solve. This can give round-off errors. So we have to make a change that takes this case into consideration. We rewrite $t$ by its conjugate and implement it as:
+If we get a large value for $\tau$ we would get wrong results when calculating $t$. For large $\tau$ we could get a situation with $t\approx-\tau\pm\sqrt{\tau^2}$ which the computer would have to solve. This can give round-off errors. So we have to make a change that takes this case into consideration. We rewrite $t$ by its conjugate and implement it under a if-test:
 \begin{lstlisting}
-tau = (matrix[l,l] - matrix[k,k])/(2.*matrix[k,l])  # cot(2*theta)
-
-if tau >= 0:   # tan(theta)
+if tau >= 0:
 	t = 1./(tau + np.sqrt(1. + tau**2))
 else:
 	t = -1./(-tau + np.sqrt(1. + tau**2))
-
-c = 1./np.sqrt(1. + t**2)   # cos(theta)
-s = t*c                     # sin(theta)
 \end{lstlisting}
 For a similarity transformation like the one in equation \ref{eq:sim_transf}, where \textbf{U} is the rotation matrix in equation \ref{eq:jacobi_rotate} with the non-zero elements 
 \begin{align*}
@@ -225,29 +220,50 @@ Here we have to choose the angle $\theta$ such that all $b_{kl}=0$ or smaller th
 
 \subsection{Testing algorithms}
 \label{sect:testing}
-The main algorithms are found in the program \textit{main.py} in a GitHub-folder as found in Appendix \ref{sect:appendix} by following the link there. The programs for the testing of the algorithms we are about to explain are found in the same folder with name \textit{tests.py}.
+The main algorithms are found in the program \textit{main.py} in a GitHub-folder as found in Appendix \ref{sect:appendix} by following the link there. The programs for the testing of the algorithms we are about to explain are found in the same folder with name \textit{tests.py}. We test for small dimensions of matrices. For small matrices we can more easily control the expected results.
 
 The first test we implement is a test of our matrix and the maximum non-diagonal element function. For this test we manually make a $5\times5$ matrix we random numbers. This is to easily check that the function can find the maximum non-diagonal element in the matrix. We also use a numpy function called \textbf{numpy.lib.stride\_tricks.as\_strided} to numerically find the maximum element in the matrix, and is only used to cross-check our function. Then we implement an error-call for if our function finds a diagonal element, or if finds another element which is not the same as for the numpy function.
 
 Next we want to test that the eigenvalues we get from out constructed matrix in equation \ref{eq:eigen_prob} is correct. We calculate the analytical eigenvalues of the eigenvalue problem which is given in equation \ref{eq:analytic_eigenval}, and compare it with Python's \textbf{numpy.linalg.eig} of our constructed matrix. If they do not match within a tolerance of $1e-10$, we assert an error.
 
-The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. The test test of orthogonality is successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ and if the element $i=j$. This can be seen in the following pseudo code:
-\begin{lstlisting}
-for i in range(n):
-	for j in range(n):
-		inner_prod = np.matmul(np.transpose(num_vec[:,i]), num_vec[:,j])
-		if i != j and inner_prod > tol:
-			raise ValueError("Orthogonality not preserved")
-		if i == j and abs(inner_prod - 1) > tol:
-			raise ValueError("Orthogonality not preserved")
-\end{lstlisting} 
-If the tests fails, then we assert an error.
+The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. We set the test of orthogonality as successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ within the tolerance, and if the element $i=j$. If the tests fails, then we assert an error.
 
 \subsection{Quantum dots, one electron}
 \label{sect:quantum_one}
+Next, we want to expand our numerics to a quantum mechanical problem for an electron moving in a three-dimensional harmonic oscillator potential. We will assume spherical symmetry, and will look at the radial part of Schrödinger's equation in spherical coordinate with $r\in[0,\infty)$:
+\begin{equation}
+\label{eq:rad_schr_1}
+-\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\frac{d}{dr}r^2\frac{d}{dr}-\frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r)=ER(r)
+\end{equation}
+The potential for this case is the harmonic oscillator potential, $V(r)=\frac{1}{2}kr^2=\frac{1}{2}m\omega^2r^2$. The energy is then the corresponding harmonic oscillator energy with oscillator frequency $\omega$ as:
+\begin{equation}
+\label{eq:HO_energy_1}
+E_{nl} = \hbar \omega\left(2n + l + \frac{3}{2}\right)
+\end{equation}
+$n=0,1,\cdots$ stands for which state we are looking at, while $l=0,1,\cdots$ is the orbital momentum of the electron. 
 
+Then we do a substitution with $R(r)=\frac{1}{r}u(r)$ with boundary conditions\\ $u(0)=u(\infty)=0$ to get:
+\begin{equation*}
+-\frac{\hbar^2}{2m}\frac{d}{dr^2}u(r)+\left(V(r)+\frac{l(l+1)}{r^2}\frac{\hbar^2}{2m}\right)u(r)=Eu(r)
+\end{equation*}
 
-
+Now we want to scale the equation with a dimensionless variable $\rho=\frac{r}{\alpha}$, where $\alpha$ is a constant with dimension length. The harmonic oscillator potential is then $V(\rho)=\frac{1}{2}k\alpha^2\rho^2$. In this project we will use $l=0$. So now with the new potential and scaling, Schrödinger's equation is now:
+\begin{equation*}
+-\frac{\hbar^2}{2m\alpha^2}\frac{d^2}{d\rho^2}u(\rho)+V(\rho)u(\rho)=Eu(\rho)
+\end{equation*}
+Then we multiply the equation with $\frac{2m\alpha^2}{\hbar^2}$:
+\begin{equation*}
+-\frac{d^2}{d\rho^2}u(\rho)+\frac{mk}{\hbar^2}\alpha^4\rho^2u(\rho)=\frac{2m\alpha^2}{\hbar^2}Eu(\rho)
+\end{equation*}
+Since $\alpha$ is a constant, we can fix it however we want. So to make the equation easier we fix it to be:
+\[\alpha=\left(\frac{\hbar^2}{mk}\right)^{\frac{1}{4}}\]
+Then we can define one the right hand side, a variable for the eigenvalue of the problem as 
+\[\lambda=\frac{2m\alpha^2}{\hbar^2}E.\]
+The final Schrödinger equation that we have to solve has now become
+\begin{equation}
+\label{eq:fin_schr_1}
+-\frac{d^2}{d\rho^2}u(\rho)+\rho^2u(\rho)=\lambda u(\rho).
+\end{equation}
 
 
 \subsection{Quantum dots, two electrons}
@@ -265,4 +281,3 @@ Link to GitHub repository:
 Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
 \end{thebibliography}
 \end{document}
-
