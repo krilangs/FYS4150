@@ -245,9 +245,10 @@ E_{nl} = \hbar \omega\left(2n + l + \frac{3}{2}\right)
 $n=0,1,\cdots$ stands for which state we are looking at, while $l=0,1,\cdots$ is the orbital momentum of the electron. 
 
 Then we do a substitution with $R(r)=\frac{1}{r}u(r)$ with boundary conditions\\ $u(0)=u(\infty)=0$ to get:
-\begin{equation*}
+\begin{equation}
+\label{eq:before_scale}
 -\frac{\hbar^2}{2m}\frac{d}{dr^2}u(r)+\left(V(r)+\frac{l(l+1)}{r^2}\frac{\hbar^2}{2m}\right)u(r)=Eu(r)
-\end{equation*}
+\end{equation}
 
 Now we want to scale the equation with a dimensionless variable $\rho=\frac{r}{\alpha}$, where $\alpha$ is a constant with dimension length. The harmonic oscillator potential is then $V(\rho)=\frac{1}{2}k\alpha^2\rho^2$. In this project we will use $l=0$. So now with the new potential and scaling, Schrödinger's equation is now:
 \begin{equation*}
@@ -288,7 +289,53 @@ As we can see, our eigenvalue problem for the electron has the same form and is 
 
 \subsection{Quantum dots, two electrons}
 \label{sect:quantum_two}
+Once again we will expand our problem. Now we add another electron to the harmonic oscillator well. These two electrons interact with each other by a repulsive Coulomb interaction. We start with the following radial Schrödinger's equation for one electron:
+\begin{equation}
+\label{eq:schr_single_2}
+-\frac{\hbar^2}{2m}\frac{d^2}{dr^2}u(r)+\frac{1}{2}kr^2u(r)=E^{(1)}u(r)
+\end{equation}
+Then for two electrons with no interaction and the two-electron energy $E^{(2)}$, we get
+\begin{equation}
+\label{eq:schr_double_2}
+\left(-\frac{\hbar^2}{2m}\frac{d^2}{dr_1^2}-\frac{\hbar^2}{2m}\frac{d^2}{dr_2^2}+\frac{1}{2}k(r_1^2+r_2^2)\right)u(r_1,r_2)=E^{(2)}u(r_1,r_2).
+\end{equation}
+Now $u(r_1,r_2)$ is a two-electron wave function. Since we do not have an interaction between the electrons here, this can be taken as the product between two single-electron wave functions.
 
+To simplify the equation we introduce the center-of-mass coordinate $\textbf{R}=\frac{1}{2}(\textbf{r}_1+\textbf{r}_2)$ and the relative coordinate $\textbf{r}=\textbf{r}_1-\textbf{r}_2$. This makes it possible to solve the equation as a single body problem, instead of a two-body problem which is more difficult. Schrödinger's equation with these coordinates becomes
+\begin{equation}
+\label{eq:schr_CM}
+\left(-\frac{\hbar^2}{m}\frac{d^2}{dr^2}-\frac{\hbar^2}{4m}\frac{d^2}{dR^2}+\frac{1}{4}kr^2+kR^2\right)u(r,R)=E^{(2)}u(r,R).
+\end{equation}
+
+Next we separate the wave function as $u(r,R)=\psi(r)\phi(R)$ and with the two-electron energy as $E^{(2)}=E_r+E_R$, where $E_r$ is the radial energy and $E_R$ is the center-of-mass energy. Then by adding the Coulomb interaction as 
+\[V(r_1,r_2)=\frac{\beta e^2}{r},\quad \beta e^2=1.44 \text{ eVnm},\]
+to Schrödinger's equation (\ref{eq:schr_CM}) we obtain the $r$-dependent term as
+\begin{equation}
+\label{eq:shcr_split_2}
+\left(-\frac{\hbar^2}{m}\frac{d^2}{dr^2}+\frac{1}{4}kr^2+\frac{\beta e^2}{r}\right)\psi(r)=E_r\psi(r).
+\end{equation}
+
+This is similar to equation \ref{eq:before_scale}, so we introduce again the dimensionless variable $\rho$ and do the same calculations as before. We end up with 
+\begin{equation}
+\label{eq:before_alpha_2}
+-\frac{d^2}{d\rho^2}\psi(\rho)+\frac{mk}{4\hbar^2}\alpha^4\rho^2\psi(\rho)+\frac{m\alpha\beta e^2}{\rho\hbar^2}\psi(\rho)=\frac{m\alpha^2}{\hbar^2}E_r\psi(\rho).
+\end{equation}
+Now we define a new frequency term
+\[\omega_r^2=\frac{mk}{4\hbar^2}\alpha^4,\]
+and fix $\alpha$ to be
+\[\alpha=\frac{\hbar^2}{m\beta e^2}.\]
+Then we define the eigenvalues for the problem as 
+\begin{equation}
+\label{eq:eigenval_2}
+\lambda=\frac{m\alpha^2}{\hbar^2}E.
+\end{equation}
+The final Schrödinger equation to be solved is now
+\begin{equation}
+\label{eq:final_schr_2}
+-\frac{d^2}{d\rho^2}\psi(\rho)+\omega_r^2\rho^2\psi(\rho)+\frac{1}{\rho}=\lambda\psi(\rho).
+\end{equation}
+
+We want to study the problem for several values of the oscillator frequency $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we compare our results with the analytical for MÅ FINNE!!!!!, and plot the ground state for the different $\omega_r$'s.
 
 \section{Results}
 \section{Conclusion}
