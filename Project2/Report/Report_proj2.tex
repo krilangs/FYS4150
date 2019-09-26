@@ -74,7 +74,7 @@ Then we take:
 \end{equation*}
 This is clearly orthogonal, which means that a unitary transformation preserves both the orthogonality and the dot product of the basis vector.
 
-We can also check that the eigenvalues are preserved under a unitary transformation as seen in the Lecture notes for Computational Physics (7.3) \cite{lectures}:\\
+We can also check that the eigenvalues are preserved under a unitary transformation as seen in Computational Physics (7.3) \cite{lectures}:\\
 Start with the eigenvalue problem and a similarity transformed matrix \textbf{B}. 
 \begin{equation}
 \label{eq:sim_transf}
@@ -228,6 +228,8 @@ Next we want to test that the eigenvalues we get from out constructed matrix in 
 
 The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. We set the test of orthogonality as successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ within the tolerance, and if the element $i=j$. If the tests fails, then we assert an error.
 
+Another thing we do is to make some plots to see the dependency the matrix dimension has on the number of transformations needed and the time they take. All these plots can be seen in the Figures-folder in GitHub (\ref{sect:appendix}).
+
 \subsection{Quantum dots, one electron}
 \label{sect:quantum_one}
 Next, we want to expand our numerics to a quantum mechanical problem for an electron moving in a three-dimensional harmonic oscillator potential. We will assume spherical symmetry, and will look at the radial part of Schrödinger's equation in spherical coordinate with $r\in[0,\infty)$:
@@ -265,9 +267,29 @@ The final Schrödinger equation that we have to solve has now become
 -\frac{d^2}{d\rho^2}u(\rho)+\rho^2u(\rho)=\lambda u(\rho).
 \end{equation}
 
+This now has the same type of form like the buckling beam problem in equation \ref{eq:beam_scale} just with another term. So we will do the exact same as we did earlier by discretization and a Taylor approximation to rewrite with the same $\rho_i=\rho_0+ih$. We have to use $\rho_{max}=\rho_N$ and not equal to $\infty$, since infinity cannot be represented numerically. So we can now rewrite the Schrödinger equation (\ref{eq:fin_schr_1}) as 
+\begin{equation*}
+-\frac{u(\rho_i+h)-2u(\rho_i)+u(\rho_i-h)}{h^2}+\rho_i^2u(\rho_i)=\lambda u(\rho_i).
+\end{equation*}
+In a more compact way we write:
+\begin{equation}
+\label{eq:schr_discr_1}
+-\frac{u_{i+1}-2u_i+u_{i-1}}{h^2}+\rho_i^2u_i=-\frac{u_{i+1}-2u_i+u_{i-1}}{h^2}+V_iu_i=\lambda u_i
+\end{equation}
+
+In the buckling beam problem we had no potential working on it. In this problem we have the harmonic oscillator potential. This means that we have to add a potential term to the diagonal elements $d_i=\frac{2}{h^2}+V_i$, while the non-diagonal elements stays the same and are constants $e_i=-\frac{1}{h^2}$. Schrödinger's equation can then again be rewritten as
+\begin{equation}
+\label{eq:schr_eigen_1}
+d_iu_i+e_iu_{i-1}+e_iu_{i+1}=\lambda u_i.
+\end{equation}
+This equation can be written as a symmetric matrix eigenvalue problem just like equation \ref{eq:eigen_prob}, where we have left out the endpoints 0 and $N$.
+
+As we can see, our eigenvalue problem for the electron has the same form and is solved in the same way as for the buckling beam problem numerically. The only thing we do is to add the harmonic oscillator potential to the diagonal elements. So now we can experiment with the dimensionality of the matrix and the value of $\rho_{max}$. We want to find optimal values for the dimensionality and $\rho_{max}$ such that the eigenvalues we get are close enough to the analytical eigenvalues $\lambda=3,7,11,15,...$ with 3-4 leading digits after the decimal. We also look at the number of integration points needed to produce these results. The eigenvalues for the three lowest-lying states are then plotted for the optimal values.
 
 \subsection{Quantum dots, two electrons}
 \label{sect:quantum_two}
+
+
 \section{Results}
 \section{Conclusion}
 
@@ -281,3 +303,4 @@ Link to GitHub repository:
 Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
 \end{thebibliography}
 \end{document}
+
