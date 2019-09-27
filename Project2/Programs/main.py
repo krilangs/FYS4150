@@ -8,18 +8,28 @@ def Matrix(n, omega, max_rho, pot):
     """Construct the tri-diagonal matrix."""
     rho_0 = 0
     rho_max = max_rho
-    rho = np.linspace(rho_0, rho_max, n+1)
+    rho = np.linspace(rho_0, rho_max, n)
     h = rho_max/(n+1)   # Step size
-    V = np.zeros(n+1)   # Potential which is exercises dependent
-    V[1:] = potentials(rho[1:], omega, pot) 
+    for i in range(n):
+        rho[i] = rho_0 + (i+1)*h
+    V = np.zeros(n)   # Potential which is exercises dependent
+    V = potentials(rho, omega, pot) 
 
     d = 2./h**2 + V     # Diagonal elements
     a = -1./h**2        # Non-diagonal around the diagonal
     A = np.zeros(shape=(n, n), dtype=np.float64)  # Create matrix with zeros
     # Fill inn the diagonal and the above and below non-diagonal elements
-    A[range(n), range(n)] = d[1:]
-    A[range(1, n), range(n-1)] = a
-    A[range(n-1), range(1, n)] = a
+    A[0,0]  = d[0]
+    A[0,1] = a
+    for i in range(1,n-1):
+        A[i,i-1] = a
+        A[i,i] = d[i]
+        A[i,i+1] = a
+    A[-1,-2] = a
+    A[-1,-1] = d[-1]
+    #A[range(n), range(n)] = d
+    #A[range(1, n), range(n-1)] = a
+    #A[range(n-1), range(1, n)] = a
 
     return A, rho
 
@@ -83,7 +93,7 @@ def offdiag(matrix):
 def potentials(rho, omega, pot):
     """Define the different potentials used in the different exercises."""
     if pot == "pot1":  # Exercise b) and c)
-        V = 0
+        V = np.zeros(len(rho))
     if pot == "pot2":  # Exercise d)
         V = rho**2
     if pot == "pot3":  # Exercise e)
@@ -160,37 +170,37 @@ def ex_c(show):
 
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, time_taken, "o--")
-    figsetup(title="Time taken for N-step Buckling beam\n Semilogy-plot",
+    figsetup(title="Time taken for Buckling beam\n Semilogy-plot",
             xlabel="N", ylabel="Time elapsed [s]", fname="Time_semilogy", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, n_iterations, "o--")
-    figsetup(title="# Transformations for N-step Buckling beam\n Semilogy-plot",
-             xlabel="N", ylabel="# Transformations", fname="Iterations_semilogy", show=plot)
+    figsetup(title="# Transformations for Buckling beam\n Semilogy-plot",
+             xlabel="N", ylabel="# Transformations", fname="Transformations_semilogy", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, time_taken, "o--")
-    figsetup(title="Time taken for N-step Buckling beam\n Loglog-plot",
+    figsetup(title="Time taken for Buckling beam\n Loglog-plot",
              xlabel="N", ylabel="Time elapsed [s]", fname="Time_loglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, n_iterations, "o--")
-    figsetup(title="# Transformations for N-step Buckling beam\n Loglog-plot",
-             xlabel="N", ylabel="# Transformations", fname="Iterations_loglog", show=plot)
+    figsetup(title="# Transformations for Buckling beam\n Loglog-plot",
+             xlabel="N", ylabel="# Transformations", fname="Transformations_loglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, time_taken, "o--")
-    figsetup(title="Time taken for N-step Buckling beam\n Normal plot",
+    figsetup(title="Time taken for Buckling beam\n Normal plot",
              xlabel="N", ylabel="Time elapsed [s]", fname="Time_plot", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, n_iterations, "o--")
-    figsetup(title="# Transformations for N-step Buckling beam\n Normal plot",
-             xlabel="N", ylabel="# Transformations", fname="Iterations_plot", show=plot)
+    figsetup(title="# Transformations for Buckling beam\n Normal plot",
+             xlabel="N", ylabel="# Transformations", fname="Transformations_plot", show=plot)
 
 def ex_d(show):
-    N = 800
-    rho_max = 50
+    N = 400
+    rho_max = 10
     plot = show
     
     M, rho = Matrix(N, 1, rho_max, pot="pot2")
@@ -203,10 +213,10 @@ def ex_d(show):
     plt.figure(figsize=[5, 5])
 
     for n in [0, 1, 2]:
-        plt.plot(rho[1:], M_vec[:, n]**2, label="$\\lambda=$%.4f" % M_val[n])
-        plt.axis([0, 8, 0.0, 0.06])
+        plt.plot(rho, M_vec[:, n]**2, label="$\\lambda_%i=$%.4f" %(n, M_val[n]))
+        plt.axis([0, 8, 0.0, 0.025])
 
-    figsetup(title="Dimensionless wavefunction for first 3 eigenstates",
+    figsetup(title="Dimensionless wavefunction for\n first 3 eigenstates",
              xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Eigenvalues", show=plot)
     
     print(M_val[:4])
@@ -231,7 +241,7 @@ def ex_e(show):
         np_val = np.sort(np_val)
         np_vec = np.sort(np_vec)
 
-        plt.plot(rho[1:], M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
+        plt.plot(rho, M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
         print(M_val[0])
         print(np_val[0])
 
@@ -241,6 +251,6 @@ def ex_e(show):
     
 if __name__ == "__main__":
     #ex_c(show=True)   
-    ex_d(show=False)
-    #ex_e(show=False)   # Maa ha analytiske foerst
+    #ex_d(show=True)
+    ex_e(show=False)   # Maa ha analytiske foerst
     
