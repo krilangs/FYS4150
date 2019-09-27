@@ -12,18 +12,18 @@ def test_offdiag():
                        [9, 9, 12, 3],
                        [5, 9, 14, 7],
                        [2, 7, 8, 5]])
-    
+
     i, j = main.offdiag(matrix)
     n = matrix.shape[0]
-    max_off_diag = np.max(as_strided(matrix, (n-1,n+1),\
+    max_off_diag = np.max(as_strided(matrix, (n-1, n+1),\
                         (matrix.itemsize*(n+1), matrix.itemsize))[:, 1:])
-    
+
     if i == j:
         raise ValueError("Got a diagonal element")
-    if matrix[i,j] != max_off_diag:
+    if matrix[i, j] != max_off_diag:
         raise ValueError("Got incorrect element %i, should have got %i"\
-                         %(matrix[i,j], max_off_diag))
-    
+                         %(matrix[i, j], max_off_diag))
+
 def test_eigenvalues(n):
     """
     Check that the matrix is constructed correctly such that numpy gives
@@ -31,15 +31,15 @@ def test_eigenvalues(n):
     """
     print("Test eigenvalues of matrix")
     M, rho = main.Matrix(n, 1, 1, pot="pot1")
-    
+
     num_val, num_vec = np.linalg.eig(M)
     num_val = np.sort(num_val)
-    
+
     h = 1./(n+1)
     d = 2./h**2
     a = -1./h**2
-    j = np.linspace(1,n,n)
-    
+    j = np.linspace(1, n, n)
+
     # Analytical eigenvalues
     lamb_j = d + 2.*a*np.cos(j*np.pi/(n + 1))
 
@@ -57,29 +57,29 @@ def test_Jacobi(n):
     tol = 1e-8
     time_take = False
     M, rho = main.Matrix(n, 1, 1, pot="pot1")
-    
+
     if time_take is True:
         num_val, num_vec, iterations, final_time = main.solve(M, tol, time_take)
-    else: 
+    else:
         num_val, num_vec = main.solve(M, tol, time_take)
 
     permute = num_val.argsort()
     num_val = num_val[permute]
     num_vec = num_vec[:, permute]
-    
+
     np_val, np_vec = np.linalg.eig(M)
     np_val = np.sort(np_val)
     np_vec = np.sort(np_vec)
-    
+
     # Check the Jacobi eigenvalues against the numerical eigenvalues from numpy
     for i in range(n):
         if abs(num_val[i] - np_val[i]) > tol:
             raise ValueError("Numerical eigenvalues does not match the analytical")
- 
+
     # Check that the eigenvectors are orthogonal after transformations
     for i in range(n):
         for j in range(n):
-            inner_prod = np.matmul(np.transpose(num_vec[:,i]), num_vec[:,j])
+            inner_prod = np.matmul(np.transpose(num_vec[:, i]), num_vec[:, j])
             if i != j and inner_prod > tol:
                 raise ValueError("Orthogonality not preserved")
             if i == j and abs(inner_prod - 1) > tol:
