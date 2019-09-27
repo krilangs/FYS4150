@@ -133,9 +133,9 @@ def figsetup(title, xlabel, ylabel, fname, show=False):
     """
     Sets up and saves figure for usage in report with the option to not plot.
     """
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.title(title, size=15)
+    plt.xlabel(xlabel, size=15)
+    plt.ylabel(ylabel, size=15)
     plt.tight_layout()
     plt.legend()
     plt.savefig(fname + ".png", dpi=250)
@@ -148,7 +148,7 @@ def ex_c(show):
     plot = show
     tol = 1e-8
     list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500, 800]
-    n_iterations = []   # List for number of iterations
+    n_iterations = []   # List for number of transformations
     time_taken = []     # List for time taken for the algorithm
     
     for n in list_n:
@@ -160,33 +160,33 @@ def ex_c(show):
 
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, time_taken, "o--")
-    figsetup(title="Time taken for solution of N-step Buckling beam\n Semilogy-plot",
+    figsetup(title="Time taken for N-step Buckling beam\n Semilogy-plot",
             xlabel="N", ylabel="Time elapsed [s]", fname="Time_semilogy", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.semilogy(list_n, n_iterations, "o--")
-    figsetup(title="# Iterations for solution of N-step Buckling beam\n Semilogy-plot",
-             xlabel="N", ylabel="# Iterations", fname="Iterations_semilogy", show=plot)
+    figsetup(title="# Transformations for N-step Buckling beam\n Semilogy-plot",
+             xlabel="N", ylabel="# Transformations", fname="Iterations_semilogy", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, time_taken, "o--")
-    figsetup(title="Time taken for solution of N-step Buckling beam\n Loglog-plot",
+    figsetup(title="Time taken for N-step Buckling beam\n Loglog-plot",
              xlabel="N", ylabel="Time elapsed [s]", fname="Time_loglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.loglog(list_n, n_iterations, "o--")
-    figsetup(title="# Iterations for solution of N-step Buckling beam\n Loglog-plot",
-             xlabel="N", ylabel="# Iterations", fname="Iterations_loglog", show=plot)
+    figsetup(title="# Transformations for N-step Buckling beam\n Loglog-plot",
+             xlabel="N", ylabel="# Transformations", fname="Iterations_loglog", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, time_taken, "o--")
-    figsetup(title="Time taken for solution of N-step Buckling beam\n Normal plot",
+    figsetup(title="Time taken for N-step Buckling beam\n Normal plot",
              xlabel="N", ylabel="Time elapsed [s]", fname="Time_plot", show=plot)
 
     plt.figure(figsize=[5, 5])
     plt.plot(list_n, n_iterations, "o--")
-    figsetup(title="# Iterations for solution of N-step Buckling beam\n Normal plot",
-             xlabel="N", ylabel="# Iterations", fname="Iterations_plot", show=plot)
+    figsetup(title="# Transformations for N-step Buckling beam\n Normal plot",
+             xlabel="N", ylabel="# Transformations", fname="Iterations_plot", show=plot)
 
 def ex_d(show):
     N = 800
@@ -241,6 +241,6 @@ def ex_e(show):
     
 if __name__ == "__main__":
     #ex_c(show=True)   
-    #ex_d(show=True)
-    ex_e(show=False)   # Maa ha analytiske foerst
+    ex_d(show=False)
+    #ex_e(show=False)   # Maa ha analytiske foerst
     
