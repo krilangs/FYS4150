@@ -222,8 +222,8 @@ def ex_d(show):
     print(M_val[:4])
 
 def ex_e(show):
-    N = 500
-    rho_max = 50
+    N = 400
+    rho_max = 10
     plot = show
     omega_r = [0.01, 0.5, 1., 5.]
 
@@ -236,21 +236,16 @@ def ex_e(show):
         permute = M_val.argsort()
         M_val = M_val[permute]
         M_vec = M_vec[:, permute]
-        
-        np_val, np_vec = np.linalg.eig(M)
-        np_val = np.sort(np_val)
-        np_vec = np.sort(np_vec)
 
         plt.plot(rho, M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
         print(M_val[0])
-        print(np_val[0])
 
-    figsetup(title="Dimensionless wavefunction for first eigenstates",
-             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Frequency",
+    figsetup(title="Dimensionless wavefunction for\n first eigenstates",
+             xlabel="$\\rho$", ylabel="$\\psi(\\rho)$", fname="Frequency",
              show=plot)
     
 if __name__ == "__main__":
     #ex_c(show=True)   
     #ex_d(show=True)
-    ex_e(show=False)   # Maa ha analytiske foerst
+    ex_e(show=True)   # Maa ha analytiske foerst
     
