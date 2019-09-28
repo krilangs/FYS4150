@@ -45,7 +45,7 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%layout
 \maketitle
 \begin{abstract}
-In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also check that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[3.0025, 7.0026, 10.9988]$ for the first three eigenvalues, with 555'255 transformations for a $800\times800$ matrix and a $\rho_{max}=50$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. For these frequencies there are analytical solutions that we compare with...NOT DONE
+In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also check that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[2.9998, 6.9990, 10.9976]$ for the first three eigenvalues, with 206'466 transformations for a $400\times400$ matrix and a $\rho_{max}=10$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. We find our numerical eigenvalues as $\lambda=[0.3116,2.2231, 4.0577,17.4436]$ for a $400\times400$ matrix and $\rho_{max}=10$, for their respective $\omega_r$. So here we see that another electron increases the energy levels and that it increases with increasing potential strength $\omega_r$.%For these frequencies there are analytical solutions that we compare our numerical ones with. 
 \end{abstract}
 
 \section{Introduction}
@@ -335,7 +335,7 @@ The final Schrödinger equation to be solved is now
 -\frac{d^2}{d\rho^2}\psi(\rho)+\omega_r^2\rho^2\psi(\rho)+\frac{1}{\rho}=\lambda\psi(\rho).
 \end{equation}
 
-We want to study the problem for several values of the oscillator frequency $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we compare our results with the analytical for MÅ FINNE!!!!!, and plot the ground state for the different $\omega_r$'s.
+We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues for the ground states, and plot the ground state for the different $\omega_r$'s.
 
 \section{Results}
 \section{Conclusion}
@@ -347,7 +347,27 @@ Link to GitHub repository:
 
 \begin{thebibliography}{}
 \bibitem[1]{lectures}
-Hjorth-Jensen, M. (2015). \textit{Computational Physics - Lecture notes Fall 2015}
+Hjorth-Jensen, M. (2015). \textit{Computational Physics, Eigensystems chap. 7}
+
+\bibitem[2]{analytiv_eigval}
+Taut, M. Phys. Rev. A 48, 3561 (1993), \textit{Two electrons in an external oscillator potential: Particular analytic solutions of a Coulomb correlation problem}\\
+\url{https://journals.aps.org/pdf/abstract/10.1103/PhysRevA.48.3561}
 \end{thebibliography}
 \end{document}
+
+%This equation for no interaction between two electrons has analytical eigenvalues \cite{analytiv_eigval} calculated as
+%\begin{equation*}
+%\lambda_m = V_0 + \omega_e\left(m+\frac{1}{2}\right),
+%\end{equation*}
+%where $m=0,1,2,...$ and
+%\begin{align*}
+%V_0&=\frac{3}{2}\left(\frac{\omega_r}{2}\right)^{\frac{2}{3}}\\
+%\omega_e&=\sqrt{3}\omega_r.
+%\end{align*}
+%So the eigenvalues are:
+%\begin{equation}
+%\label{eq:analytic_eigval_2}
+%\lambda_m=\omega_r\left(2m+\frac{3}{2}\right)
+%\end{equation}
+%In the analytical calculations from M.Taut \cite{analytiv_eigval}, there is kept a factor $0.5$ that we have to multiply out for our numerical results to match.
 
