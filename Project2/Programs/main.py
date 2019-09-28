@@ -247,5 +247,4 @@ def ex_e(show):
 if __name__ == "__main__":
     #ex_c(show=True)   
     #ex_d(show=True)
-    ex_e(show=True)   # Maa ha analytiske foerst
-    
+    ex_e(show=True)
