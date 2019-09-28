@@ -335,9 +335,24 @@ The final Schrödinger equation to be solved is now
 -\frac{d^2}{d\rho^2}\psi(\rho)+\omega_r^2\rho^2\psi(\rho)+\frac{1}{\rho}=\lambda\psi(\rho).
 \end{equation}
 
-We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues for the ground states, and plot the ground state for the different $\omega_r$'s.
+We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues (and compare with the analytical calculations from M.Taut \cite{analytiv_eigval}) for the ground states, and plot the ground state for the different $\omega_r$'s.
 
 \section{Results}
+For our testing of the buckling beam we chose to run for smaller matrices. This is because smaller matrices need fewer similarity transformations and does not take a lot of time. With our code, all the tests in \textbf{tests.py} were successful. Thus, nothing was printed when we ran the program, other than printouts to verify that all the tests actually started. The output can be seen at the bottom of the code.
+
+Then we wanted to see how the run-time and number of transformations needed to reduce the Töplitz matrix to a diagonal eigenvalue matrix, were affected by the dimension of the matrix. In the folder "Figures", which you find by going to the GitHub-link in Appendix \ref{sect:appendix}, lies plots for the time taken for the similarity transformations and the number of transformations as functions of the matrix dimensionality. We have plotted three different types for each of the two cases; 
+\begin{itemize}
+	\item log-log plot, where we get a linear growth in both cases.
+	\item semi-log plot, where we see there are a high increase in time and transformations for the first couple of hundred dimensions before it starts to flatten more out as the dimensionality increases.
+	\item a "normal" plot as seen in Figure \ref{fig:time_transf}, where we see that the curve has a almost an exponential growth with few transformations and short times for the first couple of hundred dimensions
+\end{itemize}
+\begin{figure}[htbp]
+	%\hspace*{-2.5cm}
+	\subfloat[Plot of the time of the transformations as function of dimensionality]{\includegraphics[width=0.5\linewidth]{Time_plot.png}}
+	\subfloat[Plot of the number of transformations as function of dimensionality]{\includegraphics[width=0.5\linewidth]{Transformations_plot.png}}
+	\caption{To the left we see a plot of the time of the Jacobi method for reducing the Töplitz matrix to an eigenvalue diagonal matrix as a function of the matrix dimensionality. To the right we see a plot of the number of transformations as a function of matrix dimensionality needed to reduce the Töplitz matrix by use of the Jacobi method. EXPLANATION::\label{fig:time_transf}}
+\end{figure}
+
 \section{Conclusion}
 
 \appendix
@@ -370,4 +385,3 @@ Taut, M. Phys. Rev. A 48, 3561 (1993), \textit{Two electrons in an external osci
 %\lambda_m=\omega_r\left(2m+\frac{3}{2}\right)
 %\end{equation}
 %In the analytical calculations from M.Taut \cite{analytiv_eigval}, there is kept a factor $0.5$ that we have to multiply out for our numerical results to match.
-
