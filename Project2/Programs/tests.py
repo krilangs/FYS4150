@@ -6,6 +6,7 @@ import main
 def test_offdiag():
     """
     Test that the function for finding the maximum off-diagonal element works.
+    Create a random matrix manually to easier be able to verify the test.
     """
     print("Test maximum off-diagonal")
     matrix = np.array([[7, 2, 1, 6],
@@ -13,8 +14,10 @@ def test_offdiag():
                        [5, 9, 14, 7],
                        [2, 7, 8, 5]])
 
+    # Find the indices of the max off-diagonal element
     i, j = main.offdiag(matrix)
     n = matrix.shape[0]
+    # Use numpy to find the largest off-diagonal element as "analytical" solution
     max_off_diag = np.max(as_strided(matrix, (n-1, n+1),\
                         (matrix.itemsize*(n+1), matrix.itemsize))[:, 1:])
 
@@ -32,6 +35,7 @@ def test_eigenvalues(n):
     print("Test eigenvalues of matrix")
     M, rho = main.Matrix(n, 1, 1, pot="pot1")
 
+    # Use numpy to find the eigenvalues of the matrix
     num_val, num_vec = np.linalg.eig(M)
     num_val = np.sort(num_val)
 
@@ -95,3 +99,14 @@ if __name__ == "__main__":
     test_eigenvalues(n=8)
     test_Jacobi(n=5)
     print("All the tests are passed.")
+
+"""
+Terminal>tests.py
+Running the tests:
+Test maximum off-diagonal
+Test eigenvalues of matrix
+Test Jacobi:
+Dim 5 x 5:
+Eigenpairs are found after 26 similarity transformations
+All the tests are passed.
+"""
