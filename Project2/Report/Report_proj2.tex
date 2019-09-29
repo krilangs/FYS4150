@@ -45,7 +45,7 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%layout
 \maketitle
 \begin{abstract}
-In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy and analytical results. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also verify that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[2.9998, 6.9990, 10.9976]$ for the first three eigenvalues, with 206'466 transformations for a $400\times400$ matrix and a $\rho_{max}=10$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. We find our numerical eigenvalues as $\lambda=[0.3116,2.2231, 4.0577,17.4436]$ for a $400\times400$ matrix and $\rho_{max}=10$, for their respective $\omega_r$. So here we see that another electron increases the energy levels, and that it increases with increasing potential strength $\omega_r$.
+In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy and analytical results. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also verify that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[2.9998, 6.9990, 10.9976]$ for the first three eigenvalues, with 206'466 transformations for a $400\times400$ matrix and a $\rho_{max}=10$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. We find our numerical eigenvalues as $\lambda=[0.3116,2.2231, 4.0577,17.4436]$ for a $400\times400$ matrix and $\rho_{max}=10$, for their respective $\omega_r$. So here we see that another electron increases the energy levels, and that it increases with increasing potential strength $\omega_r$. Also when increasing the potential strength we get that the potential well width decrease with its peak moving closer to the center of the well.
 \end{abstract}
 
 \section{Introduction}
@@ -332,7 +332,7 @@ The final Schrödinger equation to be solved is now
 -\frac{d^2}{d\rho^2}\psi(\rho)+\omega_r^2\rho^2\psi(\rho)+\frac{1}{\rho}=\lambda\psi(\rho).
 \end{equation}
 
-We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state with $l=0$, which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues (and compare with the analytical calculations from \citet{Taut}) for the ground states, and plot the ground state for the different $\omega_r$'s.
+We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state with $l=0$, which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues for the ground states, and plot the ground state for the different $\omega_r$'s.
 
 \section{Results}
 For our testing of the buckling beam we chose to run for smaller matrices. This is because smaller matrices need fewer similarity transformations and does not take a lot of time. With our code, all the tests in \textbf{tests.py} were successful. Thus, nothing was printed when we ran the program, other than printouts to verify that all the tests actually started. The output can be seen at the bottom of the code.
@@ -391,29 +391,75 @@ In Table \ref{tab:ex_c} we see results of the increasing matrix dimensionality a
 	\label{tab:ex_c}
 \end{table}
 
+For the one electron in a harmonic oscillator potential well we compare our numerically calculated eigenvalues with the analytical eigenvalues which should be 3, 7, 11 and 15. In Figure \ref{fig:eigenvalues} we have plotted the probability distribution of the dimensionless wave function for the three first eigenvalues as function of the dimensionless variable $\rho$. In Table \ref{tab:ex_d} we see the first four eigenvalues we got when finding the optimal values for the dimensionality and $\rho_{max}$ compared to the analytical ones. For the numerical results in Table \ref{tab:ex_d} we got the best eigenvalues for a $400\times400$ matrix with $\rho_{max}=10$. The mean CPU-time in this case is about 30 seconds for 206 466 similarity transformations. We see that the first eigenvalues has the best accuracy to the analytical, and the accuracy decreases with increasing eigenvalue. In Figure \ref{fig:eigenvalues} we see that the first eigenvalue has the highest peak. The second eigenvalue has the second highest and so on, and for each eigenvalue there is added another peak which is smaller than the last. From this we can conclude that the higher excited states have a larger spatial distribution than the lower energetic states.
+
+\begin{figure}[htbp]
+	\centering\includegraphics[width=0.6\linewidth]{Eigenvalues.png}
+	\caption{One electron in a harmonic oscillator potential well: Plot of the probability distribution of the dimensionless wave function as a function of the dimensionless variable $\rho$ for the three first eigenvalues with matrix dimension $400\times400$ and $\rho_{max}=10$. These eigenvalues took about 30 seconds in average and needed 206 466 similarity transformations. \label{fig:eigenvalues}}
+\end{figure}
+
+\begin{table}[h!]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Eigenvalues $\lambda$ & Numerical & Analytical \\
+		\hline \rule{0pt}{13pt}
+		$\lambda_0$ & 2.9998 & 3 \\
+		\hline \rule{0pt}{13pt}
+		$\lambda_1$ & 6.9990 & 7 \\
+		\hline \rule{0pt}{13pt}
+		$\lambda_2$ & 10.9976 & 11 \\
+		\hline \rule{0pt}{13pt}
+		$\lambda_3$ & 14.9956 & 15 \\
+		\hline 
+	\end{tabular}	
+	\caption{In this table we see the eigenvalues for the four first eigenstates for the analytical and the numerical we got with Jacobi's method for a tridiagonal matrix of dimension $400\times400$ and with $\rho_{max}=10$. We see that the numerical eigenvalues are very close to the analytical.}
+	\label{tab:ex_d}
+\end{table}
+
+For the two electron in a harmonic oscillator potential well we analyze the ground state eigenvalue for different oscillator potential strengths $\omega_r=[0.01,0.5,1,5]$. In Figure \ref{fig:strengths} we have plotted the probability distribution for the dimensionless wave function for the ground state eigenvalue for the different potential strengths. There we see that the distribution widens for smaller potential strengths. So with increasing potential strength the peak is higher and closer to the origin. This means that the probability of finding the two electrons closer together, and closer to the center of the potential well, is higher for bigger $\omega_r$, since increasing $\omega_r$ decreases the width of the potential well. We can then interpret $\rho$ as the distance between the two electron in the potential well. In Table \ref{tab:ex_e} we see the eigenvalues for the ground state for the different potential strengths and the number of transformations of Jacobi's method. We can see there that the eigenvalues increase with increasing strength with fits which Figure \ref{fig:strengths} where the highest peak is the highest strength, which means it has the highest energy. We can also see that as the strength increases, the number of transformations decrease.
+
+\begin{figure}[htbp]
+	\centering\includegraphics[width=0.6\linewidth]{Potential_strength.png}
+	\caption{Two electrons in a harmonic oscillator potential well: Plot of the probability distribution of the dimensionless wave function as a function of the dimensionless variable $\rho$ for matrix with dimension $400\times400$ and $\rho_{max}=10$. Here we see that with increasing potential strength, we get increasing distribution and smaller peak. This corresponds to that the width of the potential well decreases with increasing potential strength, such that the electrons have a higher possibility of being closer to each other around the center of th well for higher strengths. \label{fig:strengths}}
+\end{figure}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Potential strengths $\omega_r$ & Ground state eigenvalue $\lambda_0$ & Transformations \\
+		\hline \rule{0pt}{13pt}
+		$0.01$ & 0.31164 & 209'556 \\
+		\hline \rule{0pt}{13pt}
+		$0.5$ & 2.23007 & 209'392 \\
+		\hline \rule{0pt}{13pt}
+		$1$ & 4.05767 & 207'506 \\
+		\hline \rule{0pt}{13pt}
+		$5$ & 17.44360 & 195.523 \\
+		\hline 
+	\end{tabular}	
+	\caption{In this table we see the ground state eigenvalues and number of similarity transformations for the varying potential strengths. For increasing strengths we see that the eigenvalue increases which means that the energy for this state increases, and that there is a decrease in the number of transformations.}
+	\label{tab:ex_e}
+\end{table}
+
 \section{Conclusion}
+One of the main things in this project was to solve three eigenvalue problems for a tridiagonal symmetric Töplitz matrix with the use of Jacobi's method numerically. We have discretized and scaled differential equations with the ends results being on the same form with different potential terms. 
+
+Then we have studied the affect the dimensionality of the matrix have on the CPU-time and number of unitary transformations needed to make the Töplitz matrix into a diagonal eigenvalue matrix. There we came to the conclusion that for big matrices the CPU-time quickly becomes very high, as do the number of transformations. So we can conclude from our CPU-time results that Jacobi's method is not a very fast algorithm for big matrices, even though we have used \textbf{jit} compilation to speed up the code. However, Jacobi's method is a versatile algorithm as we have seen by scaling and reducing different differential equations to 1D problems and then solving them numerically. After getting the problem on this form, then the algorithm can be used to solve several physical problems with few changes in the code. Jacobi's method is also a very reliable algorithm for solving eigenvalue problems even though it is not the most efficient as we have seen.
+
+Then we looked at different potential strengths for the two electron problem. There we concluded with that higher potential strengths give higher eigenvalues for the ground state which then gives higher energies. This also made the potential well more narrower allowing the two electrons to be within a shorter range of each other around the center of the well.
+
+Future work could be to find more efficient algorithms to solve our eigenvalue problems like Lanczos' and Householder's algorithms. We could also add the repulsion between the two electrons, and analyze the effect this will have on the system.
 
 \appendix
 \section{Appendix}
 \label{sect:appendix}
-Link to GitHub repository:
+Link to GitHub repository:\\
+\url{https://github.com/krilangs/FYS4150/tree/master/Project2}
 
 \bibliographystyle{plainnat}
 \bibliography{myrefs}
 \end{document}
-
-%This equation for no interaction between two electrons has analytical eigenvalues \cite{analytiv_eigval} calculated as
-%\begin{equation*}
-%\lambda_m = V_0 + \omega_e\left(m+\frac{1}{2}\right),
-%\end{equation*}
-%where $m=0,1,2,...$ and
-%\begin{align*}
-%V_0&=\frac{3}{2}\left(\frac{\omega_r}{2}\right)^{\frac{2}{3}}\\
-%\omega_e&=\sqrt{3}\omega_r.
-%\end{align*}
-%So the eigenvalues are:
-%\begin{equation}
-%\label{eq:analytic_eigval_2}
-%\lambda_m=\omega_r\left(2m+\frac{3}{2}\right)
-%\end{equation}
-%In the analytical calculations from M.Taut \cite{analytiv_eigval}, there is kept a factor $0.5$ that we have to multiply out for our numerical results to match.
