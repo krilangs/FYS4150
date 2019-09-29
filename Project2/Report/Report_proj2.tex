@@ -21,7 +21,7 @@
 prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,showtabs=false,showspaces=false,showstringspaces=false,identifierstyle=\ttfamily,keywordstyle=\color[rgb]{0,0,1},commentstyle=\color[rgb]{0.133,0.545,0.133},stringstyle=\color[rgb]{0.627,0.126,0.941},literate={å}{{\r a}}1 {Å}{{\r A}}1 {ø}{{\o}}1}
 
 % Use for references
-%\usepackage[sort&compress,square,comma,numbers]{natbib}
+\usepackage[round,comma,numbers]{natbib}
 %\DeclareRobustCommand{\citeext}[1]{\citeauthor{#1}~\cite{#1}}
 
 % Fix spacing in tables and figures
@@ -45,26 +45,26 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%layout
 \maketitle
 \begin{abstract}
-In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also check that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[2.9998, 6.9990, 10.9976]$ for the first three eigenvalues, with 206'466 transformations for a $400\times400$ matrix and a $\rho_{max}=10$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. We find our numerical eigenvalues as $\lambda=[0.3116,2.2231, 4.0577,17.4436]$ for a $400\times400$ matrix and $\rho_{max}=10$, for their respective $\omega_r$. So here we see that another electron increases the energy levels and that it increases with increasing potential strength $\omega_r$.%For these frequencies there are analytical solutions that we compare our numerical ones with. 
+In this project we want to solve eigenvalue problems of a tridiagonal Töplitz matrix using Jacobi's method. We will use unit tests to check our results with other solvers like Python's numpy and analytical results. We will solve different physical problems by discretization and scaling to make them into similar differential equations that we solve numerically. The first problem is a classical wave function problem in one dimension as a two-point boundary value problem of a buckling beam. This eigenvalue problem has analytical solutions which we will use as a unit test against our numerical algorithm. We also verify that the eigenvectors retain their orthogonality after the transformations. Both these tests passed and gave similar eigenvalues within a small tolerance of 1e-8. Next we look at a quantum mechanical problem for an electron in a 3-dimensional harmonic oscillator (quantum dots). This case also have analytical eigenvalues which we test against. For our numerical simulation we get eigenvalues $\lambda=[2.9998, 6.9990, 10.9976]$ for the first three eigenvalues, with 206'466 transformations for a $400\times400$ matrix and a $\rho_{max}=10$. For the last case we expand for two electrons which interact via a repulsive Coulomb interaction. Here we test for different frequency strengths $\omega_r=[0.01, 0.1, 1, 5]$ for the ground state. We find our numerical eigenvalues as $\lambda=[0.3116,2.2231, 4.0577,17.4436]$ for a $400\times400$ matrix and $\rho_{max}=10$, for their respective $\omega_r$. So here we see that another electron increases the energy levels, and that it increases with increasing potential strength $\omega_r$.
 \end{abstract}
 
 \section{Introduction}
-A hot topic in todays physics is what we call quantum dots where we look at electrons in small areas in semiconductors. To be able to solve this we have to look at differential equations. These are often difficult to solve analytically, and have to be solved numerically. Even then we have to do approximations to be able to make the equations easier to solve.
+A hot topic in todays physics is what we call quantum dots where we look at electrons in small areas in semiconductors. To be able to solve these problems we have to look at differential equations. These are often difficult to solve analytically, and have to be solved numerically. Even then we have to do approximations to be able to make the equations easier to solve.
 
-In our case we will use methods from linear algebra and look at eigenvalue problems. These are widely used to solve physical problems, so to understand how they work and how they are solved is important. Another powerful tool is to scale the equations. This means that we can solve an equation for one case, and then scale the equation to be able to solve it for another. This is one of the steps that we do in this project where we start with the wave equation for a buckling beam in one dimension, and then expand for a quantum mechanics case with the Schrödinger equation for the one and two electrons (quantum dots) in three dimensions case.
+In our case we will use methods from linear algebra and look at eigenvalue problems. These are widely used to solve physical problems, so to understand how they work and how they are solved is important. Another powerful tool is to scale the equations. This means that we can solve an equation for one case, and then scale the equation to be able to solve it for another. This is one of the steps that we do in this project where we start with the wave equation for a buckling beam in one dimension, and then expand for quantum mechanics cases with the Schrödinger equation for one and two electrons (quantum dots) in three dimensions.
 
-In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the endpoints with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now a eigenvalue problem that we will solve by solving a tridiagonal Töplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$. Lastly we come up with a conclusion to the project.
+In the methods section we look at the theory we use and the implementation of the algorithms. We start with the buckling beam which is fastened in both ends, such that we know the endpoints with Dirichlet boundary conditions. The differential equations is simplified (scaled) with the introduction of a dimensionless variable $\rho$, such that we can discretize the new equation. This is now an eigenvalue problem that we will solve by solving a tridiagonal Töplitz matrix with Jacobi's method numerically. We then derive the algorithms to be used, and implement them and unit tests into a our program. Then we expand to quantum mechanics with the radial Schrödinger equation for one and two electrons in a three-dimensional harmonic oscillator potential. These equations are then manipulated and scaled to the form as the discretized buckling beam problem, but with other potential terms. For these cases we have analytical results to compare with. So the results of the eigenvalues are then compared to the analytical ones. We also look at the number of similarity transformations needed as a result of the matrix dimensionality and the maximum value of $\rho$ for the Jacobi method algorithm. Lastly we come up with a conclusion to the project.
 
 \section{Methods}
 \subsection{Unitary transformation}
 \label{sect_unitary_transf}
 Consider a basis of vectors 
 \[\textbf{v}_i = \begin{bmatrix}
-v_{i1}\\
+v_{i,1}\\
 \vdots\\
-v_{in}
+v_{i,n}
 \end{bmatrix}\]
-which is orthogonal. This means that $\textbf{v}_j^T\textbf{v}_i=\delta_{ij}$. Then we define a unitary matrix $\textbf{U}$ such that $\textbf{U}\textbf{U}^T=\mathcal{I}$. A unitary transformation of the basis vector \textbf{v}$_i$ is then:
+which is orthogonal. This means that $\textbf{v}_j^T\textbf{v}_i=\delta_{ij}$. Then we define a unitary matrix $\textbf{U}$ such that $\textbf{U}\textbf{U}^T=\mathcal{I}$ (identity matrix). A unitary transformation of the basis vector \textbf{v}$_i$ is then:
 \begin{equation*}
 \textbf{w}_i=\textbf{U}\textbf{v}_i
 \end{equation*}
@@ -74,7 +74,7 @@ Then we take:
 \end{equation*}
 This is clearly orthogonal, which means that a unitary transformation preserves both the orthogonality and the dot product of the basis vector.
 
-We can also check that the eigenvalues are preserved under a unitary transformation as seen in Computational Physics (7.3) \cite{lectures}:\\
+We can also check that the eigenvalues are preserved under a unitary transformation as seen in \citet{lectures}\footnote{Computational Physics (2015) - Chapter 7.3 Similarity transformations}:\\
 Start with the eigenvalue problem and a similarity transformed matrix \textbf{B}. 
 \begin{equation}
 \label{eq:sim_transf}
@@ -85,7 +85,7 @@ Multiply with \textbf{U}$^T$ and use that \textbf{U}$^T$\textbf{U}=$\mathcal{I}$
 \rightarrow (\textbf{U}^T\textbf{A}\textbf{U})(\textbf{U}^T\textbf{x})=\lambda\textbf{U}^T\textbf{x}\\
 \Rightarrow \textbf{B}(\textbf{U}^T\textbf{x})=\lambda(\textbf{U}^T\textbf{x})
 \end{align*}
-Here we see that the eigenvalues are the same, but the eigenvectors have changed.
+Here we see that the eigenvalues ($\lambda$) are the same, but the eigenvectors have changed.
 
 \subsection{Buckling Beam}
 \label{sect:Beam}
@@ -122,9 +122,9 @@ As an eigenvalue problem we get
 \label{eq:eigen_prob}
 \begin{bmatrix}
 d & a & 0 & \cdots & 0\\
-a & d & a &\ddots & \vdots\\
+a & d & a &\vdots & \vdots\\
 0 & a & d & \ddots & 0\\
-\vdots & \ddots & \ddots & \ddots & a\\
+\vdots & \cdots & \ddots & \ddots & a\\
 0 & \cdots & 0 & a & d
 \end{bmatrix}
 \begin{bmatrix}
@@ -150,9 +150,9 @@ without considering the endpoints $u_0$ and $u_N$, and with $d=\frac{2}{h^2}$ an
 
 \subsection{Jacobi's method}
 \label{sect:Jacobi}
-Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. Then we make a check of the matrix implementation where we compare the eigenvalues we get from the analytical eigenvalues in equation \ref{eq:analytic_eigenval} for a small Töplitz matrix (dimensions 5 or so) with Python's numpy.linalg.eig() for finding eigenpairs of the Töplitz matrix.
+Now we implement the Töplitz matrix from the eigenvalue problem in equation \ref{eq:eigen_prob} into our program. This is dependent on the dimension of the matrix and the value for $\rho_{max}$ which we choose. Then we make a check of the matrix implementation where we compare the eigenvalues we get from the analytical eigenvalues in equation \ref{eq:analytic_eigenval} for a small Töplitz matrix of dimension 8 and with $\rho_{max}=1$ with Python's numpy.linalg.eig() for finding eigenpairs of the Töplitz matrix.
 
-We are now going to solve the Töplitz matrix with Jacobi's method. The main idea with Jacobi's method is to do several similarity (unitary) transformations on the eigenvalue matrix in equation \ref{eq:eigen_prob}, till it is transformed to a diagonal matrix containing only the eigenvalues. The Jacobi rotation matrix 
+We are now going to solve the Töplitz matrix with Jacobi's method. The main idea with Jacobi's method is to do several similarity (unitary) transformations on the eigenvalue matrix in equation \ref{eq:eigen_prob}, till it is transformed to a diagonal matrix containing only the eigenvalues on the diagonal with zeros as the rest of the elements. The Jacobi rotation matrix 
 \begin{equation}
 \label{eq:jacobi_rotate}
 \begin{bmatrix}
@@ -164,7 +164,7 @@ We are now going to solve the Töplitz matrix with Jacobi's method. The main ide
 0 & \cdots & 0 & \cdots & 0 & 1
 \end{bmatrix}
 \end{equation}
-is an orthogonal ($n\times n$) transformation matrix that performs a plane rotation around the angle $\theta$ in Euclidean $n$-dimensional space \cite{lectures}(7.4). The angle $\theta$ is arbitrary and chosen such that all off-diagonal elements in \textbf{B} in equation \ref{eq:sim_transf} is zero. To do this we calculate the Frobenius norm of the matrix \textbf{A}, since the Frobenius norm is conserved under unitary transformations:
+is an orthogonal ($n\times n$) transformation matrix that performs a plane rotation around the angle $\theta$ in Euclidean $n$-dimensional space (\citet{lectures}\footnote{Computational Physics (2015) - Chapter 7.4 Jacobi's method}). The angle $\theta$ is arbitrary and chosen such that all off-diagonal elements in \textbf{B} in equation \ref{eq:sim_transf} is zero. To do this we calculate the Frobenius norm of the matrix \textbf{A}. Since the Frobenius norm is conserved under unitary transformations:
 \begin{equation}
 \label{eq:Frobenius}
 ||\textbf{A}||_F^2 = ||\textbf{B}||_F^2=\sum_{ij}|a_{ij}|^2=\sum_{ij}|b_{ij}|^2
@@ -174,17 +174,14 @@ After taking the Frobenius norm we find the off-diagonal elements in \textbf{B} 
 \label{eq:off_diag}
 off(\textbf{B})^2=||\textbf{B}||_F^2-\sum_{i=1}^{n}b_{ii}^2=off(\textbf{A})^2-2a_{kl}^2
 \end{equation}
-For each similarity transformation we can see that the matrix moves closer to diagonal form for each step. To do this numerically we implement a function for finding the maximum non-diagonal element value to start with, and this returns the position of the element to be used in the Jacobi rotation matrix. After one transformation the function finds the next maximum element. This continues until we are left with the diagonal matrix we want containing only the eigenvalues (or at least has non-diagonal elements smaller than a given tolerance $1e-8$). This function is implemented as:
+For each similarity transformation we can see that the matrix moves closer to diagonal form for each step. To do this numerically we implement a function for finding the maximum non-diagonal element value for which we start to use the Jacobi rotation matrix on, and this returns the position of the element to be used in the Jacobi rotation matrix. After one transformation the function finds the next maximum element. This continues until we are left with the diagonal matrix we want containing only the eigenvalues (or at least has non-diagonal elements smaller than a given tolerance $1e-8$). This function is implemented as:
 \begin{lstlisting}
-max_elem = 0
 for i in range(n):
 	for j in range(i+1, n):
 		if abs(matrix[i,j]) > max_elem:
 			max_elem = abs(matrix[i,j])
 			max_k = i
 			max_l = j
-		else:
-			pass
 \end{lstlisting}
 For simplification we define:
 \begin{align*}
@@ -194,7 +191,7 @@ Here we define $\theta$ such that $a_{kl}\neq0$ for the non-diagonal elements of
 \[t^2+2\tau t-1=0.\]
 Where we easily find
 \[t=-\tau\pm\sqrt{1+\tau^2},\quad c=\frac{1}{\sqrt{1+t^2}},\quad s=tc.\]
-If we get a large value for $\tau$ we would get wrong results when calculating $t$. For large $\tau$ we could get a situation with $t\approx-\tau\pm\sqrt{\tau^2}$ which the computer would have to solve. This can give round-off errors. So we have to make a change that takes this case into consideration. We rewrite $t$ by its conjugate and implement it under a if-test:
+If we get a large value for $\tau$ we could get wrong results when calculating $t$. For large $\tau$ we could get a situation with $t\approx-\tau\pm\sqrt{\tau^2}$, which the computer would have to solve. This can give round-off errors. So we have to make a change that takes this case into consideration. We rewrite $t$ by its conjugate and implement it under an if-test:
 \begin{lstlisting}
 if tau >= 0:
 	t = 1./(tau + np.sqrt(1. + tau**2))
@@ -214,25 +211,25 @@ b_{ll} &= a_{kk} s^2 - 2a_{kl}cs + a_{ll} c^2\\
 b_{kl} &= (a_{kk} - a_{ll})cs + a_{kl}(c^2-s^2)\\
 b_{ik} &= a_{ik}c - a_{il}s, \quad i\neq k\quad i\neq l\\
 b_{il} &= a_{ll}c + a_{ik}s, \quad i\neq k\quad i\neq l\\
-b_{ii} &= a_{ii}, \quad i\neq k\quad i\neq l
+b_{ii} &= a_{ii}, \qquad \qquad i\neq k\quad i\neq l
 \end{align*}
-Here we have to choose the angle $\theta$ such that all $b_{kl}=0$ or smaller than a tolerance, which is what we do with the function for the maximum non-diagonal elements and the Jacobi rotation matrix. We also compute the eigenvectors for the matrix. For the solver for finding the eigenvalues we also take the time and number of transformations of the Jacobi rotation/maximum off-diagonal algorithm to compare for different matrix dimensions.
+Here we have to choose the angle $\theta$ such that all $b_{kl}=0$, which is what we do with the function for the maximum non-diagonal elements and the Jacobi rotation matrix. We also compute the eigenvectors for the matrix. Since Jacobi's method is a slow algorithm, we choose to use numba's function \textbf{jit} to speed up the calculations for the rotation function and the function for finding the maximum non-diagonal element. For the solver for finding the eigenvalues we also take the time and number of transformations of the Jacobi rotation/maximum off-diagonal algorithm to compare for different matrix dimensions.
 
 \subsection{Testing algorithms}
 \label{sect:testing}
 The main algorithms are found in the program \textit{main.py} in a GitHub-folder as found in Appendix \ref{sect:appendix} by following the link there. The programs for the testing of the algorithms we are about to explain are found in the same folder with name \textit{tests.py}. We test for small dimensions of matrices. For small matrices we can more easily control the expected results.
 
-The first test we implement is a test of our matrix and the maximum non-diagonal element function. For this test we manually make a $5\times5$ matrix we random numbers. This is to easily check that the function can find the maximum non-diagonal element in the matrix. We also use a numpy function called \textbf{numpy.lib.stride\_tricks.as\_strided} to numerically find the maximum element in the matrix, and is only used to cross-check our function. Then we implement an error-call for if our function finds a diagonal element, or if finds another element which is not the same as for the numpy function.
+The first test we implement is a test of our matrix and the maximum non-diagonal element function. For this test we manually make a $5\times5$ matrix with random numbers. This is to easily check that the function can find the maximum non-diagonal element in the matrix. We also use a numpy function called \textbf{numpy.lib.stride\_tricks.as\_strided} to numerically find the maximum element in the matrix, and which is treated as analytical results and only used to cross-check our function. Then we implement an error-call for if our function finds a diagonal element, or if it finds another element which is not the same as for the numpy function.
 
-Next we want to test that the eigenvalues we get from out constructed matrix in equation \ref{eq:eigen_prob} is correct. We calculate the analytical eigenvalues of the eigenvalue problem which is given in equation \ref{eq:analytic_eigenval}, and compare it with Python's \textbf{numpy.linalg.eig} of our constructed matrix. If they do not match within a tolerance of $1e-10$, we assert an error.
+Next we want to test that the eigenvalues we get from out constructed matrix in equation \ref{eq:eigen_prob} is correct. Here we choose to test for matrix dimensionality $8\times8$. We calculate the analytical eigenvalues of the eigenvalue problem which is given in equation \ref{eq:analytic_eigenval}, and compare it with Python's \textbf{numpy.linalg.eig} of our constructed matrix. If they do not match within a tolerance of $1e-10$, we assert an error.
 
-The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. We set the test of orthogonality as successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ within the tolerance, and if the element $i=j$. If the tests fails, then we assert an error.
+The last test we want to do is a test of Jacobi's method on our constructed Töplitz matrix. Here we want to check that we get the correct eigenpairs after the similarity transformations. First we check that Jacobi's method gives us the same eigenvalues as for the numpy function we used earlier, for any given square matrix of dimensionality we choose. Here we test a $5\times5$ matrix. If they do not match within a tolerance of $1e-8$, we assert an error. We can also take the time of the algorithm and see number of transformations if we choose so. Then we want to check that the orthogonality of the eigenvectors after transformations are preserved. To check this we take the inner product of the eigenvectors after the transformations. We set the test of orthogonality as successful if the inner products are smaller than a tolerance of $1e-8$. We check for the case if the element $i\neq j$ within the tolerance, and if the element $i=j$. If the tests fails, then we assert an error.
 
 Another thing we do is to make some plots to see the dependency the matrix dimension has on the number of transformations needed and the time they take. All these plots can be seen in the Figures-folder in GitHub (\ref{sect:appendix}).
 
 \subsection{Quantum dots, one electron}
 \label{sect:quantum_one}
-Next, we want to expand our numerics to a quantum mechanical problem for an electron moving in a three-dimensional harmonic oscillator potential. We will assume spherical symmetry, and will look at the radial part of Schrödinger's equation in spherical coordinate with $r\in[0,\infty)$:
+Next, we want to expand our numerics to a quantum mechanical problem for an electron moving in a three-dimensional harmonic oscillator potential. We will assume spherical symmetry, and will look at the radial part of Schrödinger's equation in spherical coordinates with $r\in[0,\infty)$:
 \begin{equation}
 \label{eq:rad_schr_1}
 -\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\frac{d}{dr}r^2\frac{d}{dr}-\frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r)=ER(r)
@@ -283,9 +280,9 @@ In the buckling beam problem we had no potential working on it. In this problem 
 \label{eq:schr_eigen_1}
 d_iu_i+e_iu_{i-1}+e_iu_{i+1}=\lambda u_i.
 \end{equation}
-This equation can be written as a symmetric matrix eigenvalue problem just like equation \ref{eq:eigen_prob}, where we have left out the endpoints 0 and $N$.
+This equation can be written as a symmetric matrix eigenvalue problem just like equation \ref{eq:eigen_prob}, where we have left out the endpoints $u_0$ and $u_N$.
 
-As we can see, our eigenvalue problem for the electron has the same form and is solved in the same way as for the buckling beam problem numerically. The only thing we do is to add the harmonic oscillator potential to the diagonal elements. So now we can experiment with the dimensionality of the matrix and the value of $\rho_{max}$. We want to find optimal values for the dimensionality and $\rho_{max}$ such that the eigenvalues we get are close enough to the analytical eigenvalues $\lambda=3,7,11,15,...$ with 3-4 leading digits after the decimal. We also look at the number of integration points needed to produce these results. The eigenvalues for the three lowest-lying states are then plotted for the optimal values.
+As we can see, our eigenvalue problem for the electron has the same form and is solved in the same way as for the buckling beam problem numerically. The only thing we do is to add the harmonic oscillator potential to the diagonal elements. So now we can experiment with the dimensionality of the matrix and the value of $\rho_{max}$. We want to find optimal values for the dimensionality and $\rho_{max}$ such that the eigenvalues we get are close enough to the analytical eigenvalues $\lambda=3,7,11,15,...$ with 3-4 leading digits after the decimal. We also look at the number of similarity transformations needed to produce these results. The eigenvalues for the three lowest-lying states are then plotted for the optimal values.
 
 \subsection{Quantum dots, two electrons}
 \label{sect:quantum_two}
@@ -335,7 +332,7 @@ The final Schrödinger equation to be solved is now
 -\frac{d^2}{d\rho^2}\psi(\rho)+\omega_r^2\rho^2\psi(\rho)+\frac{1}{\rho}=\lambda\psi(\rho).
 \end{equation}
 
-We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state ($l=0$), which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues (and compare with the analytical calculations from M.Taut \cite{analytiv_eigval}) for the ground states, and plot the ground state for the different $\omega_r$'s.
+We want to study the problem for several values of the oscillator frequency\\ $\omega_r=[0.01, 0.5, 1, 5]$ for the ground state with $l=0$, which we now consider as the strength of the oscillator potential. In this case we also have to find the optimal/stable values for the dimensionality and $\rho_{max}$ for the $\omega_r$ values. Since the Schrödinger equation we have obtained is on the form as the two previous cases, we reuse our code but now with a new potential $V(\rho)=\omega_r^2\rho^2+\frac{1}{\rho}$. Then we look at our eigenvalues (and compare with the analytical calculations from \citet{Taut}) for the ground states, and plot the ground state for the different $\omega_r$'s.
 
 \section{Results}
 For our testing of the buckling beam we chose to run for smaller matrices. This is because smaller matrices need fewer similarity transformations and does not take a lot of time. With our code, all the tests in \textbf{tests.py} were successful. Thus, nothing was printed when we ran the program, other than printouts to verify that all the tests actually started. The output can be seen at the bottom of the code.
@@ -360,14 +357,8 @@ Then we wanted to see how the run-time and number of transformations needed to r
 \label{sect:appendix}
 Link to GitHub repository:
 
-\begin{thebibliography}{}
-\bibitem[1]{lectures}
-Hjorth-Jensen, M. (2015). \textit{Computational Physics, Eigensystems chap. 7}
-
-\bibitem[2]{analytiv_eigval}
-Taut, M. Phys. Rev. A 48, 3561 (1993), \textit{Two electrons in an external oscillator potential: Particular analytic solutions of a Coulomb correlation problem}\\
-\url{https://journals.aps.org/pdf/abstract/10.1103/PhysRevA.48.3561}
-\end{thebibliography}
+\bibliographystyle{plainnat}
+\bibliography{myrefs}
 \end{document}
 
 %This equation for no interaction between two electrons has analytical eigenvalues \cite{analytiv_eigval} calculated as
