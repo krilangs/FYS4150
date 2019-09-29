@@ -5,31 +5,31 @@ from numba import jit
 import time
 
 def Matrix(n, omega, max_rho, pot):
-    """Construct the tri-diagonal matrix."""
+    """Construct the tri-diagonal Töplitz matrix."""
     rho_0 = 0
     rho_max = max_rho
     rho = np.linspace(rho_0, rho_max, n)
     h = rho_max/(n+1)   # Step size
     for i in range(n):
         rho[i] = rho_0 + (i+1)*h
-    V = np.zeros(n)   # Potential which is exercises dependent
-    V = potentials(rho, omega, pot) 
+    V = np.zeros(n)
+    V = potentials(rho, omega, pot)  # Potential which is exercise dependent
 
     d = 2./h**2 + V     # Diagonal elements
     a = -1./h**2        # Non-diagonal around the diagonal
     A = np.zeros(shape=(n, n), dtype=np.float64)  # Create matrix with zeros
+
     # Fill inn the diagonal and the above and below non-diagonal elements
     A[0,0]  = d[0]
     A[0,1] = a
+
     for i in range(1,n-1):
         A[i,i-1] = a
         A[i,i] = d[i]
         A[i,i+1] = a
+
     A[-1,-2] = a
     A[-1,-1] = d[-1]
-    #A[range(n), range(n)] = d
-    #A[range(1, n), range(n-1)] = a
-    #A[range(n-1), range(1, n)] = a
 
     return A, rho
 
@@ -107,6 +107,7 @@ def solve(matrix, tol, time_take=False):
     all non-diagonal elements to zero within a tolerance.
     Can also check time of the operations if time_take=True.
     """
+    # Make a copy of the matrix to avoid any accidental changes to the original matrix
     M = np.copy(matrix)
     n = len(M)
     print("Dim %i x %i:" %(n,n))
@@ -121,14 +122,15 @@ def solve(matrix, tol, time_take=False):
     while M[k,l]**2 >= tol:
         M, eig_vec = Jacobi_rotate(M, eig_vec, k, l)  # Do the transformations
         k, l = offdiag(M)  # Calculate new indices for the new maximum element
-        iterations += 1   # Add iterations
+        iterations += 1    # Add iterations
 
     if time_take is True:   # Stop timer, and calculate the time of operations
         stop_time = time.perf_counter()
         final_time = stop_time - start_time
         print("Time used on the algorithm: %.10s s" %final_time)
 
-    eig_val = np.zeros(n)  # Eigenvalues
+    eig_val = np.zeros(n)
+    # Eigenvalues which are the remaining diagonal elements in the matrix
     for i in range(n):
         eig_val[i] = M[i,i]
 
@@ -159,7 +161,7 @@ def ex_c(show):
     tol = 1e-8
     list_n = [5, 10, 20, 50, 70, 100, 150, 200, 300, 400, 500, 800]
     n_iterations = []   # List for number of transformations
-    time_taken = []     # List for time taken for the algorithm
+    time_taken = []     # List for time taken of the algorithm
     
     for n in list_n:
         M, rho = Matrix(n, 1, 1, pot="pot1")
@@ -207,12 +209,12 @@ def ex_d(show):
     M_val, M_vec, iterations, time = solve(M, tol=1e-8, time_take=True)
     
     permute = M_val.argsort()
-    M_val = M_val[permute]
-    M_vec = M_vec[:, permute]
+    M_val = M_val[permute]     # Eigenvalues
+    M_vec = M_vec[:, permute]  # Eigenvectors
     
     plt.figure(figsize=[5, 5])
 
-    for n in [0, 1, 2]:
+    for n in [0, 1, 2]:  # The three first eigenvalues
         plt.plot(rho, M_vec[:, n]**2, label="$\\lambda_%i=$%.4f" %(n, M_val[n]))
         plt.axis([0, 8, 0.0, 0.025])
 
@@ -234,8 +236,8 @@ def ex_e(show):
         M_val, M_vec = solve(M, tol=1e-8, time_take=False)
     
         permute = M_val.argsort()
-        M_val = M_val[permute]
-        M_vec = M_vec[:, permute]
+        M_val = M_val[permute]     # Eigenvalues
+        M_vec = M_vec[:, permute]  # Eigenvectors
 
         plt.plot(rho, M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
         print(M_val[0])
