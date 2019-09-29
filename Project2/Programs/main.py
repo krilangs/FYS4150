@@ -243,11 +243,10 @@ def ex_e(show):
         print(M_val[0])
 
     figsetup(title="Dimensionless wavefunction for\n first eigenstate and varying $\\omega_r$",
-             xlabel="$\\rho$", ylabel="$|\\psi(\\rho)|^2$", fname="Frequency",
+             xlabel="$\\rho$", ylabel="$|\\psi(\\rho)|^2$", fname="Potential_strength",
              show=plot)
     
 if __name__ == "__main__":
     #ex_c(show=True)
     #ex_d(show=True)
     ex_e(show=True)
-
