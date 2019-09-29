@@ -219,7 +219,7 @@ def ex_d(show):
         plt.axis([0, 8, 0.0, 0.025])
 
     figsetup(title="Dimensionless wavefunction for\n first 3 eigenstates",
-             xlabel="$\\rho$", ylabel="$u(\\rho)$", fname="Eigenvalues", show=plot)
+             xlabel="$\\rho$", ylabel="$|u(\\rho)|^2$", fname="Eigenvalues", show=plot)
     
     print(M_val[:4])
 
@@ -239,14 +239,15 @@ def ex_e(show):
         M_val = M_val[permute]     # Eigenvalues
         M_vec = M_vec[:, permute]  # Eigenvectors
 
-        plt.plot(rho, M_vec[:, 0], label="$\\omega_r=$%.2f" %w)
+        plt.plot(rho, M_vec[:, 0]**2, label="$\\omega_r=$%.2f" %w)
         print(M_val[0])
 
-    figsetup(title="Dimensionless wavefunction for\n first eigenstates",
-             xlabel="$\\rho$", ylabel="$\\psi(\\rho)$", fname="Frequency",
+    figsetup(title="Dimensionless wavefunction for\n first eigenstate and varying $\\omega_r$",
+             xlabel="$\\rho$", ylabel="$|\\psi(\\rho)|^2$", fname="Frequency",
              show=plot)
     
 if __name__ == "__main__":
     #ex_c(show=True)
     #ex_d(show=True)
     ex_e(show=True)
+
