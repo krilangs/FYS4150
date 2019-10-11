@@ -4,17 +4,17 @@
 #include <fstream>
 #include <iomanip>
 #include <cmath>
-//#include <stdlib.h>
-//#include <stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 #define   EPS      3.0e-14
 #define   MAXIT    10
 #define   ZERO     1.0E-10
 #define   PI       3.14159265359
 using namespace std;
 
-void gauleg(double x1, double x2, double x[], double w[], int N);
-void gauss_laguerre(double *x, double *w, int N, double alpha);
-double gammln(double xx);
+void gauleg(double, double, double *, double *, int);
+void gauss_laguerre(double *, double *, int, double);
+double gammln(double);
 
 /*
 ** The function

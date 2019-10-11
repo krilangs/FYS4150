@@ -5,8 +5,8 @@
 #include <iostream>
 #include "weights.cpp"
 
-void gauleg(double x1, double x2, double x[], double w[], int N);
-void gauss_laguerre(double *x, double *w, int N, double alpha);
-double gammln(double xx);
+void gauleg(double, double, double *, double *, int);
+void gauss_laguerre(double *, double *, int, double);
+double gammln(double);
 
 #endif // WEIGHTS_H
