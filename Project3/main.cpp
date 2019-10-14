@@ -9,6 +9,7 @@
 #include <utility>      // pair
 #include <chrono>       // time
 #include <random>
+#include <QtCore/QThread>
 #define   EPS      3.0e-14
 #define   MAXIT    10
 #define   ZERO     1.0E-10
@@ -29,13 +30,13 @@ double int_function(double x1, double x2, double y1, double y2, double z1, doubl
 {
     double r1 = sqrt(x1*x1 + y1*y1 + z1*z1);
     double r2 = sqrt(x2*x2 + y2*y2 + z2*z2);
-    double r1_2 = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+    double r12 = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
 
-    if (r1_2 <= ZERO){
+    if (r12 <= ZERO){
         return 0;
     }
     else{
-        double value = exp(-2*alpha*(r1 + r2))/r1_2;
+        double value = exp(-2*alpha*(r1 + r2))/r12;
         return value;
     }
 }
@@ -95,10 +96,6 @@ double gaulag_quad(double alpha, int N)
     gauleg(0, PI, theta, w_theta, N);
     gauleg(0, 2*PI, phi, w_phi, N);
     for (int i=1; i <= N; i++){
-        //cout << i <<": w_u= " << w_r[i] << ", u= " << r[i] << endl;
-        //cout << i <<": w_theta= " << w_theta[i-1] << ", theta= " << theta[i-1] << endl;
-        //cout << i <<": w_phi= " << w_phi[i-1] << ", phi= " << phi[i-1] << endl;
-        //cout << i << " INTEGRAND! " << int_func_spherical(r[i], r[i], theta[i], theta[i], phi[i], phi[i]) << endl;
     for (int j=1; j <= N; j++){
     for (int k=0; k < N; k++){
     for (int l=0; l < N; l++){
@@ -186,7 +183,8 @@ pair<double, double> mc_improved(double alpha, int N)
         theta2 = uniform_theta(generator);
         phi1 = uniform_phi(generator);
         phi2 = uniform_phi(generator);
-        func_val = int_func_spherical(r1, r2, theta1, theta2, phi1, phi2);
+        func_val = int_func_spherical(r1, r2, theta1, theta2, phi1, phi2)
+                    *r1*r1*r2*r2*sin(theta1)*sin(theta2);
         f += func_val;
         f2 += func_val*func_val;
     }
@@ -252,7 +250,7 @@ int main()
         auto start = high_resolution_clock::now();
         double int_gauss_lag = gaulag_quad(alpha, N);
         auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(stop - start);
+        auto duration = duration_cast<seconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
         cout << "Gaussian-Laguerre quad = " << setw(20) << setprecision(15)
              << int_gauss_lag << endl;
@@ -260,7 +258,7 @@ int main()
              << analytic << endl;
         cout << "Error = " << setw(20) << setprecision(15)
              << abs(analytic - int_gauss_lag) << endl;
-        cout << duration.count() << "ms" << endl;
+        cout << duration.count() << "s" << endl;
     }
     // Call Monte Carlo integration calculation
     else if (choice.compare("C") == 0){
@@ -272,7 +270,7 @@ int main()
         auto start = high_resolution_clock::now();
         pair<double, double> MC_int = monte_carlo(a, b, alpha, N);
         auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(stop - start);
+        auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
         cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
              << MC_int.first << endl;
@@ -282,7 +280,7 @@ int main()
              << analytic << endl;
         cout << "Error = " << setw(20) << setprecision(15)
              << abs(analytic - MC_int.first) << endl;
-        cout << duration.count() << "ms" << endl;
+        cout << duration.count() << "microseconds" << endl;
     }
     // Call imporved Monte Carlo integration calculation
     else if (choice.compare("D") == 0){
@@ -294,7 +292,7 @@ int main()
         auto start = high_resolution_clock::now();
         pair<double, double> MC_int = mc_improved(alpha, N);
         auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(stop - start);
+        auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
         cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
              << MC_int.first << endl;
@@ -304,7 +302,7 @@ int main()
              << analytic << endl;
         cout << "Error = " << setw(20) << setprecision(15)
              << abs(analytic - MC_int.first) << endl;
-        cout << duration.count() << "ms" << endl;
+        cout << duration.count() << "microseconds" << endl;
     }
     // Call to see calling info
     else if ((choice.compare("info") == 0) || (choice.compare("help") == 0)) {
