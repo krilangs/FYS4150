@@ -1,4 +1,4 @@
-#include "weights.h"
+//#include "weights.h"
 #include <cmath>
 #include <iostream>
 #include <fstream>

@@ -9,7 +9,8 @@
 #include <utility>      // pair
 #include <chrono>       // time
 #include <random>
-#include <QtCore/QThread>
+#include <omp.h>
+
 #define   EPS      3.0e-14
 #define   MAXIT    10
 #define   ZERO     1.0E-10
@@ -24,6 +25,7 @@ double int_func_spherical(double, double, double, double, double, double);
 double gaulag_quad(double, int);
 pair<double, double> monte_carlo(double, double, double, int);
 pair<double, double> mc_improved(double, int);
+pair<double, double> mc_parallization(double, int, int);
 
 // This function defines the function to integrate
 double int_function(double x1, double x2, double y1, double y2, double z1, double z2, double alpha)
@@ -197,9 +199,53 @@ pair<double, double> mc_improved(double alpha, int N)
     return results;
 }
 
+//Imporved Monte Carlo integration with parallization
+pair<double, double> mc_parallization(double alpha, int N, int n_threads)
+{
+    double I;
+    double Var;
+    double func_val;
+    double f = 0;
+    double f2 = 0;
+
+    mt19937 generator(777);
+    exponential_distribution<double> exponential(1);
+    uniform_real_distribution<double> uniform_theta(0, PI);
+    uniform_real_distribution<double> uniform_phi(0, 2*PI);
+
+    double r1;
+    double r2;
+    double theta1;
+    double theta2;
+    double phi1;
+    double phi2;
+
+    #pragma omp parallel for reduction (+:f, f2) num_threads(n_threads) private(r1, r2, theta1, theta2, phi1, phi2, func_val)
+    for (int i=0; i < N; i++){
+        r1 = exponential(generator);
+        r2 = exponential(generator);
+        theta1 = uniform_theta(generator);
+        theta2 = uniform_theta(generator);
+        phi1 = uniform_phi(generator);
+        phi2 = uniform_phi(generator);
+        func_val = int_func_spherical(r1, r2, theta1, theta2, phi1, phi2)
+                    *r1*r1*r2*r2*sin(theta1)*sin(theta2);
+        f += func_val;
+        f2 += func_val*func_val;
+    }
+    double common_factor = 4*pow(PI, 4)/pow(2*alpha, 5);
+    I = f*common_factor/N;
+    f2 *= pow(common_factor, 2)/N;
+    Var = (f2 - I*I)/N;
+
+    pair<double, double> results = make_pair(I, Var);
+    return results;
+}
+
 int main()
 {
     int N;
+    int n_threads;
     double a, b;
     double alpha = 2;
     double analytic = 5 * PI * PI / (16*16);
@@ -291,6 +337,30 @@ int main()
 
         auto start = high_resolution_clock::now();
         pair<double, double> MC_int = mc_improved(alpha, N);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        cout << setiosflags(ios::showpoint | ios::uppercase);
+        cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
+             << MC_int.first << endl;
+        cout << "Variance = " << setw(20) << setprecision(6)
+             << MC_int.second << endl;
+        cout << "Analytical answer = " << setw(20) << setprecision(15)
+             << analytic << endl;
+        cout << "Error = " << setw(20) << setprecision(15)
+             << abs(analytic - MC_int.first) << endl;
+        cout << duration.count() << "microseconds" << endl;
+    }
+    // Call imporved Monte Carlo integration with parallization
+    else if (choice.compare("E") == 0){
+        cout << "Read in the number of integration points" << endl;
+        cin >> N;
+        cout << "Read in the number of threads" << endl;
+        cin >> n_threads;
+        //cout << "Read in integration limits" << endl;
+        //cin >> a >> b;
+
+        auto start = high_resolution_clock::now();
+        pair<double, double> MC_int = mc_parallization(alpha, N, n_threads);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
