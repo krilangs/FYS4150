@@ -1,0 +1,62 @@
+\documentclass[12pt,a4paper,english]{article}
+\usepackage{times}
+\usepackage[utf8]{inputenc}
+\usepackage{babel,textcomp}
+\usepackage{mathpazo}
+\usepackage{mathtools}
+\usepackage{amsmath,amssymb}
+\usepackage{ dsfont }
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfig} 
+\usepackage[colorlinks]{hyperref}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{backgroundcolor=\color{lbcolor},tabsize=4,rulecolor=,language=python,basicstyle=\scriptsize,upquote=true,aboveskip={1.5\baselineskip},columns=fixed,numbers=left,showstringspaces=false,extendedchars=true,breaklines=true,
+prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,showtabs=false,showspaces=false,showstringspaces=false,identifierstyle=\ttfamily,keywordstyle=\color[rgb]{0,0,1},commentstyle=\color[rgb]{0.133,0.545,0.133},stringstyle=\color[rgb]{0.627,0.126,0.941},literate={å}{{\r a}}1 {Å}{{\r A}}1 {ø}{{\o}}1}
+
+% Use for references
+%\usepackage[sort&compress,square,comma,numbers]{natbib}
+%\DeclareRobustCommand{\citeext}[1]{\citeauthor{#1}~\cite{#1}}
+
+% Fix spacing in tables and figures
+%\usepackage[belowskip=-8pt,aboveskip=5pt]{caption}
+%\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+% Change the page layout
+%\usepackage[showframe]{geometry}
+%\usepackage{layout}
+%\setlength{\hoffset}{-0.7in}  % Length left
+%\setlength{\voffset}{-1.1in}  % Length on top
+%\setlength{\textwidth}{512pt}  % Width /597pt
+%\setlength{\textheight}{720pt}  % Height /845pt
+%\setlength{\footskip}{25pt}
+
+\newcommand{\VEV}[1]{\langle#1\rangle}
+\title{FYS4150 - Project 3}
+\date{}
+\author{ Kristoffer Langstad\\ \textit{krilangs@uio.no}}
+
+\begin{document}%\layout
+\maketitle
+\begin{abstract}
+	
+\end{abstract}
+
+\section{Introduction}
+The efficiency of numerical integration methods have a great importance to us when solving physical problems. Today, there are many numerical integration methods that can be used. So to find the optimal method to solve our problem is important. That is why we will study different numerical methods to see the importance of optimization of the methods versus brute force integrations.
+
+In this project we solve a six-dimensional integral, which is used to determine the ground state correlation energy between two electrons in a helium atom. For this project we will first look at different versions of Gaussian quadrature before we move over to different Monte Carlo integration methods. The Gaussian quadrature integration methods are mostly used in low-dimensional cases, while Monte Carlo are mostly used in multidimensional cases.
+
+In the methods section we look at the theory of the physical problem and the different numerical algorithms we are using. For the integral we are solving in closed form, the quantum mechanical expectation value of the correlation energy between two electrons without a normalization factor, we compare our numerical results with a known solution. We will then compare the results we get between the different numerical integration methods to see the difference between brute force methods and more thought out methods. The methods we are using are brute force Gaussian-Legendre Quadrature, Gaussian-Laguerre quadrature in spherical coordinates, brute force Monte Carlo, improved Monte Carlo by use of importance sampling and parallelized Monte Carlo. In the results we present and compare our results of the numerical integration methods and discuss the methods used. Then in the conclusion section we come up with a conclusion to the project, and which method is the best.
+
+\section{Method}
+\section{Results}
+\section{Conclusion}
+\appendix
+\section{Appendix}
+\label{sect:appendix}
+\end{document}
