@@ -28,10 +28,10 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 
 % Change the page layout
 %\usepackage[showframe]{geometry}
-%\usepackage{layout}
-%\setlength{\hoffset}{-0.7in}  % Length left
+\usepackage{layout}
+\setlength{\hoffset}{-0.5in}  % Length left
 %\setlength{\voffset}{-1.1in}  % Length on top
-%\setlength{\textwidth}{512pt}  % Width /597pt
+\setlength{\textwidth}{470pt}  % Width /597pt
 %\setlength{\textheight}{720pt}  % Height /845pt
 %\setlength{\footskip}{25pt}
 
@@ -81,6 +81,128 @@ The wave function is not normalized, so there is a normalization factor that we 
 \subsection{Improved Monte Carlo integration}
 \subsection{Monte Carlo parallelized}
 \section{Results}
+
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Mesh points (N) & Numerical & Analytical & Error & CPU time [ms]\\
+		\hline \rule{0pt}{13pt}
+		5 & 0.308692 & 0.192766 & 0.115926 & 1 \\
+		\hline \rule{0pt}{13pt}
+		10 & 0.154052 & 0.192766 & 0.0387138 & 92 \\
+		\hline \rule{0pt}{13pt}
+		15 & 0.187130 & 0.192766 & 0.00563558 & 996 \\
+		\hline \rule{0pt}{13pt}
+		20 & 0.180469 & 0.192766 & 0.0122967 & 5460 \\
+		\hline \rule{0pt}{13pt}
+		25 & 0.185593 & 0.192766 & 0.00717284 & 17645 \\
+		\hline \rule{0pt}{13pt}
+		30 & 0.185011 & 0.192766 & 0.00775459 & 51586 \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for Gaussian-Legendre quadrature results with integration limit $\lambda=1.5$.}
+	\label{tab:Gauss_Leg}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Mesh points (N) & Numerical & Analytical & Error & CPU time [ms]\\
+		\hline \rule{0pt}{13pt}
+		5 & 0.174353 & 0.192766 & 0.0184125 & 6 \\
+		\hline \rule{0pt}{13pt}
+		10 & 0.186544 & 0.192766 & 0.00622209 & 309 \\
+		\hline \rule{0pt}{13pt}
+		15 & 0.189757 & 0.192766 & 0.00300848 & 3596 \\
+		\hline \rule{0pt}{13pt}
+		20 & 0.191066 & 0.192766 & 0.00169936 & 19990 \\
+		\hline \rule{0pt}{13pt}
+		25 & 0.191724 & 0.192766 & 0.00104137 & 75788 \\
+		\hline \rule{0pt}{13pt}
+		30 & 0.192099 & 0.192766 & 0.000666809 & 225945 \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for Gaussian-Laguerre quadrature results for spherical coordinates.}
+	\label{tab:Gauss_Lag}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Mesh points (N) & Numerical & Analytical & Error & Variance & CPU time [$\mu$s]\\
+		\hline \rule{0pt}{13pt}
+		$10$ & 0.0520584 & 0.192766 & 0.140706 & $9.60859\cdot10^{-4}$ & 11 \\
+		\hline \rule{0pt}{13pt}
+		$10^2$ & 0.0858179 & 0.192766 & 0.106948 & $2.56645\cdot10^{-3}$ & 15 \\
+		\hline \rule{0pt}{13pt}
+		$10^3$ & 0.108695 & 0.192766 & 0.0840702 & $4.91805\cdot10^{-4}$ & 34 \\
+		\hline \rule{0pt}{13pt}
+		$10^4$ & 0.160121 & 0.192766 & 0.0326449 & $3.90958\cdot10^{-4}$ & 5674 \\
+		\hline \rule{0pt}{13pt}
+		$10^5$ & 0.196523 & 0.192766 & 0.00375685 & $1.15132\cdot10^{-4}$ & 46947 \\
+		\hline \rule{0pt}{13pt}
+		$10^6$ & 0.193233 & 0.192766 & 0.000467207 & $1.99508\cdot10^{-5}$ & 465973 \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for brute force Monte Carlo integration results with integration limit $\lambda=1.5$.}
+	\label{tab:MC_brute}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Mesh points (N) & Numerical & Analytical & Error & Variance & CPU time [$\mu$s]\\
+		\hline \rule{0pt}{13pt}
+		$10$ & 0.365879 & 0.192766 & 0.173114 & $4.59202\cdot10^{-2}$ & 0 \\
+		\hline \rule{0pt}{13pt}
+		$10^2$ & 0.155251 & 0.192766 & 0.0375148 & $1.56870\cdot10^{-3}$ & 5 \\
+		\hline \rule{0pt}{13pt}
+		$10^3$ & 0.173329 & 0.192766 & 0.0194369 & $2.87435\cdot10^{-4}$ & 1029 \\
+		\hline \rule{0pt}{13pt}
+		$10^4$ & 0.188290 & 0.192766 & 0.00447596 & $9.22912cdot10^{-5}$ & 6793 \\
+		\hline \rule{0pt}{13pt}
+		$10^5$ & 0.187134 & 0.192766 & 0.00563153 & $8.96394\cdot10^{-6}$ & 76973 \\
+		\hline \rule{0pt}{13pt}
+		$10^6$ & 0.191672 & 0.192766 & 0.00109395 & $9.26449\cdot10^{-7}$ & 765983 \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for improved Monte Carlo integration results for spherical coordinates.}
+	\label{tab:MC_improved}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Mesh points (N) & Numerical & Analytical & Error & Variance & CPU time [$\mu$s]\\
+		\hline \rule{0pt}{13pt}
+		$10$ & 0.365879 & 0.192766 & 0.173114 & $4.59202\cdot10^{-2}$ & 0 \\
+		\hline \rule{0pt}{13pt}
+		$10^2$ & 0.155251 & 0.192766 & 0.0375148 & $1.56870\cdot10^{-3}$ & 5 \\
+		\hline \rule{0pt}{13pt}
+		$10^3$ & 0.173329 & 0.192766 & 0.0194369 & $2.87435\cdot10^{-4}$ & 1029 \\
+		\hline \rule{0pt}{13pt}
+		$10^4$ & 0.188290 & 0.192766 & 0.00447596 & $9.22912cdot10^{-5}$ & 6793 \\
+		\hline \rule{0pt}{13pt}
+		$10^5$ & 0.187134 & 0.192766 & 0.00563153 & $8.96394\cdot10^{-6}$ & 76973 \\
+		\hline \rule{0pt}{13pt}
+		$10^6$ & 0.191672 & 0.192766 & 0.00109395 & $9.26449\cdot10^{-7}$ & 765983 \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for parallelized Monte Carlo integration results for spherical coordinates and with N number of threads.}
+	\label{tab:MC_parallel}
+\end{table}
+
 \section{Conclusion}
 \appendix
 \section{Appendix}

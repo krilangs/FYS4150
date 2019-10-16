@@ -276,13 +276,13 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
-        cout << "Gaussian-Legendre quad = " << setw(20) << setprecision(15)
+        cout << "Gaussian-Legendre quad = " << setw(10) << setprecision(6)
              << int_gauss_leg << endl;
-        cout << "Analytical answer = " << setw(20) << setprecision(15)
+        cout << "Analytical answer = " << setw(10) << setprecision(6)
              << analytic << endl;
-        cout << "Error = " << setw(20) << setprecision(15)
+        cout << "Error = " << setw(10) << setprecision(6)
              << abs(analytic - int_gauss_leg) << endl;
-        cout << "CPU time = " << duration.count() << "ms" << endl;
+        cout << "CPU time = " << duration.count() << " ms" << endl;
     }
     // Call Gauss-Laguerre Quadrature calculation
     else if (choice.compare("B") == 0){
@@ -294,13 +294,13 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
-        cout << "Gaussian-Laguerre quad = " << setw(20) << setprecision(15)
+        cout << "Gaussian-Laguerre quad = " << setw(10) << setprecision(6)
              << int_gauss_lag << endl;
-        cout << "Analytical answer = " << setw(20) << setprecision(15)
+        cout << "Analytical answer = " << setw(10) << setprecision(6)
              << analytic << endl;
-        cout << "Error = " << setw(20) << setprecision(15)
+        cout << "Error = " << setw(10) << setprecision(6)
              << abs(analytic - int_gauss_lag) << endl;
-        cout << duration.count() << "ms" << endl;
+        cout << "CPU time = " << duration.count() << " ms" << endl;
     }
     // Call Monte Carlo integration calculation
     else if (choice.compare("C") == 0){
@@ -314,15 +314,15 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
-        cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
+        cout << "Monte Carlo integration = " << setw(10) << setprecision(6)
              << MC_int.first << endl;
-        cout << "Variance = " << setw(20) << setprecision(6)
+        cout << "Variance = " << setw(10) << setprecision(6)
              << MC_int.second << endl;
-        cout << "Analytical answer = " << setw(20) << setprecision(15)
+        cout << "Analytical answer = " << setw(10) << setprecision(6)
              << analytic << endl;
-        cout << "Error = " << setw(20) << setprecision(15)
+        cout << "Error = " << setw(10) << setprecision(6)
              << abs(analytic - MC_int.first) << endl;
-        cout << duration.count() << "microseconds" << endl;
+        cout << "CPU time = " << duration.count() << " microseconds" << endl;
     }
     // Call imporved Monte Carlo integration calculation
     else if (choice.compare("D") == 0){
@@ -334,15 +334,15 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
-        cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
+        cout << "Monte Carlo integration = " << setw(10) << setprecision(6)
              << MC_int.first << endl;
-        cout << "Variance = " << setw(20) << setprecision(6)
+        cout << "Variance = " << setw(10) << setprecision(6)
              << MC_int.second << endl;
-        cout << "Analytical answer = " << setw(20) << setprecision(15)
+        cout << "Analytical answer = " << setw(10) << setprecision(6)
              << analytic << endl;
-        cout << "Error = " << setw(20) << setprecision(15)
+        cout << "Error = " << setw(10) << setprecision(6)
              << abs(analytic - MC_int.first) << endl;
-        cout << duration.count() << "microseconds" << endl;
+        cout << "CPU time = " << duration.count() << " microseconds" << endl;
     }
     // Call imporved Monte Carlo integration with parallization
     else if (choice.compare("E") == 0){
@@ -356,15 +356,15 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
-        cout << "Monte Carlo integration = " << setw(20) << setprecision(15)
+        cout << "Monte Carlo integration = " << setw(10) << setprecision(6)
              << MC_int.first << endl;
-        cout << "Variance = " << setw(20) << setprecision(6)
+        cout << "Variance = " << setw(10) << setprecision(6)
              << MC_int.second << endl;
-        cout << "Analytical answer = " << setw(20) << setprecision(15)
+        cout << "Analytical answer = " << setw(10) << setprecision(6)
              << analytic << endl;
-        cout << "Error = " << setw(20) << setprecision(15)
+        cout << "Error = " << setw(10) << setprecision(6)
              << abs(analytic - MC_int.first) << endl;
-        cout << duration.count() << "microseconds" << endl;
+        cout << "CPU time = " << duration.count() << " microseconds" << endl;
     }
     // Call to see calling info
     else if ((choice.compare("info") == 0) || (choice.compare("help") == 0)) {
