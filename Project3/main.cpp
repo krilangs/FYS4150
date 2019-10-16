@@ -108,10 +108,8 @@ double gaulag_quad(double alpha, int N)
              * sin(theta[k])*sin(theta[l]);
     }}}}}}
 
-    delete [] r;
     delete [] theta;
     delete [] phi;
-    delete [] w_r;
     delete [] w_theta;
     delete [] w_phi;
 
@@ -284,19 +282,17 @@ int main()
              << analytic << endl;
         cout << "Error = " << setw(20) << setprecision(15)
              << abs(analytic - int_gauss_leg) << endl;
-        cout << duration.count() << "ms" << endl;
+        cout << "CPU time = " << duration.count() << "ms" << endl;
     }
     // Call Gauss-Laguerre Quadrature calculation
     else if (choice.compare("B") == 0){
         cout << "Read in the number of integration points" << endl;
         cin >> N;
-        //cout << "Read in integration limits" << endl;
-        //cin >> a >> b;
 
         auto start = high_resolution_clock::now();
         double int_gauss_lag = gaulag_quad(alpha, N);
         auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<seconds>(stop - start);
+        auto duration = duration_cast<milliseconds>(stop - start);
         cout << setiosflags(ios::showpoint | ios::uppercase);
         cout << "Gaussian-Laguerre quad = " << setw(20) << setprecision(15)
              << int_gauss_lag << endl;
@@ -304,7 +300,7 @@ int main()
              << analytic << endl;
         cout << "Error = " << setw(20) << setprecision(15)
              << abs(analytic - int_gauss_lag) << endl;
-        cout << duration.count() << "s" << endl;
+        cout << duration.count() << "ms" << endl;
     }
     // Call Monte Carlo integration calculation
     else if (choice.compare("C") == 0){
@@ -332,8 +328,6 @@ int main()
     else if (choice.compare("D") == 0){
         cout << "Read in the number of integration points" << endl;
         cin >> N;
-        //cout << "Read in integration limits" << endl;
-        //cin >> a >> b;
 
         auto start = high_resolution_clock::now();
         pair<double, double> MC_int = mc_improved(alpha, N);
@@ -356,8 +350,6 @@ int main()
         cin >> N;
         cout << "Read in the number of threads" << endl;
         cin >> n_threads;
-        //cout << "Read in integration limits" << endl;
-        //cin >> a >> b;
 
         auto start = high_resolution_clock::now();
         pair<double, double> MC_int = mc_parallization(alpha, N, n_threads);
