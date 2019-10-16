@@ -43,7 +43,7 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 \begin{document}%\layout
 \maketitle
 \begin{abstract}
-	
+In this project we want to solve an integral of the quantum mechanical expectation value of the correlation energy between two electrons which repel each other via the classical Coulomb interaction. For this integral we neglect the normalization factor. This integral can be solved in closed form and has an answer ($5\pi^2/16^2$) that we will try to get from our numerical methods. We will use different numerical integration methods to see the difference in both the methods, and the difference in brute force calculation versus more thought out methods. Then we will compare the convergence to the answer of the methods as of how many mesh points are needed to get at the level of third leading digit, and the CPU time used for the different methods to reach this answer. First we use a brute force Gaussian-Legendre quadrature integration to solve the integral. Then we improve the method by using Gaussian-Laguerre and change to spherical coordinates. The last three methods are variants of Monte Carlo integration; where we first use brute force with a uniform distribution, then improve by using importance sampling with an exponential distribution and spherical coordinates and lastly we will use parallelization of Monte Carlo. RESULTS::::
 \end{abstract}
 
 \section{Introduction}
@@ -54,6 +54,32 @@ In this project we solve a six-dimensional integral, which is used to determine 
 In the methods section we look at the theory of the physical problem and the different numerical algorithms we are using. For the integral we are solving in closed form, the quantum mechanical expectation value of the correlation energy between two electrons without a normalization factor, we compare our numerical results with a known solution. We will then compare the results we get between the different numerical integration methods to see the difference between brute force methods and more thought out methods. The methods we are using are brute force Gaussian-Legendre Quadrature, Gaussian-Laguerre quadrature in spherical coordinates, brute force Monte Carlo, improved Monte Carlo by use of importance sampling and parallelized Monte Carlo. In the results we present and compare our results of the numerical integration methods and discuss the methods used. Then in the conclusion section we come up with a conclusion to the project, and which method is the best.
 
 \section{Method}
+\subsection{Integration problem}
+We first look at a six-dimensional integral that determines the ground state correlation energy between two electrons in a helium atom. Then we assume that the wave function for each of the electrons can be modeled like a single-particle wave function of an electron in the hydrogen atom. The single particle wave function for an electron $i$ in the 1st state for a dimensionless variable $\textbf{r}_i=x_i\textbf{e}_x+y_i\textbf{e}_y+z_i\textbf{e}_z$ and $r_i=\sqrt{x_i^2+y_i^2+z_i^2}$, can be expressed as 
+\begin{equation}
+\label{eq:wave_func}
+\psi_{1s}(\textbf{r}_i)=e^{-\alpha r_i}.
+\end{equation}
+Then we fix the constant $\alpha=2$, which represents the charge of the He-atom (Z=2). 
+
+The wave function for two electrons can then be written as the product of two single-particle ($1s$) wave functions as
+\begin{equation}
+\label{eq:wave_2}
+\Psi(\textbf{r}_1, \textbf{r}_2)=e^{-\alpha(r_1+r_2)}.
+\end{equation}
+This two interacting electrons problem in the helium atom has no analytical solution to the Schrödinger equation. 
+
+So the integral we need to solve is the quantum mechanical expectation value of the correlation energy between two electrons which repel each other via the classical Coulomb interaction:
+\begin{equation}
+\langle\frac{1}{|\textbf{r}_1-\textbf{r}_2|}\rangle=\int_{-\infty}^{\infty}e^{-2\alpha(r_1+r_2)}\frac{1}{|\textbf{r}_1-\textbf{r}_2|}d\textbf{r}_1d\textbf{r}_2
+\end{equation}
+The wave function is not normalized, so there is a normalization factor that we neglect in this project. The above integral can be solved in closed form with answer $\frac{5\pi^2}{16^2}$, which is used to compare with later.
+
+\subsection{Gaussian-Legendre quadrature}
+\subsection{Gaussian-Laguerre quadrature}
+\subsection{Monte Carlo integration}
+\subsection{Improved Monte Carlo integration}
+\subsection{Monte Carlo parallelized}
 \section{Results}
 \section{Conclusion}
 \appendix
