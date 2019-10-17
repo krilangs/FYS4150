@@ -88,22 +88,22 @@ The wave function is not normalized, so there is a normalization factor that we 
 	%\hspace{-1cm}
 	\begin{tabular}{ |c|c|c|c|c| }
 		\hline \rule{0pt}{13pt}
-		Mesh points (N) & Numerical & Analytical & Error & CPU time [ms]\\
+		Mesh points (N) & Numerical & Analytical & Difference & CPU time [ms]\\
 		\hline \rule{0pt}{13pt}
 		5 & 0.308692 & 0.192766 & 0.115926 & 1 \\
 		\hline \rule{0pt}{13pt}
-		10 & 0.154052 & 0.192766 & 0.0387138 & 92 \\
+		10 & 0.154052 & 0.192766 & 0.0387138 & 97 \\
 		\hline \rule{0pt}{13pt}
-		15 & 0.187130 & 0.192766 & 0.00563558 & 996 \\
+		15 & 0.187130 & 0.192766 & 0.00563558 & 1102 \\
 		\hline \rule{0pt}{13pt}
-		20 & 0.180469 & 0.192766 & 0.0122967 & 5460 \\
+		20 & 0.180469 & 0.192766 & 0.0122967 & 5729 \\
 		\hline \rule{0pt}{13pt}
-		25 & 0.185593 & 0.192766 & 0.00717284 & 17645 \\
+		25 & 0.185593 & 0.192766 & 0.00717284 & 22936 \\
 		\hline \rule{0pt}{13pt}
-		30 & 0.185011 & 0.192766 & 0.00775459 & 51586 \\
+		30 & 0.185011 & 0.192766 & 0.00775459 & 71586 \\
 		\hline 
 	\end{tabular}	
-	\caption{Table for Gaussian-Legendre quadrature results with integration limit $\lambda=1.5$.}
+	\caption{Table for brute force Gaussian-Legendre quadrature integration results with integration limit $\lambda=1.5$. The numerical results are what we get for the given number of mesh points. The differences are means of a number of sets of absolute differences between the numerical and analytical results. The absolute difference decreases and the CPU time, in milliseconds, increases as the mesh points increases. We see that the difference does not decrease all the time as it converges towards zero, but seem to go up and down as the mesh points increases.}
 	\label{tab:Gauss_Leg}
 \end{table}
 
@@ -112,22 +112,22 @@ The wave function is not normalized, so there is a normalization factor that we 
 	%\hspace{-1cm}
 	\begin{tabular}{ |c|c|c|c|c| }
 		\hline \rule{0pt}{13pt}
-		Mesh points (N) & Numerical & Analytical & Error & CPU time [ms]\\
+		Mesh points (N) & Numerical & Analytical & Difference & CPU time [ms]\\
 		\hline \rule{0pt}{13pt}
 		5 & 0.174353 & 0.192766 & 0.0184125 & 6 \\
 		\hline \rule{0pt}{13pt}
 		10 & 0.186544 & 0.192766 & 0.00622209 & 309 \\
 		\hline \rule{0pt}{13pt}
-		15 & 0.189757 & 0.192766 & 0.00300848 & 3596 \\
+		15 & 0.189757 & 0.192766 & 0.00300848 & 4139 \\
 		\hline \rule{0pt}{13pt}
-		20 & 0.191066 & 0.192766 & 0.00169936 & 19990 \\
+		20 & 0.191066 & 0.192766 & 0.00169936 & 23450 \\
 		\hline \rule{0pt}{13pt}
-		25 & 0.191724 & 0.192766 & 0.00104137 & 75788 \\
+		25 & 0.191724 & 0.192766 & 0.00104137 & 96382 \\
 		\hline \rule{0pt}{13pt}
-		30 & 0.192099 & 0.192766 & 0.000666809 & 225945 \\
+		30 & 0.192099 & 0.192766 & 0.000666809 & 354909 \\
 		\hline 
-	\end{tabular}	
-	\caption{Table for Gaussian-Laguerre quadrature results for spherical coordinates.}
+	\end{tabular}
+	\caption{Table for Gaussian-Laguerre quadrature results for spherical coordinates. For this case we have a more stable and faster decrease in the absolute difference than in Table \ref{tab:Gauss_Leg}. So for the comparison between the numerical and analytical results goes, this improved Gaussian quadrature integration method with Laguerre polynomial and spherical coordinates is better than the brute force with Legendre polynomial. The CPU time, in milliseconds, on the other hand, is a lot higher in this case than for the brute force.}
 	\label{tab:Gauss_Lag}
 \end{table}
 
@@ -136,22 +136,22 @@ The wave function is not normalized, so there is a normalization factor that we 
 	%\hspace{-1cm}
 	\begin{tabular}{ |c|c|c|c|c|c| }
 		\hline \rule{0pt}{13pt}
-		Mesh points (N) & Numerical & Analytical & Error & Variance & CPU time [$\mu$s]\\
+		Mesh points (N) & Numerical & Analytical & Difference & Variance & CPU time [$\mu$s]\\
 		\hline \rule{0pt}{13pt}
-		$10$ & 0.0520584 & 0.192766 & 0.140706 & $9.60859\cdot10^{-4}$ & 11 \\
+		$10$ & 0.0520584 & 0.192766 & 0.140706 & $9.60859\cdot10^{-4}$ & 3 \\
 		\hline \rule{0pt}{13pt}
-		$10^2$ & 0.0858179 & 0.192766 & 0.106948 & $2.56645\cdot10^{-3}$ & 15 \\
+		$10^2$ & 0.0858179 & 0.192766 & 0.106948 & $2.56645\cdot10^{-3}$ & 5 \\
 		\hline \rule{0pt}{13pt}
-		$10^3$ & 0.108695 & 0.192766 & 0.0840702 & $4.91805\cdot10^{-4}$ & 34 \\
+		$10^3$ & 0.108695 & 0.192766 & 0.0840702 & $4.91805\cdot10^{-4}$ & 506 \\
 		\hline \rule{0pt}{13pt}
-		$10^4$ & 0.160121 & 0.192766 & 0.0326449 & $3.90958\cdot10^{-4}$ & 5674 \\
+		$10^4$ & 0.160121 & 0.192766 & 0.0326449 & $3.90958\cdot10^{-4}$ & 6320 \\
 		\hline \rule{0pt}{13pt}
-		$10^5$ & 0.196523 & 0.192766 & 0.00375685 & $1.15132\cdot10^{-4}$ & 46947 \\
+		$10^5$ & 0.196523 & 0.192766 & 0.00375685 & $1.15132\cdot10^{-4}$ & 53390 \\
 		\hline \rule{0pt}{13pt}
-		$10^6$ & 0.193233 & 0.192766 & 0.000467207 & $1.99508\cdot10^{-5}$ & 465973 \\
+		$10^6$ & 0.193233 & 0.192766 & 0.000467207 & $1.99508\cdot10^{-5}$ & 540289 \\
 		\hline 
 	\end{tabular}	
-	\caption{Table for brute force Monte Carlo integration results with integration limit $\lambda=1.5$.}
+	\caption{Table for brute force Monte Carlo integration results with integration limit $\lambda=1.5$. For this method we see that for mesh points up to around $10^4$, the numerical results are worse than for the Gaussian quadrature methods. With higher mesh points than this, the numerical results become very good. The CPU time, in microseconds, for this brute force Monte Carlo, is much better than for the Gaussian quadratures. For around N=30 the CPU time were in seconds for Gaussian quadrature, but for this Monte Carlo method we use around half a second for N=$10^6$. The variance is low, and decreases a little as the mesh points increases.}
 	\label{tab:MC_brute}
 \end{table}
 
@@ -164,18 +164,18 @@ The wave function is not normalized, so there is a normalization factor that we 
 		\hline \rule{0pt}{13pt}
 		$10$ & 0.365879 & 0.192766 & 0.173114 & $4.59202\cdot10^{-2}$ & 0 \\
 		\hline \rule{0pt}{13pt}
-		$10^2$ & 0.155251 & 0.192766 & 0.0375148 & $1.56870\cdot10^{-3}$ & 5 \\
+		$10^2$ & 0.155251 & 0.192766 & 0.0375148 & $1.56870\cdot10^{-3}$ & 47 \\
 		\hline \rule{0pt}{13pt}
-		$10^3$ & 0.173329 & 0.192766 & 0.0194369 & $2.87435\cdot10^{-4}$ & 1029 \\
+		$10^3$ & 0.173329 & 0.192766 & 0.0194369 & $2.87435\cdot10^{-4}$ & 1258 \\
 		\hline \rule{0pt}{13pt}
-		$10^4$ & 0.188290 & 0.192766 & 0.00447596 & $9.22912cdot10^{-5}$ & 6793 \\
+		$10^4$ & 0.188290 & 0.192766 & 0.00447596 & $9.22912\cdot10^{-5}$ & 7983 \\
 		\hline \rule{0pt}{13pt}
-		$10^5$ & 0.187134 & 0.192766 & 0.00563153 & $8.96394\cdot10^{-6}$ & 76973 \\
+		$10^5$ & 0.187134 & 0.192766 & 0.00563153 & $8.96394\cdot10^{-6}$ & 83742 \\
 		\hline \rule{0pt}{13pt}
-		$10^6$ & 0.191672 & 0.192766 & 0.00109395 & $9.26449\cdot10^{-7}$ & 765983 \\
+		$10^6$ & 0.191672 & 0.192766 & 0.00109395 & $9.26449\cdot10^{-7}$ & 801284 \\
 		\hline 
 	\end{tabular}	
-	\caption{Table for improved Monte Carlo integration results for spherical coordinates.}
+	\caption{Table for improved Monte Carlo integration results for spherical coordinates. This improved Monte Carlo method gives a better absolute difference between the numerical and analytical results for lower number of mesh points than the brute force Monte Carlo in Table \ref{tab:MC_brute}. Fo higher mesh points, it seems like the brute force is a little more accurate. As in the Gaussian quadrature cases, the improved method with spherical coordinates seem to use longer CPU time than the brute forces. For the Monte Carlo methods, the time increase between the methods is not that high and are still in microseconds. The variance for the improved Monte Carlo is higher for for lower mesh points, but decreases more as the mesh points increases. For N=$10^{6}$ mesh points the variance in the improved method is much lower than for the brute force.}
 	\label{tab:MC_improved}
 \end{table}
 
@@ -186,21 +186,35 @@ The wave function is not normalized, so there is a normalization factor that we 
 		\hline \rule{0pt}{13pt}
 		Mesh points (N) & Numerical & Analytical & Error & Variance & CPU time [$\mu$s]\\
 		\hline \rule{0pt}{13pt}
-		$10$ & 0.365879 & 0.192766 & 0.173114 & $4.59202\cdot10^{-2}$ & 0 \\
+		$10$ & 0.338228 & 0.192766 & 0.145462 & $1.23046\cdot10^{-2}$ & 0 \\
 		\hline \rule{0pt}{13pt}
-		$10^2$ & 0.155251 & 0.192766 & 0.0375148 & $1.56870\cdot10^{-3}$ & 5 \\
+		$10^2$ & 0.138270 & 0.192766 & 0.0544956 & $2.12627\cdot10^{-3}$ & 8 \\
 		\hline \rule{0pt}{13pt}
-		$10^3$ & 0.173329 & 0.192766 & 0.0194369 & $2.87435\cdot10^{-4}$ & 1029 \\
+		$10^3$ & 0.147001 & 0.192766 & 0.0457643 & $4.31803\cdot10^{-4}$ & 961 \\
 		\hline \rule{0pt}{13pt}
-		$10^4$ & 0.188290 & 0.192766 & 0.00447596 & $9.22912cdot10^{-5}$ & 6793 \\
+		$10^4$ & 0.211847 & 0.192766 & 0.0190813 & $2.023455\cdot10^{-4}$ & 4011 \\
 		\hline \rule{0pt}{13pt}
-		$10^5$ & 0.187134 & 0.192766 & 0.00563153 & $8.96394\cdot10^{-6}$ & 76973 \\
+		$10^5$ & 0.208352 & 0.192766 & 0.0155862 & $1.77756\cdot10^{-5}$ & 33874 \\
 		\hline \rule{0pt}{13pt}
-		$10^6$ & 0.191672 & 0.192766 & 0.00109395 & $9.26449\cdot10^{-7}$ & 765983 \\
+		$10^6$ & 0.199578 & 0.192766 & 0.0068116 & $1.96726\cdot10^{-6}$ & 350165 \\
 		\hline 
 	\end{tabular}	
-	\caption{Table for parallelized Monte Carlo integration results for spherical coordinates and with N number of threads.}
+	\caption{Table for parallelized Monte Carlo integration results for spherical coordinates and with 8 number of threads. All values are averages over 5 runs, since the values change a bit for each time it is run. The results we get are similar to the ones in Table \ref{tab:MC_improved} for the improved Monte Carlo, except that in this case the numerical values are not as good. The CPU time, in microseconds, are a lot better which is what we wanted with the parallelization. For chosen higher number of threads the CPU time decreases, but then the numerical results are getting worse. For lower number of threads the numerical results are closer to the analytical, but has higher CPU time. So the chosen 8 number of threads is a compromise between the accuracy and CPU time.}
 	\label{tab:MC_parallel}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Compiler flags & -O & -O2 & -O3 & -Ofast \\
+		\hline \rule{0pt}{13pt}
+		CPU time [$\mu$s] &  &  &  &  \\
+		\hline 
+	\end{tabular}	
+	\caption{Table for parallelized Monte Carlo integration results for 8 number of threads and $N=10^6$ number of mesh points. }
+	\label{tab:MC_opt_compile}
 \end{table}
 
 \section{Conclusion}

@@ -32,7 +32,7 @@ double int_function(double x1, double x2, double y1, double y2, double z1, doubl
 {
     double r1 = sqrt(x1*x1 + y1*y1 + z1*z1);
     double r2 = sqrt(x2*x2 + y2*y2 + z2*z2);
-    double r12 = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+    double r12 = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 
     if (r12 <= ZERO){
         return 0;
@@ -105,7 +105,7 @@ double gaulag_quad(double alpha, int N)
     for (int n=0; n < N; n++){
         I += w_r[i] * w_r[j] * w_theta[k] * w_theta[l] * w_phi[m] * w_phi[n]
              * int_func_spherical(r[i], r[j], theta[k], theta[l], phi[m], phi[n])
-             * sin(theta[k])*sin(theta[l]);
+             * sin(theta[k]) * sin(theta[l]);
     }}}}}}
 
     delete [] theta;
@@ -122,8 +122,8 @@ pair<double, double> monte_carlo(double a, double b, double alpha, int N)
     double I;
     double Var;
     double func_val;
-    double f = 0;
-    double f2 = 0;
+    double MCint = 0;
+    double MCintsqr2 = 0;
 
     mt19937 generator(777);
     uniform_real_distribution<double> uniform(a, b);
@@ -143,13 +143,13 @@ pair<double, double> monte_carlo(double a, double b, double alpha, int N)
         z1 = uniform(generator);
         z2 = uniform(generator);
         func_val = int_function(x1, x2, y1, y2, z1, z2, alpha);
-        f += func_val;
-        f2 += func_val*func_val;
+        MCint += func_val;
+        MCintsqr2 += func_val*func_val;
     }
-    double common_factor = pow(b - a, 6);
-    I = f*common_factor/N;
-    f2 *= pow(common_factor, 2)/N;
-    Var = (f2 - I*I)/N;
+    double jacobidet = pow(b - a, 6);
+    I = MCint*jacobidet/N;
+    MCintsqr2 *= pow(jacobidet, 2)/N;
+    Var = (MCintsqr2 - I*I)/N;
 
     pair<double, double> results = make_pair(I, Var);
     return results;
@@ -161,8 +161,8 @@ pair<double, double> mc_improved(double alpha, int N)
     double I;
     double Var;
     double func_val;
-    double f = 0;
-    double f2 = 0;
+    double MCint = 0;
+    double MCintsqr2 = 0;
 
     mt19937 generator(777);
     exponential_distribution<double> exponential(1);
@@ -185,13 +185,13 @@ pair<double, double> mc_improved(double alpha, int N)
         phi2 = uniform_phi(generator);
         func_val = int_func_spherical(r1, r2, theta1, theta2, phi1, phi2)
                     *r1*r1*r2*r2*sin(theta1)*sin(theta2);
-        f += func_val;
-        f2 += func_val*func_val;
+        MCint += func_val;
+        MCintsqr2 += func_val*func_val;
     }
-    double common_factor = 4*pow(PI, 4)/pow(2*alpha, 5);
-    I = f*common_factor/N;
-    f2 *= pow(common_factor, 2)/N;
-    Var = (f2 - I*I)/N;
+    double jacobidet = 4*pow(PI, 4)/pow(2*alpha, 5);
+    I = MCint*jacobidet/N;
+    MCintsqr2 *= pow(jacobidet, 2)/N;
+    Var = (MCintsqr2 - I*I)/N;
 
     pair<double, double> results = make_pair(I, Var);
     return results;
@@ -203,8 +203,8 @@ pair<double, double> mc_parallization(double alpha, int N, int n_threads)
     double I;
     double Var;
     double func_val;
-    double f = 0;
-    double f2 = 0;
+    double MCint = 0;
+    double MCintsqr2 = 0;
 
     mt19937 generator(777);
     exponential_distribution<double> exponential(1);
@@ -218,7 +218,7 @@ pair<double, double> mc_parallization(double alpha, int N, int n_threads)
     double phi1;
     double phi2;
 
-    #pragma omp parallel for reduction (+:f, f2) num_threads(n_threads) private(r1, r2, theta1, theta2, phi1, phi2, func_val)
+    #pragma omp parallel for reduction (+:MCint, MCintsqr2) num_threads(n_threads) private(r1, r2, theta1, theta2, phi1, phi2, func_val)
     for (int i=0; i < N; i++){
         r1 = exponential(generator);
         r2 = exponential(generator);
@@ -228,13 +228,13 @@ pair<double, double> mc_parallization(double alpha, int N, int n_threads)
         phi2 = uniform_phi(generator);
         func_val = int_func_spherical(r1, r2, theta1, theta2, phi1, phi2)
                     *r1*r1*r2*r2*sin(theta1)*sin(theta2);
-        f += func_val;
-        f2 += func_val*func_val;
+        MCint += func_val;
+        MCintsqr2 += func_val*func_val;
     }
-    double common_factor = 4*pow(PI, 4)/pow(2*alpha, 5);
-    I = f*common_factor/N;
-    f2 *= pow(common_factor, 2)/N;
-    Var = (f2 - I*I)/N;
+    double jacobidet = 4*pow(PI, 4)/pow(2*alpha, 5);
+    I = MCint*jacobidet/N;
+    MCintsqr2 *= pow(jacobidet, 2)/N;
+    Var = (MCintsqr2 - I*I)/N;
 
     pair<double, double> results = make_pair(I, Var);
     return results;
