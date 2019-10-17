@@ -10,8 +10,6 @@ SOURCES += \
 INCLUDEPATH += C:\Qt\5.13.0\mingw73_64\include
 DEPENDPATH += C:\Qt\5.13.0\mingw73_64\include
 
-//LIBS += -LC:\Qt\5.13.0\mingw73_64\include\QtCore
-
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
 
