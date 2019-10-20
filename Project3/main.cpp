@@ -218,7 +218,8 @@ pair<double, double> mc_parallization(double alpha, int N, int n_threads)
     double phi1;
     double phi2;
 
-    #pragma omp parallel for reduction (+:MCint, MCintsqr2) num_threads(n_threads) private(r1, r2, theta1, theta2, phi1, phi2, func_val)
+    #pragma omp parallel reduction (+:MCint, MCintsqr2) num_threads(n_threads) private(r1, r2, theta1, theta2, phi1, phi2, func_val)
+    #pragma omp for
     for (int i=0; i < N; i++){
         r1 = exponential(generator);
         r2 = exponential(generator);
