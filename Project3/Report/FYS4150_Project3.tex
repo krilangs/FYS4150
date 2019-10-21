@@ -23,7 +23,7 @@ prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,show
 %\DeclareRobustCommand{\citeext}[1]{\citeauthor{#1}~\cite{#1}}
 
 % Fix spacing in tables and figures
-%\usepackage[belowskip=-8pt,aboveskip=5pt]{caption}
+%\usepackage[belowskip=0pt,aboveskip=5pt]{caption}
 %\setlength{\intextsep}{10pt plus 2pt minus 2pt}
 
 % Change the page layout
@@ -165,8 +165,26 @@ For the random numbers generation we use the pseudo-random number engine Mersene
 }), in combination with a non-deterministic random number generator (\textit{random\_device}) to make sure that the random number seed changes as the program goes on. Then for the uniform distribution we use \textit{uniform\_real\_distribution} to make uniform numbers in the domain [a,b]. Since we use the same limits as for the Gaussian-Legendre quadrature, we use the same \textit{int\_function} in Cartesian coordinates for computing the function $f$ in equation \ref{eq:6dim_expect}. After evaluating the integral, we calculate the variance in 6-dimensions. We also take the CPU time of the calculations to compare with other methods.
 
 \subsection{Improved Monte Carlo integration}
-\subsection{Monte Carlo parallelized}
+Now we want to improve on the brute force Monte Carlo integration. This we do by introducing importance sampling, exponential distribution and changing to spherical coordinates. For the spherical coordinate change in the Gaussian-Laguerre quadrature we got an exponential expression in the integrand. For this factor we will use exponential distribution denoted as $p(y)=e^{-y}$. Then we will use that the probability is conserved when performing a change of variable. So for a change of variable we now get
+\[p(y)dy=e^{-y}dy=p(x)dx=dx\]
+for the uniform PDF $p(x)$ defined in $x\in[0,1]$. Then we integrate this new change of variable $x\rightarrow y$
+\[x(y)=\int_{0}^{y}e^{-y^{\prime}}dy^{\prime}=1-e^{-y}.\]
+By inverting this we now get from the uniform PDF $y(x)=-\ln(1-x)$ to exponential PDF. The exponential part can now be absorbed into the expectation value to get
+\begin{align*}
+I=\int_{0}^{\infty}f(r)dr=\int_{0}^{\infty}\frac{f(r)}{p(r)}p(r)dr=\int_{0}^{1}g(r(x))dx\approx \frac{1}{N}\sum_{i=0}^{N-1}g(r(x_i)).
+\end{align*}
+Here we use change of variables for the radial distance $r=y\in[0,\infty)$ with $p(r)=e^{-r}$ and $p(r)dr=dx$. 
 
+Now we can solve the integral numerically in the function \textit{mc\_improved} in the \textbf{main.cpp} program. We will now draw uniform distributions for the angular coordinates $\theta_i$ and $\phi_i$ with finite limits $[0,\pi]$ and $[0, 2\pi]$ respectively. For the radial coordinates $r_i$, we will use the importance sampling with exponential distribution. We use the same type of random generators as for the brute force, but now we will also implement the exponential distribution by \textit{exponential\_distribution}. From the change of variables we also get a Jacobi determinant as a factor $\frac{\pi^4}{8\alpha^5}$. For calculating the integrand we use the same \textit{int\_func\_spherical} as for the Gaussian-Laguerre quadrature. The integral to be evaluated numerically is now:
+\begin{equation}
+\label{eq:mc_improved}
+I\approx\frac{\pi^4}{8\alpha^5}\frac{1}{N}\sum_{i=0}^{N-1}\frac{(r_{1,i})^2(r_{2,i})^2\sin(\theta_{1,i})\sin(\theta_{2,i})}{\sqrt{(r_{1,i})^2+(r_{2,i})^2-2r_{1,i}r_{2,i}\cos(\beta)}}
+\end{equation}
+
+We also calculate the variance, but this calculation is equal to the brute force variance (eq. \ref{eq:variance}). Again, we will compare our numerical results with the analytical and the other methods after evaluating the final integral (eq. \ref{eq:mc_improved}). Then we compare the variances and CPU times for different number of mesh points with the results we got in the other methods.
+
+\subsection{Monte Carlo parallelized}
+For the last part we will parallelize the improved Monte Carlo integration using the library openMP and various compiler flags. This is done in the \textit{mc\_parallization}-function in the \textbf{main.cpp} program. The only difference to this and the improved Monte Carlo is that we have added two lines for initializing the openMP parallelization on the for-loop. Before we evaluate the integral, we try to find the optimal speed-up by testing different number of threads and compiler flags. After finding the optimal compiler flag and thread number, we evaluate the integral in equation \ref{eq:mc_improved}. Then we do the same comparing as we have done for the other methods.
 
 \section{Results}
 The code is run in C++ with QT Creator on a 64-bit Windows 10 laptop with 8GB RAM. For the random generator for the Monte Carlo methods we use the Mersenne Twister generator (64 bit) \textbf{mt19937\_64}, and we make sure that the random generator seed change so we don't use the same seed multiple times. For the openMP we use 4 threads.
@@ -227,12 +245,8 @@ For the improved Gaussian quadrature with Laguerre polynomial and in spherical c
 	\caption{Table for Gaussian-Laguerre quadrature results for spherical coordinates. For this case we have a more stable and faster decrease in the absolute difference than in Table \ref{tab:Gauss_Leg}. So for the comparison between the numerical and analytical results goes, this improved Gaussian quadrature integration method with Laguerre polynomial and spherical coordinates is better than the brute force with Legendre polynomial. The CPU time, in milliseconds, on the other hand, is a lot higher in this case than for the brute force.}
 	\label{tab:Gauss_Lag}
 \end{table}
-
+\newpage
 For the brute force Monte Carlo integration method we used the same $\lambda=1.5$ integration limits as for the brute force Gaussian quadrature. In Table \ref{tab:MC_brute} we have the same type of results as for the Gaussian quadratures, but now we have included the variances as well. For the Monte Carlo method we have to use mesh points in powers of ten to be able to do the same analysis as before. For this method we get CPU time in microseconds instead of in milliseconds as for the other two methods. So even though the Monte Carlo method needs much higher number of mesh points, the CPU time is much quicker. For lower powers of ten for the mesh points, the numerical results are not as good as for the Gaussian quadratures with low mesh points. As the mesh points get bigger, $10^4$ and up, the numerical results gets better. For around $10^6$ mesh points with CPU time around 411 ms, we reach our goal for third leading digit of the analytical result. If we compare the CPU time for when we reach our goal with the other two methods, we see that the brute force Monte Carlo method is faster than the brute force Gaussian quadrature but slower than the improved Gaussian quadrature. The variance in the Monte Carlo method is not that low for low number of mesh points, but decreases as the number of mesh points increase. It goes a little up and down for $10^2-10^4$ like the difference does. This is the same behavior we see in the brute force Gaussian-Legendre quadrature. The CPU time for our chosen number of mesh points are still under half a second even for one million mesh points.
-
-For the improved Monte Carlo method we changed to spherical methods and used importance sampling. This gave us the results in Table \ref{tab:MC_improved}. As for the brute force Monte Carlo case the improved gave a bad result for very low number of mesh points. For the improved we now get faster better results with increasing mesh points. So now we reach our goal within $10^5$ number of mesh points with CPU time around 74 ms. As for the Gaussian quadratures, we now get that the improved method is more accurate for lower number of mesh points than the brute force. Again, the brute force is quicker than the improved if we only look at the same number of mesh points. The variance for the improved Monte Carlo is lower than the brute force method. For higher mesh points the variance for the improved method decreases more than the brute force method.
-
-For the final improvement we parallelize the improved Monte Carlo method using openMP and different compiler flags. Since the CPU time is heavily dependent on the background processes of the CPU, the time it takes to run the calculations may very from time to time. That is why we have taken an estimated average of the CPU times to try and find the fastest compiler flag to run with the parallelization. So in Table \ref{tab:MC_opt_compile} we have tested various compiler flags on the improved Monte Carlo method with $10^6$ number of mesh points. There we tested the C++ compiler flags -O1, -O2, -O3 and -Ofast with 4 number of threads for the openMP. From the table we get the best average CPU times for -Ofast with -O3 very close second. We get slightly different results each time we run the code since we have implemented the random number generator in such a way that the seed changes. In Table \ref{tab:MC_parallel} we used compiler flag -Ofast for optimal speed-up. Since we have used parallelization on the improved Monte Carlo method, we get almost the same numerical results. The thing that changes the most is the CPU times. From the table we see that the optimal compiler flag and the parallelization makes the calculations a lot faster, especially for higher number of mesh points. For this method we now reach our goal of converging to third leading digit of the analytical answer for $10^4$ number of mesh points with CPU time around 4 ms. For $10^6$ mesh points the calculations now take around 280 ms, while it took around 693 ms for the improved method and around 410 ms for the brute force. So the parallelization with 4 number of threads and with optimal compiler flag give us the best accuracy of the numerical results and the best CPU time for calculating them.
 
 \begin{table}[htbp]
 	\centering
@@ -258,6 +272,8 @@ For the final improvement we parallelize the improved Monte Carlo method using o
 	\label{tab:MC_brute}
 \end{table}
 
+For the improved Monte Carlo method we changed to spherical methods and used importance sampling. This gave us the results in Table \ref{tab:MC_improved}. As for the brute force Monte Carlo case the improved gave a bad result for very low number of mesh points. For the improved we now get faster better results with increasing mesh points. So now we reach our goal within $10^5$ number of mesh points with CPU time around 74 ms. As for the Gaussian quadratures, we now get that the improved method is more accurate for lower number of mesh points than the brute force. Again, the brute force is quicker than the improved if we only look at the same number of mesh points. The variance for the improved Monte Carlo is lower than the brute force method. For higher mesh points the variance for the improved method decreases more than the brute force method.
+
 \begin{table}[htbp]
 	\centering
 	%\hspace{-1cm}
@@ -281,6 +297,8 @@ For the final improvement we parallelize the improved Monte Carlo method using o
 	\caption{Table for improved Monte Carlo integration results for spherical coordinates. This improved Monte Carlo method gives a better absolute difference between the numerical and analytical results for the same number of mesh points as the brute force Monte Carlo in Table \ref{tab:MC_brute}. As in the Gaussian quadrature cases, the improved method with spherical coordinates seem to use longer CPU time than the brute force method. For the Monte Carlo methods, the time increase between the methods is not that high and are still in microseconds. The variance for the improved Monte Carlo is lower for lower mesh points, and decreases more as the mesh points increases. For N=$10^{6}$ mesh points the variance in the improved method is around 10 times lower than the brute force.}
 	\label{tab:MC_improved}
 \end{table}
+
+For the final improvement we parallelize the improved Monte Carlo method using openMP and different compiler flags. Since the CPU time is heavily dependent on the background processes of the CPU, the time it takes to run the calculations may very from time to time. That is why we have taken an estimated average of the CPU times to try and find the fastest compiler flag to run with the parallelization. So in Table \ref{tab:MC_opt_compile} we have tested various compiler flags on the improved Monte Carlo method with $10^6$ number of mesh points. There we tested the C++ compiler flags -O1, -O2, -O3 and -Ofast with 4 number of threads for the openMP. From the table we get the best average CPU times for -Ofast with -O3 very close second. We get slightly different results each time we run the code since we have implemented the random number generator in such a way that the seed changes. In Table \ref{tab:MC_parallel} we used compiler flag -Ofast for optimal speed-up. Since we have used parallelization on the improved Monte Carlo method, we get almost the same numerical results. The thing that changes the most is the CPU times. From the table we see that the optimal compiler flag and the parallelization makes the calculations a lot faster, especially for higher number of mesh points. For this method we now reach our goal of converging to third leading digit of the analytical answer for $10^4$ number of mesh points with CPU time around 4 ms. For $10^6$ mesh points the calculations now take around 280 ms, while it took around 693 ms for the improved method and around 410 ms for the brute force. So the parallelization with 4 number of threads and with optimal compiler flag give us the best accuracy of the numerical results and the best CPU time for calculating them.
 
 \begin{table}[htbp]
 	\centering
@@ -319,7 +337,7 @@ For the final improvement we parallelize the improved Monte Carlo method using o
 	\caption{Table for parallelized Monte Carlo integration results for spherical coordinates and with 4 number of threads. This is run with the compiler flag \textbf{-Ofast} in C++, since this gave the best CPU times (as seen in Table \ref{tab:MC_opt_compile}). The results we get are close to the ones in Table \ref{tab:MC_improved} for the improved Monte Carlo, except that in this case the CPU times, in microseconds, are much better. This is exactly what we wanted with the parallelization. For chosen higher number of threads than what we have chosen, the CPU time decreases but then the numerical results get worse. For lower number of threads the numerical results are closer to the analytical, but has higher CPU time. So the chosen 4 number of threads is a compromise between the accuracy and CPU time. For the parallelization we reach our third leading digit goal around $10^4$ with CPU time around 4 ms.}
 	\label{tab:MC_parallel}
 \end{table}
-
+\newpage
 When running the C++ program directly in QT Creator we get different results and CPU times then if we run the program in a terminal window. This happens especially for the Monte Carlo methods. In the terminal window the results stay the same if we run the same task wit the same values several times, while the results changes a little when run directly in the QT Creator. In the terminal window, changing the number of threads does not seem to change anything for the parallelized Monte Carlo. When we run the program directly in QT Creator, then the results and CPU times change when changing the number of threads for openMP. That is why we choose 4 number of threads, since this seem to give a good compromise between the numerical results and the CPU time. For lower number of threads we get better numerical results, but longer CPU time. For higher number of threads we get better CPU time, but worse numerical results. So it seems like the terminal does not mange to take into account the random generator and the number of threads each time a task is run, while the QT Creator manages to do so if run there.
 
 \section{Conclusion}
@@ -333,6 +351,7 @@ For the integral we had to work with the possibility of singularities and dividi
 \section{Appendix}
 \label{sect:appendix}
 Link to GitHub repository:\\
+\url{https://github.com/krilangs/FYS4150/tree/master/Project3}
 
 \bibliographystyle{plainnat}
 \bibliography{myrefs}
