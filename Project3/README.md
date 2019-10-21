@@ -5,4 +5,4 @@ Folder "Programs" contains all the C++ code for the project done in QT Creator o
 - main.cpp: contains the rest of the programming that runs the integration functions and the code calculations
 The code was both run in a terminal window and directly in the QT Creator.
 
-Folder "Report" contains the final report as .pdf and .tex format.
+Folder "Report" contains the final report as .pdf and .tex format, and a bibtex file with the references.
