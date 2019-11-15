@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-print("Choose which Task to run by typing the one of the letters (C, D, E):")
+print("Choose which Task to run by typing the one of the letters (C, D, E, F):")
 print("Task C - Equilibrium plots:")
 print("Task D - probability histogram")
-print("Task E & F - phase transition plots")
+print("Task E - phase transition plots")
+print("Task F - Critical temperature")
 
 Task = input("Write here: ")
 
@@ -297,7 +298,7 @@ if Task == "E":
         plt.show()
 
 if Task == "F":
-    with open("") as file:
+    with open("Phase_transitions") as file:
         lines = file.readlines()
     temps = []
     energylist = []
@@ -305,7 +306,7 @@ if Task == "F":
     Cvlist = []
     Suscplist = []
     indeks = 0
-    for i in range(1, len(lines)):
+    for i in range(2, len(lines)):
         pieces = lines[i].split()
         temps.append(float(pieces[0]))
         energylist.append(float(pieces[1]))
@@ -314,7 +315,7 @@ if Task == "F":
         Suscplist.append(float(pieces[4]))
 
     firstTemp = temps[0]
-    for i in range(1,len(temps)):
+    for i in range(2,len(temps)):
         if temps[i] == firstTemp:
             temps = temps[0:i]
             break
@@ -332,45 +333,6 @@ if Task == "F":
         print("Tc for Cv =",temps[sublistCv.index(maxCv)])
         print("Tc for X =",temps[sublistSuscp.index(maxSuscp)])
 
-    plt.figure()
-    plt.title("Mean Energy")
-    plt.xlabel("T [kT/J]")
-    plt.ylabel("Energy expectation value $\\langle$E$\\rangle$ [J]")
-    for i in range(int(len(energylist)/len(temps))):
-        plt.plot(temps,energylist[i*len(temps):len(temps)*(i+1)],"")
-    plt.legend(["L = 40","L = 60","L = 80","L = 100"])
-
-    plt.figure()
-    plt.title("Absolute mean Magnetization")
-    plt.xlabel("T [kT/J]")
-    plt.ylabel("Magnetization expectation value $\\langle$|M|$\\rangle$ [1]")
-    for i in range(int(len(energylist)/len(temps))):
-        plt.plot(temps,maglist[i*len(temps):len(temps)*(i+1)],"")
-    plt.legend(["L = 40","L = 60","L = 80","L = 100"])
-
-
-    plt.figure()
-    plt.title("Specific heat")
-    plt.xlabel("T [kT/J]")
-    plt.ylabel("Specific heat $\\langle$$C_v$$\\rangle$ [$J^2/kT^2$]")
-    for i in range(int(len(energylist)/len(temps))):
-        plt.plot(temps,Cvlist[i*len(temps):len(temps)*(i+1)],"")
-    plt.legend(["L = 40","L = 60","L = 80","L = 100"])
-
-
-    plt.figure()
-    plt.title("Susceptibility")
-    plt.xlabel("T [kT/J]")
-    plt.ylabel("Susceptibility $\\langle$$\\chi$$\\rangle$ [1/kT]")
-    for i in range(int(len(energylist)/len(temps))):
-        plt.plot(temps,Suscplist[i*len(temps):len(temps)*(i+1)],"")
-    plt.legend(["L = 40","L = 60","L = 80","L = 100"])
-
-    plt.show()
-
-    """
-    Task f)
-    """
     #Performing a linear regression to find critical temp in thermodyn. limit
     TCCv = np.array(TCCv)
     TCX = np.array(TCX)
@@ -396,7 +358,8 @@ if Task == "F":
     plt.plot(Llist,np.polyval(linreg2,Llist))
     plt.legend(["$T_C$(L) from simulations","$T_C(L)$ = a$\\cdot$ $\\frac{1}{L}$ + $T_C(L = \infty)$ $\\to$ %g$\\cdot$x + %g" % (linreg2[0],linreg2[1])])
 
+    exact = 2./(np.log(1+np.sqrt(2)))
     print("\n")
     print("The estimated Critical Temperature from our simulations is Tc = %g " % (0.5*(linreg1[1]+linreg2[1])))
-
+    print("Exact critical temperature is around %.4f" %exact)
     plt.show()
