@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper,english]{article}
+\usepackage{times}
+\usepackage[utf8]{inputenc}
+\usepackage{babel,textcomp}
+\usepackage{mathpazo}
+\usepackage{mathtools}
+\usepackage{amsmath,amssymb}
+\usepackage{ dsfont }
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfig} 
+\usepackage[colorlinks]{hyperref}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{backgroundcolor=\color{lbcolor},tabsize=4,rulecolor=,language=python,basicstyle=\scriptsize,upquote=true,aboveskip={1.5\baselineskip},columns=fixed,numbers=left,showstringspaces=false,extendedchars=true,breaklines=true,
+prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},frame=single,showtabs=false,showspaces=false,showstringspaces=false,identifierstyle=\ttfamily,keywordstyle=\color[rgb]{0,0,1},commentstyle=\color[rgb]{0.133,0.545,0.133},stringstyle=\color[rgb]{0.627,0.126,0.941},literate={å}{{\r a}}1 {Å}{{\r A}}1 {ø}{{\o}}1}
+
+% Use for references
+\usepackage[square,comma,numbers]{natbib}
+%\DeclareRobustCommand{\citeext}[1]{\citeauthor{#1}~\cite{#1}}
+
+% Fix spacing in tables and figures
+%\usepackage[belowskip=0pt,aboveskip=5pt]{caption}
+%\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+% Change the page layout
+%\usepackage[showframe]{geometry}
+\usepackage{layout}
+\setlength{\hoffset}{-0.5in}  % Length left
+\setlength{\voffset}{-0.8in}  % Length on top
+\setlength{\textwidth}{470pt}  % Width /597pt
+\setlength{\textheight}{670pt}  % Height /845pt
+%\setlength{\footskip}{25pt}
+
+\newcommand{\VEV}[1]{\langle#1\rangle}
+\title{FYS4150 - Project 4}
+\date{}
+\author{ Kristoffer Langstad\\ \textit{krilangs@uio.no}}
+
+\begin{document}%layout
+\maketitle
+\begin{abstract}
+In this project we want to find the phase transition at a critical temperature $T_C$ for a thermodynamic system with the Ising model in 2D from a ferromagnet phase to a paramagnet phase. This is a binary system where we look at the spins (up and down) for objects that interact only with its nearest neighbor at with different lattice sizes. We will use Monte Carlo and Metropolis algorithms develop the Ising model to solve the system numerically. Properties of the system are evaluated to find the number of Monte Carlo (MC) cycles needed to reach the system equilibrium. For a simple 2x2 lattice we have analytical values that we compare our numerics with. For this case we get best results as equal results within 4 leading digits for the mean energy and mean absolute magnetic moment with $10^7$ Monte Carlo cycles and $T=1.0$, while we get equal results within 3 leading digits for the specific heat and the susceptibility. Then for the evaluation of the 20x20 lattice for $T=1.0$ and $T=2.4$ with both an ordered and random initial spin orientation of the objects, we find that the system reaches the equilibrium state after around 8000 Monte Carlo cycles per lattice (which in this case represents time). For the random initial spins, the curves of the evaluated properties are much smoother and fluctuate less than the ordered. We also see that the higher temperature have a bigger affect on the values we evaluate than the lower temperature. We also find that the number of accepted configurations as a function of the temperature in the domain $T\in[1.0, 2.4]$ increase almost as an exponential with the temperature. For the probability distribution $P(E)$, which also is the number of times a given energy appears in the MC cycles, we see that the most probable energy for $T=1.0$ is more or less the ground state with energy -800. With increased temperature $T=2.4$, we get increased entropy and most likely energy around -490$\rightarrow$ -470. So a low energy is the same as the object has a low probability of jumping to the next state. For the evaluation of the Ising model near the critical temperature $T_C$ for lattices $L=[40,60,80,100]$, temperatures $T\in[2.15, 2.35]$, stepsize $\Delta T=0.002$ and MC cycles $5\cdot10^5$ we find the numerical critical temperature $T_C=2.26251$ which indicate the phase transition. The analytical critical temperature is given as $T_C\approx2.2692$ (\citet{PhysRev.65.117}), which compared to the numerical is equal with 2 leading digits. The critical temperature gets closer to the analytical in the thermodynamic limit $L\rightarrow\infty$.
+\end{abstract}
+
+\section{Introduction}
+\label{sect:Introduction}
+To study thermodynamics we can use statistical mechanics. A very popular method to do this is the Ising model. With this model we can simulate phase transitions for a magnetic system from a quantum mechanical perspective from a ferromagnet phase to a paramagnet phase. The model can then evaluate binary states for atomic spins (up and down) in a lattice of different sizes, where the spins only interact with its nearest neighbors. The phase transitions occur at a critical temperature from a system of a finite magnetic moment to a phase with zero magnetization.
+
+In this project we will use the two-dimensional Ising model to find the phase transitions in a magnetic system for lattices of different sizes. For the lattices we have binary values as up and down. Since we use a 2D model, we have analytical values for the critical temperature which denotes the phase transitions. First we will evaluate a 2x2 lattice by using the Ising model and Monte Carlo and Metropolis algorithms to be used as benchmark calculations. Then we expand to a 20x20 lattice for various temperature values to evaluate the equilibrium time and the probability distribution of the energies. Then we study the phase transitions of the system to find the critical temperature. The numerical calculations are done in C++ with QT Creator on a Windows computer, while the plotting are done in Python 3.7.
+
+In the methods section we look at the theory and execution of the physical problems and the numerical algorithms we are using. For the 2x2 lattice we calculate numerically known analytical values for expressions like the expectation values for the energy $E(T)$, mean absolute magnetic moment $|M(T)|$, specific heat $C_v(T)$ and susceptibility $\chi(T)$. Then we expand to a 20x20 lattice to see when the most likely state (equilibrium time) is reached with different temperatures. After the steady state is found, we find the probability distributions for the energies to have specific values. Then we evaluate for several lattice sizes $L=[40,60,80,100]$ to find the critical temperature of the system, which indicates the phase transition. In the results section we present and discuss the results we get from the numerical calculations. These results are also compared with analytical values for the 2x2 lattice case, and the analytical value for the critical temperature by \citet{PhysRev.65.117}. IN the conclusion section, we present a conclusion to the project.
+
+\section{Methods}
+\section{Results}
+\section{Conclusion}
+\appendix
+\section{Appendix}
+\label{sect:appendix}
+Link to GitHub repository:\\
+\url{https://github.com/krilangs/FYS4150/tree/master/Project4}
+
+\bibliographystyle{plainnat}
+\bibliography{myrefs}
+\end{document}
