@@ -22,7 +22,6 @@ void ex_b();
 void ex_c();
 void ex_d();
 void ex_e();
-void ex_f();
 
 // Task b
 void ex_b(){
@@ -240,83 +239,6 @@ void ex_e(){
     cout << "Time used [s]: " << time_used.count() << endl;
 }
 
-// Task f
-void ex_f(){
-    string file = "Data/Temperature";
-    ofile.open(file);
-    ofile << "|  Temperature  |  Energy-Mean  |  Magnetization-Mean  |  Specific heat  |  Susceptibility  |  Lattice  |\n";
-
-    int N_start, N_step, N_final, Nconfigs;
-    long int MC;
-    double T_start, T_step, T_final, T;
-
-    cout << "Read in the number of Monte Carlo cycles" << endl;
-    cin >> MC;
-    vec Energies = zeros<mat>(400);
-    vec counter = zeros<mat>(400);
-
-    // Base: T=[2.0, 2.3] & stepsize=0.05
-    cout << "Read in the initial value for the Temperature" << endl;
-    cin >> T_start;
-    cout << "Read in the final value for the Temperature" << endl;
-    cin >> T_final;
-    cout << "Read in the step size for the Temperature" << endl;
-    cin >> T_step;
-
-    // Declare a matrix which stores the expectation values for spins 40, 60, 80, 100
-    int mat_len = (T_final-T_start)/T_step + 2;
-    mat L_40 = zeros<mat>(mat_len, 5);
-    mat L_60 = zeros<mat>(mat_len, 5);
-    mat L_80 = zeros<mat>(mat_len, 5);
-    mat L_100 = zeros<mat>(mat_len, 5);
-
-    N_start = 40;
-    N_step = 20;
-    N_final = 100;
-
-    // Time the loop
-    auto start = high_resolution_clock::now();
-    vec Tvalues = zeros<mat>(mat_len);
-
-    #pragma omp parallel for
-    for (int N = N_start; N <= N_final; N += N_step){
-        // Start Monte Carlo sampling by looping over the selcted Temperatures
-        for (int i = 0; i <= (T_final-T_start)/T_step + 1; i++){
-            vec ExpectValue = zeros<mat>(5);
-
-            T = T_start + T_step*i;
-            Tvalues(i) = T;
-
-            // Start Monte Carlo computation and get expectation values
-            Metropolis(N, MC, T, ExpectValue, Nconfigs, false, Energies, counter);
-
-            if (N == 40){
-            L_40.row(i) = ExpectValue.t();
-            }
-            else if (N == 60){
-            L_60.row(i) = ExpectValue.t();
-            }
-            else if (N == 80){
-            L_80.row(i) = ExpectValue.t();
-            }
-            else{
-            L_100.row(i) = ExpectValue.t();
-            }
-        }
-    }
-    auto stop = high_resolution_clock::now();
-    auto time_used = duration_cast<seconds>(stop - start);
-    cout << "Time used [s]: " << time_used.count() << endl;
-
-    // Write results to file
-    WriteTC(ofile, L_40, 40, MC, Tvalues);
-    WriteTC(ofile, L_60, 60, MC, Tvalues);
-    WriteTC(ofile, L_80, 80, MC, Tvalues);
-    WriteTC(ofile, L_100, 100, MC, Tvalues);
-
-    ofile.close();  // Close output file
-}
-
 // Main program begins here
 int main(){
     string choice;
@@ -325,7 +247,6 @@ int main(){
         C    : run Equilibrium \n \
         D    : run Probability distribution \n \
         E    : run Phase transitions \n \
-        F    : run Critical temperature \n \
         info : write out this message\n \
         q    : quit program\n\n";
     cout << info;
@@ -353,11 +274,6 @@ int main(){
     // Call E) calculation
     else if (choice.compare("E") == 0){
         ex_e();
-
-    }
-    // Call F) calculation
-    else if (choice.compare("F") == 0){
-        ex_f();
 
     }
     // Call to see calling info

@@ -31,6 +31,5 @@ void WriteEquilibrium(ofstream &, int, int, double, vec, int);
 void WriteNaccept(ofstream &, int, int, double, int);
 void Writeprobs(ofstream &, vec, vec, int, vec);
 void WritePhases(ofstream &, int, int, double, vec);
-void WriteTC(ofstream &, mat, int, int, vec);
 
 #endif // ISING_H
