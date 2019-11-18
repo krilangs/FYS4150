@@ -11,7 +11,7 @@ HEADERS += \
     funcs.h
 
 QMAKE_CXXFLAGS += -Ofast
-QMAKE_CXXFLAGS += -fopenmp
+//QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
 
 INCLUDEPATH += C:\armadillo-9.600.6\include
