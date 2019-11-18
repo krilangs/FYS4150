@@ -11,4 +11,4 @@ Codes: Contains all the code for this project. All the code was done on a Window
 - funcs.cpp: Contains the Metropolis algorithm function, a function to initialize the expectation values, a function for the probability and functions for writing the results file files to be exported to the Data folder.
 - main.cpp: The main program for running the calculations and functions from funcs.cpp.
 
-Code was not properly parallelized. Tried to use openMP, but for some reason I got an error for armadillo usage when uncommenting the -fopenmp flag in the .pro file. So this code is only vectorized with `-O3` and `-floop-parallelize-all`.
+Code was not properly parallelized. Tried to use openMP, but for some reason I got an error for armadillo usage when uncommenting the -fopenmp flag in the .pro file. So this code is only vectorized with `-Ofast` in the .pro file and `-floop-parallelize-all`.
