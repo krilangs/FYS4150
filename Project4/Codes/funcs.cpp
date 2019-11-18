@@ -229,32 +229,3 @@ void WritePhases(ofstream& ofile, int NSpins, int MCcycles, double T, vec Expect
     ofile << setw(20) << setprecision(8) << M_var/T;                                 // Susceptibility
     ofile << setw(15) << setprecision(8) << to_string(NSpins)+"x"+to_string(NSpins); // Lattice
 } // End output function
-
-void WriteTC(ofstream &ofile, mat L, int NSpins, int MCcycles, vec T){
-    double norm = 1.0/(double (MCcycles));
-
-    // Loop over temperature
-    for (int i = 0; i < L.n_rows; i++){
-        double E_ExpectValues = L(i,0)*norm;
-        double E2_ExpectValues = L(i,1)*norm;
-        double M_ExpectValues = L(i,2)*norm;
-        double M2_ExpectValues = L(i,3)*norm;
-        double Mabs_ExpectValues = L(i,4)*norm;
-
-        // Expectation values per spin, divide by 1/NSpins/NSpins
-        double E_var = (E2_ExpectValues- E_ExpectValues*E_ExpectValues)/NSpins/NSpins;
-        double M_var = (M2_ExpectValues - Mabs_ExpectValues*Mabs_ExpectValues)/NSpins/NSpins;
-
-        double Cv = E_var/(T(i)*T(i));
-        double Suscp = M_var/T(i);
-
-        ofile << setiosflags(ios::showpoint | ios::uppercase);
-        ofile << setw(16) << setprecision(8) << T(i);                                    // Temperature
-        ofile << setw(16) << setprecision(8) << E_ExpectValues/NSpins/NSpins;            // Mean energy
-        ofile << setw(16) << setprecision(8) << Mabs_ExpectValues/NSpins/NSpins;         // Mean magetization (abs)
-        ofile << setw(16) << setprecision(8) << Cv;                                      // Specific heat
-        ofile << setw(16) << setprecision(8) << Suscp;                                   // Susceptibility
-        ofile << setw(15) << setprecision(8) << to_string(NSpins)+"x"+to_string(NSpins); // Lattice
-        ofile << "\n";
-    }
-} // End output function
