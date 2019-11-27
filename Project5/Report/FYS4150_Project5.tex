@@ -45,19 +45,191 @@ The Solar System}
 \begin{document}
 \maketitle
 \begin{abstract}
-	In this project we want to model the solar system using ordinary differential equations and object orientation numerically. To do this we will use the so-called velocity Verlet algorithm. We start of with only the Earth and the Sun in the system, which we will solve with both Euler's forward algorithm and the velocity Verlet algorithm. For this simple two-body system we write the code to be object oriented and scaled with the Sun mass as $M_\odot=1$, and test the stability of the two algorithms. The Verlet algorithm is found to be superior in accuracy since the algorithm conserves the energy of the system, while the forward Euler algorithm does not. The Euler algorithm is faster, but the difference is so small that the Verlet algorithm is the best to use. Then we find properties like the escape velocity of Earth needed to escape the orbit of the Sun. This is found analytically to be $\sqrt{8}\pi\frac{\text{AU}}{\text{yr}}\approx8.88577\frac{\text{AU}}{\text{yr}}$, and numerically as $8.88250\frac{\text{AU}}{\text{yr}}$ with the velocity Verlet algorithm. By changing the gravitational force factor $\frac{1}{r^2}\rightarrow\frac{1}{r^{\beta}}$, we see that as $\beta\rightarrow3$ the escape velocity of the Earth escaping the Sun's orbit is decreasing more and more. So by changing the force factor, we change how strongly the orbit of the Earth is affected by the Sun. Then the system is altered to a three-body problem by introducing Jupiter to the system. First we keep the Sun as the center of mass of the system and study once again the stability of the Verlet algorithm. For 1x and 10x times the mass of Jupiter, the system is more or less stable, but when increasing the Jupiter mass by 1000 the system becomes chaotic since the Jupiter mass is around the same as the Sun mass. Now by setting the center of mass of the system as the origin of the Solar system, we add the rest of the planets (including Pluto) in the Solar system. Up till now we have used Newtonian physics, so we add a general relativistic correction to the gravitation force. This is used on the Sun-Mercury system to analyze the perihelion precession of Mercury. This observed value is found to be 43 arc seconds per century, while our numerical value is found to be 43.1281 arc seconds per century.
+	In this project we want to model the solar system using ordinary differential equations and object orientation numerically. To do this we will use the so-called velocity Verlet algorithm. We start of with only the Earth and the Sun in the system, which we will solve with both Euler's forward algorithm and the velocity Verlet algorithm. For this simple two-body system we write the code to be object oriented and scaled with the Sun mass as $M_\odot=1$, and test the stability of the two algorithms. The Verlet algorithm is found to be superior in accuracy since the algorithm conserves the energy of the system, while the forward Euler algorithm does not. The Euler algorithm is faster, but the difference is so small that the Verlet algorithm is the best to use. Then we find properties like the escape velocity of Earth needed to escape the orbit of the Sun. This is found analytically to be $\sqrt{8}\pi\frac{\text{AU}}{\text{yr}}\approx8.88577\frac{\text{AU}}{\text{yr}}$, and numerically as $8.88250\frac{\text{AU}}{\text{yr}}$ with the velocity Verlet algorithm. By changing the gravitational force factor $\frac{1}{r^2}\rightarrow\frac{1}{r^{\beta}}$, we see that as $\beta\rightarrow3$ the escape velocity of the Earth escaping the Sun's orbit is decreasing more and more. So by changing the force factor, we change how strongly the orbit of the Earth is affected by the Sun. Then the system is altered to a three-body problem by introducing Jupiter to the system. First we keep the Sun as the center of mass of the system and study once again the stability of the Verlet algorithm. For 1x and 10x times the mass of Jupiter, the system is more or less stable, but when increasing the Jupiter mass by 1000 the system becomes chaotic since the Jupiter mass is around the same as the Sun mass. Now by setting the center of mass of the system as the origin of the solar system, we add the rest of the planets (including Pluto) in the solar system. Up till now we have used Newtonian physics, so we add a general relativistic correction to the gravitation force. This is used on the Sun-Mercury system to analyze the perihelion precession of Mercury. This observed value is found to be 43 arc seconds per century, while our numerical value is found to be 43.1281 arc seconds per century.
 \end{abstract}
 
 \section{Introduction}
 \label{sect:Introduction}
-In many cases, like the Solar system, we have many coupled ordinary differential equations which in many ways are similar to each other. Often the only differences are constants and variables that differ them from each other. So to reduce the amount of code and to make are lives much easier for solving these equations, we can use object orientation. This makes it easy extend and to add more elements without having to add a lot of new code. The code is then rerun several times instead. This is done in this project by implementation of classes to make the code more reusable.
+In many cases, like the solar system, we have many coupled ordinary differential equations which in many ways are similar to each other. Often the only differences are constants and variables that differ them from each other. So to reduce the amount of code and to make are lives much easier for solving these equations, we can use object orientation. This makes it easy extend and to add more elements without having to add a lot of new code. The code is then rerun several times instead. This is done in this project by implementation of classes to make the code more reusable.
 
-In this project we will solve the Solar system with ordinary differential equations with an object oriented code. The algorithms we will use are the forward Euler algorithm and the velocity Verlet algorithm. In the first part we study the two-body Sun-Earth only system to test the stability of the algorithms. Here we test the stability with different time steps and test for energy conservation in the system for the two algorithms. Then we calculate system properties like the escape velocity of Earth, and test what happens when we change the gravitational force between the objects. With the object oriented code fully set up, we can easily add other object to the system like Jupiter. The system is now a three-body system. Here we study what happens to the system when we increase the mass of Jupiter. Then we extend to include all the planets in the Solar system (including Pluto), which is easily done by adding masses and initial conditions of the planets and running the classes more times. The initial conditions of the Sun and the planets are found at a site by NASA \cite{horizon}, which contains data like the masses, initial positions and initial velocities of the objects up to three dimensions. Lastly we study the perihelion precession of Mercury by introducing a general relativistic correction to our Newtonian gravitational force, for a system containing only the Sun and Mercury.
+In this project we will solve the solar system with ordinary differential equations with an object oriented code. The algorithms we will use are the forward Euler algorithm and the velocity Verlet algorithm. In the first part we study the two-body Sun-Earth only system to test the stability of the algorithms. Here we test the stability with different time steps and test for energy conservation in the system for the two algorithms. Then we calculate system properties like the escape velocity of Earth, and test what happens when we change the gravitational force between the objects. With the object oriented code fully set up, we can easily add other object to the system like Jupiter. The system is now a three-body system. Here we study what happens to the system when we increase the mass of Jupiter. Then we extend to include all the planets in the solar system (including Pluto), which is easily done by adding masses and initial conditions of the planets and running the classes more times. The initial conditions of the Sun and the planets are found at a site by NASA \cite{horizon}, which contains data like the masses, initial positions and initial velocities of the objects up to three dimensions. Lastly we study the perihelion precession of Mercury by introducing a general relativistic correction to our Newtonian gravitational force, for a system containing only the Sun and Mercury.
 
 In the methods section we look at the theory and implementation of the algorithms and of the physics connected to our problem necessary for us to solve the ordinary differential equations and properties for the planets. This includes topics like unit scaling, derivation of the numerics, the equations for energy and angular momentum and the escape velocity, and perihelion precession of Mercury. In the results section we will look at and analyze the results we get from the methods section. Here we will discuss the results and compare with analytically found results for verification of our numerics. Last in the conclusion section, we give an overall conclusion of the results of the project we have gotten, and possible future tasks that can be done.
 
 \section{Methods}
 \label{sect:Method}
+\subsection{Useful Constants}
+\label{subsect:constants}
+For this project we use astronomical units (AU), which is the average distance between the Sun and Earth, 1 AU = $1.5\cdot10^{11}$m. We will also use years instead of seconds, since this fits the evolution of the solar system better. The mass of the Sun is given as $M_{\text{Sun}}=M_{\odot}=2\cdot10^{30}$kg. In Table \ref{tab:planets} we see the masses of the planets in the solar system, including Pluto, and their respective distances to the Sun. NASA provides a web site which gives us the initial positions and initial velocities of the objects in the solar system \cite{horizon}. These are extracted by setting type to \textit{VECTOR}, and choose the wanted planets and coordinate origin. The positions are in units of AU, while the velocities are in units of AU per day which we will change to AU per year. Since the mass of the Sun is so much larger than the planets, we will scale the masses of the planets with the mass of the Sun. These constants are implemented in the \textit{planetsLib.h}-file in the GitHub repository \ref{sect:appendix} in three dimensions.
+
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c| }
+		\hline \rule{0pt}{13pt}
+		Planet & Mass [kg] & Distance to the Sun [AU] \\
+		\hline \rule{0pt}{13pt}
+		Mercury & $M_{\text{Mercury}}=3.3\cdot10^{23}$ & 0.39  \\
+		\hline \rule{0pt}{13pt}
+		Venus & $M_{\text{Venus}}=4.9\cdot10^{24}$ & 0.72 \\
+		\hline \rule{0pt}{13pt}
+		Earth & $M_{\text{Earth}}=6\cdot10^{23}$ & 1.00 \\
+		\hline \rule{0pt}{13pt}
+		Mars & $M_{\text{Mars}}=6.6\cdot10^{23}$ & 1.52 \\
+		\hline \rule{0pt}{13pt}
+		Jupiter & $M_{\text{Jupiter}}=1.9\cdot10^{27}$ & 5.20 \\
+		\hline \rule{0pt}{13pt}
+		Saturn & $M_{\text{Saturn}}=5.5\cdot10^{26}$ & 9.54 \\
+		\hline \rule{0pt}{13pt}
+		Uranus & $M_{\text{Uranus}}=8.8\cdot10^{25}$ & 19.19 \\
+		\hline \rule{0pt}{13pt}
+		Neptune & $M_{\text{Neptune}}=1.03\cdot10^{26}$ & 30.06 \\
+		\hline \rule{0pt}{13pt}
+		Pluto & $M_{\text{Pluto}}=1.31\cdot10^{22}$ & 39.53 \\
+		\hline 
+	\end{tabular}	
+	\caption{In this table we see the masses of the planets in the solar system with units kg, including Pluto, and their respective distances to the Sun in units AU.}
+	\label{tab:planets}
+\end{table}
+
+\subsection{Newton's Law of Motion}
+\label{subsect:Newton}
+We will look at the gravitational force between the objects in the solar system. This is given by Newton's law of gravitation between two objects with masses $M$ by
+\begin{equation}
+\label{eq:2D_FG}
+F_G=\frac{GM_1M_2}{r^2},
+\end{equation}
+where $G=6.67\cdot10^{-11} \ \textrm{N} \ \textrm{kg}^{-2} \textrm{m}^2$ is the gravitational constant and $r$ is the distance between the objects. In three dimensions of the solar system we get
+\begin{equation}
+\label{eq:3D_FG}
+\textbf{F}_G=\frac{GM_1M_2}{r^3}\textbf{r},
+\end{equation}
+where \textbf{r} is a three-dimensional position vector in Cartesian coordinates and $r=\sqrt{x^2+y^2+z^2}$.
+
+Newton's second law of motion in three-dimensions give that 
+\begin{equation}
+\label{eq:N2L}
+\textbf{F}=M\textbf{a},
+\end{equation}
+
+where $M$ is the mass og the object affected by the force and \textbf{a} is a three-dimensional acceleration vector. This gives us three differential equations, one for each coordinate:
+\begin{align*}
+F_{G,x}&=M\frac{d^2x}{dt^2}\\
+F_{G,y}&=M\frac{d^2y}{dt^2}\\
+F_{G,z}&=M\frac{d^2z}{dt^2}
+\end{align*}
+
+For a two-body system with Earth orbiting around the Sun in a circular motion, the acceleration of the Earth is given by the centripetal acceleration \[a=\frac{v^2}{r}.\]
+Newton's second law now yields
+\begin{equation}
+F_G=\frac{M_{\text{Earth}}v^2}{r}=\frac{GM_{\odot}M_{\text{Earth}}}{r^2},
+\end{equation}
+where $M_{\odot}$ is the mass of the Sun and $M_{\text{Earth}}$ is the mass of the Earth. By rearranging the above equation we find the following relation:
+\begin{equation}
+\label{eq:consts}
+v^2r=GM_{\odot}
+\end{equation}
+We now scale the equations to simplify the calculations.
+Since the motion of Earth is circular at a distance $r=1AU$ to the Sun, we use that the velocity can be written as
+\begin{equation}
+\label{eq:circ_vel}
+v=\frac{2\pi r}{1yr}=2\pi\frac{1AU}{1yr}.
+\end{equation}
+By inserting this velocity into \ref{eq:consts} and redefine the mass of the Sun to $M_{\odot}=1$, we get a scaled gravitational constant as
+\begin{equation}
+\label{eq:scaled_G}
+G=4\pi^2\frac{AU^3}{yr^2}.
+\end{equation}
+
+\subsection{Integration Methods}
+\label{subsect:Integration}
+In this project we use the forward Euler algorithm and the velocity Verlet algorithm. The forward Euler algorithm is a first order approximation to a differential equation solution with a local error proportional to the step size squared $\mathcal{O}(h^2)$. For a one-dimensional case, the forward Euler algorithm with $n$ points on discrete form is given as:
+\begin{align}
+\label{eq:1D_Euler}
+x_{i+1}&=x_i+v_ih\\
+v_{i+1}&=v_i+a_ih
+\end{align}
+Here $h=\frac{b-a}{n}$ is the step size in a domain $t\in[a,b]$, $v_i$ is the velocity, $a_i$ is the acceleration and $x_i$ is the position after $n$ steps. So by knowing the acceleration, initial positions and velocities, we can compute the position of the system. This can easily be extended to two- and three-dimensions for ($x,y,z$).
+
+The velocity Verlet algorithm has a higher order of accuracy where the local error is proportional to the step size cubed $\mathcal{O}(h^3)$.\\
+...
+\subsection{Object Orientation}
+...
+\subsection{Implementation}
+...
+\subsection{Energies}
+\label{eq:Energies}
+Since the gravitational force is conservative, the total energy of the system should be constant over time. This is one of the stability criteria of our algorithms. The total energy of the system is given by the sum of kinetic energy and potential energy $E=K+U$. The total kinetic energy of the system with $N$ objects is given as
+\begin{equation}
+\label{eq:K}
+K=\sum_{i=1}^{N}\frac{1}{2}M_iv_i^2,
+\end{equation}
+where $M_i$ is the mass and $v_i$ is the velocity of object $i$. The total potential energy of the system is given as 
+\begin{equation}
+\label{eq:U}
+U=\sum_{i=1}^{N}\sum_{j+1}^{N}\frac{GM_iM_j}{r_{j,i}},
+\end{equation}
+where $i$ and $j$ are summing over different objects and $r_{j,i}=|\textbf{r}_i-\textbf{r}_j|$.
+
+\subsection{Angular Momentum}
+\label{eq:Ang_mom}
+The angular momentum describes the rotational state of the system. Since there is no external forces acting on the system, then also the total angular momentum of the system should be constant over time in our solar system. The total angular momentum is given as
+\begin{equation}
+\label{eq:ang_mom}
+\textbf{L}=\sum_{i=1}^{N}M_i\textbf{r}_i\times \textbf{v}_i.
+\end{equation}
+
+\subsection{Testing the Algorithms}
+\label{subsect:Testing}
+With the algorithms implemented into a program and the initial velocity value giving circular orbit from equation \ref{eq:circ_vel} as $v=2\pi$, we plot the position of the Earth orbiting the Sun. Here we test the two algorithms by first using different time steps $\Delta t$ when plotting the position of the Earth. For the case with circular orbit, we study the kinetic and potential energies and the angular momentum of the system. These quantities should be conserved over time as explained earlier. We also do a timing of the algorithms to compare with each other. From these calculations we compare the different results we get by using the Euler algorithm versus using the Verlet algorithm, and discuss the differences of the two methods. For the rest of the project we will use the Verlet algorithm.
+
+\subsection{Escape Velocity}
+\label{subsect:Escape vel}
+For an object in orbit around a more massive orbit, say the Earth around the Sun, to escape out of the orbit, it have to have a specific minimum velocity. This velocity is called the escape velocity. This is found from energy conservation by using that the kinetic energy is equal to the potential energy. So by using the kinetic energy in equation \ref{eq:K} and the potential energy in equation \ref{eq:U}, we obtain the escape velocity as
+\begin{equation}
+\label{eq:v_esc}
+v_{esc}=\sqrt{\frac{2GM}{r}},
+\end{equation}
+where $M$ is the mass of the body the object is trying to escape from and $r$ is the distance to that body. If we consider the Earth at a distance $r=1$ AU from the Sun with mass $M_{\odot}=1$ and use the scaled gravitational constant in equation \ref{eq:scaled_G}, we obtain the escape velocity of Earth as 
+\begin{equation}
+\label{eq:v_esc_Earth}
+v_{esc}=\sqrt{8}\pi\frac{AU}{yr}.
+\end{equation}
+We calculate the escape velocity of the Earth numerically and compare with the analytic answer we just derived in equation \ref{eq:v_esc_Earth}.
+
+Then we try to change the gravitational force in equation \ref{eq:3D_FG} to 
+\begin{equation}
+\label{eq:change_beta}
+F_G=\frac{GM_{\odot}M_{\text{Earth}}}{r^{\beta}},
+\end{equation}
+where we change $\beta\in[3,4]$ (for three-dimensions) to see what happens to the Earth-Sun system when $\beta\rightarrow4$.
+
+\subsection{Three-Body Problem}
+\label{eq:Add Jupiter}
+Now we will add Jupiter such that we now have a three-body problem with the Sun fixed at the center of mass of the system. Now we want to check how adding Jupiter will change the Earth's motion. To do this we just add the magnitude of the force between the Earth and Jupiter as
+\begin{equation}
+\label{eq:Earth-Jupiter}
+F_{E-J}=\frac{GM_EM_J}{r^3_{E-J}},
+\end{equation}
+where $M_J$ is the mass of Jupiter, $M_E$ is the mass of the Earth and $r_{E-J}$ is the distance between Earth and Jupiter (here in 3D). Since we have a object oriented code with classes, it is easy to implement Jupiter into the calculation of the motion of the planets in the three-body system. So now we plot the position of the Earth and Jupiter using the Verlet algorithm. We also do the same for increasing the mass of Jupiter by 10 and 1000 times its initial mass, to see what happens to the system.
+
+\subsection{The Whole Solar System}
+\label{eq:SolarSystem}
+We will now change the center of mass to the origin instead of at the Sun (still very close to the Sun). Now the Sun will also have an initial velocity such that the total momentum of the system is zero. With this change of mass center we can compare with the other three-body problem to see that difference to the system.
+
+We now also add the rest of the planets in the solar system, including Pluto. Their masses and initial conditions are implemented as mentioned in the earlier section (\ref{subsect:constants}), and the whole solar system is the plotted.
+
+\subsection{Perihelion of Mercury}
+\label{eq:Mercury}
+Finally we will test general relativity by comparing the perihelion precession of Mercury to the observed value. Closed elliptical orbits comes from the Newtonian gravity force factor $1/r^2$. By changing this factor, we change the orbit to no longer being closed. This means that after one complete orbit around the Sun, the planet will not be in the exactly same place as before. Mercury has an observed perihelion precession of 43 arc seconds per century after the classical effects are subtracted. 
+
+To study this we look at the Sun-Mercury system, and add a relativistic corrective term to the Newtonian gravitational force such that we obtain
+\begin{equation}
+\label{eq:rel_FG}
+F_G=\frac{GM_{\odot}M_{\text{Mercury}}}{r^2}\left[1+\frac{3l^2}{r^2c^2}\right],
+\end{equation} 
+where $r$ is the distance between the Sun and Mercury, $c$ is the speed of light in vacuum in units AU/yr and $l=|\textbf{r}\times \textbf{v}|$ is the magnitude of Mercury's orbital angular momentum per unit mass. We want to study the perihelion angle $\theta_p$ over one century around the Sun with \[\tan\theta_p=\frac{y_p}{x_p},\] where $x_p$ and $y_p$ are the $x$ and $y$ positions of Mercury at perihelion, which is the position when Mercury is closest to the Sun. We will use that the speed of Mercury at perihelion is 12.44 AU/yr with the perihelion at a distance of 0.3075 AU from the Sun.
+
 \section{Results}
 \label{sect:Results}
 \section{Conclusion}
