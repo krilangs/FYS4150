@@ -45,7 +45,7 @@ The Solar System}
 \begin{document}
 \maketitle
 \begin{abstract}
-	In this project we want to model the solar system using ordinary differential equations and object orientation numerically. To do this we will use the so-called velocity Verlet algorithm. We start of with only the Earth and the Sun in the system, which we will solve with both Euler's forward algorithm and the velocity Verlet algorithm. For this simple two-body system we write the code to be object oriented and scaled with the Sun mass as $M_\odot=1$, and test the stability of the two algorithms. The Verlet algorithm is found to be superior in accuracy since the algorithm conserves the energy of the system, while the forward Euler algorithm does not. The Euler algorithm is faster, but the difference is so small that the Verlet algorithm is the best to use. Then we find properties like the escape velocity of Earth needed to escape the orbit of the Sun. This is found analytically to be $\sqrt{8}\pi\frac{\text{AU}}{\text{yr}}\approx8.88577\frac{\text{AU}}{\text{yr}}$, and numerically as $8.88250\frac{\text{AU}}{\text{yr}}$ with the velocity Verlet algorithm. By changing the gravitational force factor $\frac{1}{r^2}\rightarrow\frac{1}{r^{\beta}}$, we see that as $\beta\rightarrow3$ the escape velocity of the Earth escaping the Sun's orbit is decreasing more and more. So by changing the force factor, we change how strongly the orbit of the Earth is affected by the Sun. Then the system is altered to a three-body problem by introducing Jupiter to the system. First we keep the Sun as the center of mass of the system and study once again the stability of the Verlet algorithm. For 1x and 10x times the mass of Jupiter, the system is more or less stable, but when increasing the Jupiter mass by 1000 the system becomes chaotic since the Jupiter mass is around the same as the Sun mass. Now by setting the center of mass of the system as the origin of the solar system, we add the rest of the planets (including Pluto) in the solar system. Up till now we have used Newtonian physics, so we add a general relativistic correction to the gravitation force. This is used on the Sun-Mercury system to analyze the perihelion precession of Mercury. This observed value is found to be 43 arc seconds per century, while our numerical value is found to be 43.1281 arc seconds per century.
+	In this project we want to model the solar system using ordinary differential equations and object orientation numerically. To do this we will use the so-called velocity Verlet algorithm. We start of with only the Earth and the Sun in the system, which we will solve with both Euler's forward algorithm and the velocity Verlet algorithm. For this simple two-body system we write the code to be object oriented and scaled with the Sun mass as $M_\odot=1$, and test the stability of the two algorithms. The Verlet algorithm is found to be superior in accuracy since the algorithm conserves the energy of the system, while the forward Euler algorithm does not. The Euler algorithm is faster, but the difference is so small that the Verlet algorithm is the best to use. Then we find properties like the escape velocity of Earth needed to escape the orbit of the Sun. This is found analytically to be $\sqrt{8}\pi\frac{\text{AU}}{\text{yr}}\approx8.88577\frac{\text{AU}}{\text{yr}}$, and numerically as $8.88250\frac{\text{AU}}{\text{yr}}$ with the velocity Verlet algorithm. By changing the gravitational force factor $\frac{1}{r^3}\rightarrow\frac{1}{r^{\beta}}$, we see that as $\beta\rightarrow4$ (foe 3D) the escape velocity of the Earth escaping the Sun's orbit is decreasing more and more. So by changing the force factor, we change how strongly the orbit of the Earth is affected by the Sun. Then the system is altered to a three-body problem by introducing Jupiter to the system. First we keep the Sun as the center of mass of the system and study once again the stability of the Verlet algorithm. For 1x and 10x times the mass of Jupiter, the system is more or less stable, but when increasing the Jupiter mass by 1000 the system becomes chaotic since the Jupiter mass is around the same as the Sun mass. Now by setting the center of mass of the system as the origin of the solar system, we add the rest of the planets (including Pluto) in the solar system. Up till now we have used Newtonian physics, so we add a general relativistic correction to the gravitation force. This is used on the Sun-Mercury system to analyze the perihelion precession of Mercury. This observed value is found to be 43 arc seconds per century, while our numerical value is found to be 43.088 arc seconds per century.
 \end{abstract}
 
 \section{Introduction}
@@ -143,22 +143,33 @@ G=4\pi^2\frac{AU^3}{yr^2}.
 
 \subsection{Integration Methods}
 \label{subsect:Integration}
-In this project we use the forward Euler algorithm and the velocity Verlet algorithm. The forward Euler algorithm is a first order approximation to a differential equation solution with a local error proportional to the step size squared $\mathcal{O}(h^2)$. For a one-dimensional case, the forward Euler algorithm with $n$ points on discrete form is given as:
+In this project we use the forward Euler algorithm and the velocity Verlet algorithm. The forward Euler algorithm is a first order approximation to a differential equation solution with a local error proportional to the step size squared $\mathcal{O}(h^2)$. For a three-dimensional case, the forward Euler algorithm with $n$ points on discrete form is given as:
 \begin{align}
 \label{eq:1D_Euler}
-x_{i+1}&=x_i+v_ih\\
-v_{i+1}&=v_i+a_ih
+\textbf{x}_{i+1}&=\textbf{x}_i+\textbf{v}_ih\\
+\textbf{v}_{i+1}&=\textbf{v}_i+\textbf{a}_ih
 \end{align}
-Here $h=\frac{b-a}{n}$ is the step size in a domain $t\in[a,b]$, $v_i$ is the velocity, $a_i$ is the acceleration and $x_i$ is the position after $n$ steps. So by knowing the acceleration, initial positions and velocities, we can compute the position of the system. This can easily be extended to two- and three-dimensions for ($x,y,z$).
+For three-dimensions we have $\textbf{x}=(x,y,z)$, $\textbf{v}=(v_x,v_y,v_z)$ and $\textbf{a}=(a_x,a_y,a_z)$. Here $h=\frac{b-a}{n}$ is the step size in a domain $t\in[a,b]$, $v_i$ is the velocity, $a_i$ is the acceleration and $x_i$ is the position after $n$ steps. So by knowing the acceleration, initial positions and velocities, we can compute the position of the system. For the number of floating points (FLOPs) required to calculate the acceleration we need 19 FLOPs for three dimensions which is calculated $n(n-1)$ times. For the main forward Euler scheme in three dimensions we need 6 FLOPs for the position and 6 FLOPs for the velocity per time step. Total number of FLOPs with the forward Euler algorithm is then:
+\begin{equation}
+\label{eq:FLOPS_Euler}
+19n(n-1)+12n=19n^2-7n
+\end{equation}
 
-The velocity Verlet algorithm has a higher order of accuracy where the local error is proportional to the step size cubed $\mathcal{O}(h^3)$.\\
-...
-\subsection{Object Orientation}
-...
-\subsection{Implementation}
-...
+The velocity Verlet algorithm has a higher order of accuracy where the local error is proportional to the step size cubed $\mathcal{O}(h^3)$. So the Verlet algorithm has a higher order accuracy than the Euler algorithm. For a three-dimensional case the velocity Verlet on discrete form is given as:
+\begin{align}
+\label{eq:2D_Verlet}
+\textbf{x}_{i+1}&=\textbf{x}_i+\textbf{v}_ih+\frac{1}{2}\textbf{a}_ih^2\\
+\textbf{v}_{i+1}&=\textbf{v}_i+\frac{1}{2}(\textbf{a}_{i+1}+\textbf{a}_i)h
+\end{align}
+In this case we have to calculate $\textbf{x}_i{+1}$ first, since the term $\textbf{a}_{i+1}=\textbf{a}(\textbf{x}_{i+1},t_{i+1})$ is dependent on $\textbf{x}_{i+1}$. As for the Euler scheme we need 19 FLOPs to calculate the acceleration, since we use the same calculation for the acceleration in both algorithms. For the position with Verlet in three dimensions we need 21 FLOPs and 12 FLOPs for the velocity per time step. Total number of FLOPs with the velocity Verlet algorithm is then:
+\begin{equation}
+\label{eq:FLOPS_Verlet}
+19n(n-1)+33n=19n^2+14n
+\end{equation}
+From the calculations for the number of FLOPs in equation \ref{eq:FLOPS_Euler} and \ref{eq:FLOPS_Verlet}, we see that the Verlet algorithm requires more FLOPs, which means that the Verlet algorithm should use longer CPU time.
+
 \subsection{Energies}
-\label{eq:Energies}
+\label{subsect:Energies}
 Since the gravitational force is conservative, the total energy of the system should be constant over time. This is one of the stability criteria of our algorithms. The total energy of the system is given by the sum of kinetic energy and potential energy $E=K+U$. The total kinetic energy of the system with $N$ objects is given as
 \begin{equation}
 \label{eq:K}
@@ -172,7 +183,7 @@ U=\sum_{i=1}^{N}\sum_{j+1}^{N}\frac{GM_iM_j}{r_{j,i}},
 where $i$ and $j$ are summing over different objects and $r_{j,i}=|\textbf{r}_i-\textbf{r}_j|$.
 
 \subsection{Angular Momentum}
-\label{eq:Ang_mom}
+\label{subsect:Ang_mom}
 The angular momentum describes the rotational state of the system. Since there is no external forces acting on the system, then also the total angular momentum of the system should be constant over time in our solar system. The total angular momentum is given as
 \begin{equation}
 \label{eq:ang_mom}
@@ -181,7 +192,7 @@ The angular momentum describes the rotational state of the system. Since there i
 
 \subsection{Testing the Algorithms}
 \label{subsect:Testing}
-With the algorithms implemented into a program and the initial velocity value giving circular orbit from equation \ref{eq:circ_vel} as $v=2\pi$, we plot the position of the Earth orbiting the Sun. Here we test the two algorithms by first using different time steps $\Delta t$ when plotting the position of the Earth. For the case with circular orbit, we study the kinetic and potential energies and the angular momentum of the system. These quantities should be conserved over time as explained earlier. We also do a timing of the algorithms to compare with each other. From these calculations we compare the different results we get by using the Euler algorithm versus using the Verlet algorithm, and discuss the differences of the two methods. For the rest of the project we will use the Verlet algorithm.
+With the algorithms implemented into a program and the initial velocity value giving circular orbit from equation \ref{eq:circ_vel} as $v=2\pi$, we plot the position of the Earth orbiting the Sun. Here we test the two algorithms by first using different time steps $\Delta t$ when plotting the position of the Earth. For the case with circular orbit, we study the kinetic and potential energies and the angular momentum of the system. These quantities should be conserved over time as explained earlier. We also do a timing of the algorithms to compare with each other. Here we expect the Verlet algorithm to use longer CPU time than the Euler algorithm (see section \ref{subsect:Integration}). From these calculations we compare the different results we get by using the Euler algorithm versus using the Verlet algorithm, and discuss the differences of the two methods. For the rest of the project we will use the Verlet algorithm.
 
 \subsection{Escape Velocity}
 \label{subsect:Escape vel}
@@ -217,7 +228,7 @@ where $M_J$ is the mass of Jupiter, $M_E$ is the mass of the Earth and $r_{E-J}$
 \label{eq:SolarSystem}
 We will now change the center of mass to the origin instead of at the Sun (still very close to the Sun). Now the Sun will also have an initial velocity such that the total momentum of the system is zero. With this change of mass center we can compare with the other three-body problem to see that difference to the system.
 
-We now also add the rest of the planets in the solar system, including Pluto. Their masses and initial conditions are implemented as mentioned in the earlier section (\ref{subsect:constants}), and the whole solar system is the plotted.
+We now also add the rest of the planets in the solar system, including Pluto. Their masses and initial conditions are implemented as mentioned in the earlier section (\ref{subsect:constants}), and then we plot the whole solar system.
 
 \subsection{Perihelion of Mercury}
 \label{eq:Mercury}
@@ -230,8 +241,40 @@ F_G=\frac{GM_{\odot}M_{\text{Mercury}}}{r^2}\left[1+\frac{3l^2}{r^2c^2}\right],
 \end{equation} 
 where $r$ is the distance between the Sun and Mercury, $c$ is the speed of light in vacuum in units AU/yr and $l=|\textbf{r}\times \textbf{v}|$ is the magnitude of Mercury's orbital angular momentum per unit mass. We want to study the perihelion angle $\theta_p$ over one century around the Sun with \[\tan\theta_p=\frac{y_p}{x_p},\] where $x_p$ and $y_p$ are the $x$ and $y$ positions of Mercury at perihelion, which is the position when Mercury is closest to the Sun. We will use that the speed of Mercury at perihelion is 12.44 AU/yr with the perihelion at a distance of 0.3075 AU from the Sun.
 
+\subsection{Implementation}
+\label{subsect:Implementation}
+The main code is done in C++ in Qt Creator on a Windows 10 computer with the following terminal command: \[\textit{c++ -floop-parallelize-all -o main.exe main.cpp classes.cpp utils.cpp SolarSystem.cpp}\]
+We also use the \textit{-Ofast} compiler flag to increase the speed.
+
+For the plotting we use Python 3.7 in Spyder, and all the figures are stored in a folder \textit{Figures} as in the GitHub repository \ref{sect:appendix}. The Python program extracts the data from the data files in the Data folder, and plots the wanted figures.
+...
+
+
+
+
 \section{Results}
 \label{sect:Results}
+\begin{table}[htbp]
+	\centering
+	%\hspace{-1cm}
+	\begin{tabular}{ |c|c|c| }
+		\hline \rule{0pt}{13pt}
+		n & Forward Euler [s] & Velocity Verlet [s] \\
+		\hline \rule{0pt}{13pt}
+		$10^3$ & 0.000999 & 0.000997  \\
+		\hline \rule{0pt}{13pt}
+		$10^4$ & 0.010971 & 0.011004 \\
+		\hline \rule{0pt}{13pt}
+		$10^5$ & 0.104720 & 0.114698 \\
+		\hline \rule{0pt}{13pt}
+		$10^6$ & 1.036199 & 1.127986 \\
+		\hline \rule{0pt}{13pt}
+		$10^7$ & 10.693399 & 11.334689 \\
+		\hline 
+	\end{tabular}	
+	\caption{In this table we see the average CPU times in seconds of the forward Euler algorithm and the velocity Verlet algorithm. Here we see that the Euler algorithms is just faster than the Verlet algorithm. Since the Verlet has a better accuracy and the difference in times are so small, the Verlet seems to be the superior of the two.}
+	\label{tab:times}
+\end{table}
 \section{Conclusion}
 \label{sect:Conclusion}
 
