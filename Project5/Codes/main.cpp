@@ -2,38 +2,40 @@
 #include <iostream>
 #include <cmath>
 #include "planetsLib.h"
-#include "NBS.h"
+#include "classes.h"
 #define   PI       3.14159265359
 using namespace std;
 using namespace StellarObjectsLibrary;
 
 void EarthSun();
-void time();
-void escapeVelocity();
-void allPlanets();
-void earthJupiter();
-void sunEarthJupiter();
-void mercury();
+void Time();
+void EscapeVelocity();
+void AllPlanets();
+void EarthJupiter();
+void SunEarthJupiter();
+void Perihelion();
 
 
 int main(){
-    //c)
-    //EarthSun();   // Good
-    //time();      // Good
-    // d)
-    //escapeVelocity();   // Good
-    // e)
-    earthJupiter();
-    // f)
-    //sunEarthJupiter();  // Good
-    //allPlanets();    // Good
-    // g)
-    //mercury();       // Good
+    //Uncomment the desired task below to run:
+
+//c)
+    //EarthSun();
+    //Time();
+// d)
+    //EscapeVelocity();
+// e)
+    //EarthJupiter();
+// f)
+    SunEarthJupiter();
+    //AllPlanets();
+// g)
+    //Perihelion();
 
     return 0;
 }
 
-void EarthSun() {
+void EarthSun(){
     string filename1 = "Data/earth_sun_euler_";
     string filename2 = "Data/earth_sun_verlet_";
     MassObject *planets;
@@ -64,7 +66,7 @@ void EarthSun() {
     delete[] planets;
 }
 
-void time() {
+void Time(){
     int m = 1;
     MassObject *planets = new MassObject[m];
     MassObject Earth2D = { "2DEarth", Earth.mass, 1, 0, 0, 0, 2.0*acos(-1.0), 0 };
@@ -79,19 +81,20 @@ void time() {
     for (int i = 0; i < 5; i++) {
         printf("n = %d\n", n);
         timeE = earth_sun.timeEulerSolve(finalTime, int (n*finalTime));
-        printf("euler = %f\n", timeE);
+        printf("Euler = %f\n", timeE);
         timeV = earth_sun.timeVerletSolve(finalTime, int (n*finalTime));
-        printf("verlet = %f\n", timeV);
-        printf("ratio = %f\n", timeV/timeE);
+        printf("Verlet = %f\n", timeV);
+        printf("Ratio = %f\n", timeV/timeE);
         n = n*10;
     }
     earth_sun.destroy();
     delete[] planets;
 }
 
-void escapeVelocity() {
+void EscapeVelocity() {
     int m, n;
     double finalTime, *A;
+    double v1, v2, v3, v4;
     MassObject *planets;
 
     m = 1;
@@ -101,7 +104,7 @@ void escapeVelocity() {
     finalTime = 3500.0;
     n = 1000000;
 
-    double v1 = 8.875;
+    v1 = 8.875;
     planets[0].vy = v1;
     SolarSystem earth_sun(planets, m);
     earth_sun.setCenterMass(Sun.mass);
@@ -120,8 +123,7 @@ void escapeVelocity() {
     delete[] R; delete[] A;
     earth_sun.writeToFile("Data/Earth_Sun_min");
 
-
-    double v2 = 8.89;
+    v2 = 8.89;
     planets[0].vy = v2;
     earth_sun.verletSolve(finalTime, n);
     A = earth_sun.getAcceleration(1);
@@ -142,20 +144,19 @@ void escapeVelocity() {
     double ana = sqrt(8)*PI;
     printf("\nAnalytical %.20f \n", ana);
     printf("Ve %.20f \n", ve);
-    printf("relative error %.5f %% \n", fabs(ana - ve)/ana*100.0);
+    printf("Relative error %.5f %% \n", fabs(ana - ve)/ana*100.0);
 
     finalTime = 20.0;
     n = 10000;
-
     v1 = 6.8;
     v2 = 7.4;
-    double v3 = 8.0;
-    double v4 = 8.8;
+    v3 = 8.0;
+    v4 = 8.8;
     double beta;
     string filename;
     for (int i = 0; i < 4; i++) {
         beta = 2 + double (i/3.0);
-        printf("\nBeta = %.3f\n", beta);
+        printf("\nBeta = %.3f\n", beta+1);
         filename = "Data/Beta_" + to_string(i) + "_";
         earth_sun.setBeta(beta);
 
@@ -199,7 +200,7 @@ void escapeVelocity() {
    delete[] planets;
 }
 
-void earthJupiter() {
+void EarthJupiter() {
     int m, n, points;
     double finalTime;
     string filename;
@@ -235,12 +236,6 @@ void earthJupiter() {
     planets[0] = earth;
     planets[1] = jupiter;
 
-    SolarSystem earthSun(planets, 1);
-    earthSun.setCenterMass(Sun.mass);
-    earthSun.verletSolve(finalTime, n);
-    earthSun.writeToFile("Data/EarthSun_e");
-    earthSun.conservation("Data/EarthSun_e", points);
-
     SolarSystem earthJupiter(planets, m);
     earthJupiter.setCenterMass(Sun.mass);
     earthJupiter.verletSolve(finalTime, n);
@@ -261,16 +256,15 @@ void earthJupiter() {
     earthJupiter1000.writeToFile(filename + "1000x");
     earthJupiter1000.conservation(filename + "1000x", points);
 
-    earthSun.destroy();
     earthJupiter.destroy();
     earthJupiter10.destroy();
     earthJupiter1000.destroy();
     delete[] planets;
 }
 
-void sunEarthJupiter() {
+void SunEarthJupiter() {
     int m, n, points;
-    double finalTime = 30.0;
+    double finalTime = 50.0;
     double Rx, Ry, Rz, M;
     Rx = 0;
     Ry = 0;
@@ -312,7 +306,7 @@ void sunEarthJupiter() {
     delete[] planets;
 }
 
-void allPlanets() {
+void AllPlanets() {
     int m, n, points;
     double finalTime;
     string filename;
@@ -344,7 +338,7 @@ void allPlanets() {
     delete[] planets;
 }
 
-void mercury() {
+void Perihelion() {
     int m, n;
     double finalTime;
     string filename;
@@ -353,14 +347,14 @@ void mercury() {
 
     m = 1;
     planets = new MassObject[m];
-    MassObject RelMercury = { "RelMercury", Mercury.mass, 0.3075, 0, 0, 0, 12.44, 0 };
+    MassObject RelMercury = {"RelMercury", Mercury.mass, 0.3075, 0, 0, 0, 12.44, 0};
     planets[0] = RelMercury;
     finalTime = 100;
 
-    SolarSystemRelativistic mercury(planets, m);
+    SolarRelativistic mercury(planets, m);
     mercury.setCenterMass(Sun.mass);
-    mercury.perihelionPrecession(0, finalTime, n, 100);
-    system("PAUSE");
+    mercury.perihelionPrecession(0, finalTime, n);
+
     mercury.destroy();
     delete[] planets;
 }

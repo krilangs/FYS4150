@@ -1,9 +1,10 @@
-#include "NBS.h"
+#include "classes.h"
 #include "utils.h"
 #include <cmath>
 #include <iostream>
+using namespace std;
 
-void SolarSystem::acceleration(int i, int j, double *ax, double *ay, double *az) {
+void SolarSystem::acceleration(int i, int j, double *ax, double *ay, double *az){
     double denum;
     double x = pos_x[j][i];
     double y = pos_y[j][i];
@@ -12,8 +13,8 @@ void SolarSystem::acceleration(int i, int j, double *ax, double *ay, double *az)
     *ax = -x*denum;
     *ay = -y*denum;
     *az = -z*denum;
-    for (int k = 0; k < m_m; k++) {
-        if (j == k) {
+    for (int k = 0; k < m_m; k++){
+        if (j == k){
             continue;
         }
         denum = G*massObjects[k].mass/(pow(r[j][k], m_beta));
@@ -23,7 +24,7 @@ void SolarSystem::acceleration(int i, int j, double *ax, double *ay, double *az)
     }
 }
 
-double SolarSystem::kineticEnergy(int i) {
+double SolarSystem::kineticEnergy(int i){
     double K = 0;
     for (int j = 0; j < m_m; j++) {
         K += (vel_x[j][i]*vel_x[j][i] + vel_y[j][i]*vel_y[j][i] + vel_z[j][i]*vel_z[j][i])*massObjects[j].mass;
@@ -31,13 +32,13 @@ double SolarSystem::kineticEnergy(int i) {
     return 0.5*K;
 }
 
-double SolarSystem::potentialEnergy(int i) {
+double SolarSystem::potentialEnergy(int i){
     double U = 0;
     distance(i);
     for (int j = 0; j < m_m; j++) {
         U -= massObjects[j].mass*m_centerMass/r[j][j];
-        for (int k = 0; k < m_m; k++) {
-            if (k == j) {
+        for (int k = 0; k < m_m; k++){
+            if (k == j){
                 continue;
             }
             U -= massObjects[j].mass*massObjects[k].mass/r[j][k];
@@ -46,10 +47,10 @@ double SolarSystem::potentialEnergy(int i) {
     return G*U;
 }
 
-double SolarSystem::angularMomentum(int i) {
+double SolarSystem::angularMomentum(int i){
     double lx, ly, lz, l;
     l = 0;
-    for (int j = 0; j < m_m; j++) {
+    for (int j = 0; j < m_m; j++){
         lx = pos_y[j][i]*vel_z[j][i] - pos_z[j][i]*vel_y[j][i];
         ly = pos_x[j][i]*vel_z[j][i] - pos_z[j][i]*vel_x[j][i];
         lz = pos_x[j][i]*vel_y[j][i] - pos_y[j][i]*vel_x[j][i];
@@ -59,7 +60,7 @@ double SolarSystem::angularMomentum(int i) {
     return l;
 }
 
-void SolarSystem::conservation(std::string filename, int points) {
+void SolarSystem::conservation(string filename, int points){
     int *I;
     double *E, *L, *K, *U;
     int index = 0;
@@ -69,7 +70,7 @@ void SolarSystem::conservation(std::string filename, int points) {
     U = createVector(0, points);
     E = createVector(0, points);
     L = createVector(0, points);
-    for (int i = 0; i < points; i++) {
+    for (int i = 0; i < points; i++){
         index = I[i];
         K[i] = kineticEnergy(index);
         U[i] = potentialEnergy(index);
@@ -88,31 +89,30 @@ void SolarSystem::conservation(std::string filename, int points) {
     delete[] L;
 }
 
-void SolarSystem::setCenterMass(double centerMass) {
+void SolarSystem::setCenterMass(double centerMass){
     m_centerMass = centerMass;
 }
 
-void SolarSystem::setBeta(double beta) {
+void SolarSystem::setBeta(double beta){
     m_beta = beta + 1;
 }
 
-double SolarSystemRelativistic::perihelionPrecession(int index, double finalTime, int n, int years) {
+double SolarRelativistic::perihelionPrecession(int index, double finalTime, int n){
     double *per;
     double perihelion;
-    per = verletSolveRel2D(index, finalTime, n, years);
+    per = verletSolveRel2D(index, finalTime, n);
     double r = sqrt(pow(per[0], 2) + pow(per[1], 2));
     perihelion = atan2(per[1], per[0])*206264.806;
 
-    std::cout << "Position of perihelion is: (" << per[0] << "," << per[1] << ")\n";
-    std::cout << "Distance from sun: " << r << "\n";
-    std::cout << "Argument of perihelion is: " << perihelion << " arcseconds/century.\n";
-    std::cout << "Observed value of perihelion is: 43 arcseconds/century" << endl;
+    cout << "Position of perihelion is: (" << per[0] << "," << per[1] << ")\n";
+    cout << "Distance from sun: " << r << "\n";
+    cout << "Argument of perihelion is: " << perihelion << " arcseconds/century.\n";
+    cout << "Observed value of perihelion is: 43 arcseconds/century" << endl;
     delete[] per;
     return perihelion;
 }
 
-SolarSystemRelativistic::SolarSystemRelativistic(MassObject* initValue, int m)
-    : SolarSystem(initValue, m) {
+SolarRelativistic::SolarRelativistic(MassObject* initValue, int m):SolarSystem(initValue, m){
     l = createVector(m, 0);
     double lx, ly, lz;
     MassObject planet;
@@ -125,7 +125,7 @@ SolarSystemRelativistic::SolarSystemRelativistic(MassObject* initValue, int m)
     }
 }
 
-void SolarSystemRelativistic::acceleration(int i, int j, double *ax, double *ay, double *az) {
+void SolarRelativistic::acceleration(int i, int j, double *ax, double *ay, double *az){
     double  denum, rel;
     double threell_cc = 3*l[j]*l[j]/cc;
     double x = pos_x[j][i];
@@ -150,7 +150,7 @@ void SolarSystemRelativistic::acceleration(int i, int j, double *ax, double *ay,
     }
 }
 
-double *SolarSystemRelativistic::verletSolveRel2D(int index, double finalTime, int n, int years) {
+double *SolarRelativistic::verletSolveRel2D(int index, double finalTime, int n){
     double x0, xn, y0, yn, vx0, vy0, vxn, vyn, a, an;
     double r, rn, rmin;
     double *perihelion;
@@ -164,10 +164,10 @@ double *SolarSystemRelativistic::verletSolveRel2D(int index, double finalTime, i
     distance(0);
 
     double h = finalTime/(n + 1);
-    double hh = h * h;
+    double hh = h*h;
     r = sqrt(pow(x0, 2) + pow(y0, 2));
-    a = -G*(1.0 + 3.0*ll/(r*r*cc)) / pow(r, 3);
-    for (int i = 0; i < n - n/100; i++) {
+    a = -G*(1.0 + 3.0*ll/(r*r*cc))/pow(r, 3);
+    for (int i = 0; i < n - n/100; i++){
         xn = x0 + h*vx0 + (hh/2.0)*a*x0;
         yn = y0 + h*vy0 + (hh/2.0)*a*y0;
         rn = sqrt(xn*xn + yn*yn);
@@ -186,12 +186,12 @@ double *SolarSystemRelativistic::verletSolveRel2D(int index, double finalTime, i
     perihelion[0] = x0;
     perihelion[1] = y0;
 
-    for (int i = 0; i < n/100; i++) {
+    for (int i = 0; i < n/100; i++){
         xn = x0 + h*vx0 + (hh/2.0)*a*x0;
         yn = y0 + h*vy0 + (hh/2.0)*a*y0;
 
         r = sqrt(pow(xn, 2) + pow(yn, 2));
-        if (r < rmin) {
+        if (r < rmin){
             rmin = r;
             perihelion[0] = xn;
             perihelion[1] = yn;

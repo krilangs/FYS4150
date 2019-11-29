@@ -1,34 +1,16 @@
 #pragma once
 #include <string>
 
-double* createVector(double value, int n);
+double* createVector(double, int);
 
-double* linspace(double min, double max, int n);
+double **createMatrix(int, int);
 
-double **createMatrix(int m, int n);
+void deleteMatrix(double **, int);
 
-double **createDiaMatrix(double d, int n);
+void doubleArrayToBinary(double *, double, std::string);
 
-double **createTriDiaMatrix(double off_value, double d_value, int n);
+void doubleMatrixToBinary(double **, double, double, std::string);
 
-void deleteMatrix(double **mat, int n);
+void writeMatrixDim(int, int, std::string);
 
-double maxError(double *expected, double *computed, int n);
-
-double maxEpsilon(double *expected, double *computed, int n);
-
-void printError(double *u, double *v, int n);
-
-void intArrayToFile(int *v , int n, std::string filename, bool zeroPadding = false);
-
-void doubleArrayToFile(double *v , int n, std::string filename, bool zeroPadding = false);
-
-void doubleMatrixToFile(double **v , int n, int m, std::string filename);
-
-void doubleArrayToBinary(double *a, double n, std::string filename);
-
-void doubleMatrixToBinary(double **a, double n, double m, std::string filename);
-
-void writeMatrixDim(int n, int m, std::string filename);
-
-int *intLinspace(int min, int max, int n);
+int *intLinspace(int, int, int);
