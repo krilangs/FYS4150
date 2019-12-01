@@ -244,13 +244,11 @@ where $r$ is the distance between the Sun and Mercury, $c$ is the speed of light
 \subsection{Implementation}
 \label{subsect:Implementation}
 The main code is done in C++ in Qt Creator on a Windows 10 computer with the following terminal command: \[\textit{c++ -floop-parallelize-all -o main.exe main.cpp classes.cpp utils.cpp SolarSystem.cpp}\]
-We also use the \textit{-Ofast} compiler flag to increase the speed.
+We also use the \textit{-Ofast} compiler flag to increase the speed. All the C++ programs can be found in the Codes folder at the GitHub repository \ref{sect:appendix}.
+
+In this project we want to use object orientation to easily extend our programs without having to write much more code. We do this by using classes, which means that we can reuse much of the code. We write a main class for using the Euler and Verlet algorithms to simulate the positions and velocities of the planets in the Solar System. This class \textbf{Obj} is implemented in the \textit{classes.cpp} program. This class also sets initial conditions, gets the acceleration and velocities of objects, times the algorithms and inherits functions from another program to among others to write results to text files extracted to a Data folder. The program the class inherits from is the \textit{utils.cpp}, here we have supporting functions for creating vectors, matrices and writing to text files. These functions do not work alone and have to be imported by other classes or programs. In the \textit{SolarSystem.cpp} program we have to other classes; the \textbf{SolarSystem} class is a subclass of \textbf{Obj} and calculates the acceleration, energies and angular momentum of the objects. The other class is the \textbf{SolarRelativistic} class which is a subclass of \textbf{SolarSystem} and calculates the perihelion precession of Mercury by using modified Verlet algorithm with the relativistic gravity term. In the \textit{main.cpp} program, we do the main calculation for simulating the Solar System by setting the variable values to by used by the various classes and functions mentioned above.
 
 For the plotting we use Python 3.7 in Spyder, and all the figures are stored in a folder \textit{Figures} as in the GitHub repository \ref{sect:appendix}. The Python program extracts the data from the data files in the Data folder, and plots the wanted figures.
-...
-
-
-
 
 \section{Results}
 \label{sect:Results}
@@ -343,7 +341,7 @@ Then the system is modified to a three-body problem by introducing Jupiter. In F
 	\subfloat[Kinetic, potential and total energy for the Earth and Jupiter system with 1000 times the Jupiter mass. \label{fig:EarthJupiter1000Energy} ]{\includegraphics[width=0.5\linewidth]{Energy_EarthJupiter1000x.png}}
 	\caption{Here we see plots of the kinetic, potential and total energy for the Earth and Jupiter system. Here wee see that the kinetic and potential energies very with time, but they change in such a way that the total energy is constant. Only difference between the two plots are the energy magnitudes. \label{fig:EarthJupiterEnergies}}
 \end{figure}
-
+\newpage
 Now we give the Sun an initial velocity such that the total momentum of the system is zero, with the center of mass position of the three-body system as the origin. The motion of this system can be seen in Figure  \ref{fig:SunEarthJupiter}. Here we see that all the three orbits are circular and smooth. The motions in this system are close to the last system in Figure \ref{fig:EarthJupiter}, except that the Sun moves in a small circular orbit. That the Sun does not move much seems right, since the mass of the Sun is so much bigger than the other two that the mass center of the system still is within the radius of the Sun, $R_{\odot}\approx 0.00465$ AU.
 
 \begin{figure}[htbp]
@@ -367,8 +365,14 @@ Then we add the rest of the planets in the Solar System including Pluto. In Figu
 
 For the perihelion precession of Mercury we add a general relativistic correction to the Newtonian gravitational force, as discussed in section \ref{subsect:Mercury}. After a century, the perihelion of Mercury should move 43 arc seconds. The numerical perihelion precession of Mercury per century we get numerically is approximately 43.088 arc seconds. So the perihelion precession of Mercury seems to be explained well with general relativity theory.
 
+\newpage
 \section{Conclusion}
 \label{sect:Conclusion}
+In this project we have simulated the motion of the planets in the Solar System using ordinary differential equations. To do this we have used both the forward Euler and the velocity Verlet algorithms with object orientation and scaling. 
+
+We have tested the two algorithms by testing their stability with the Sun-Earth system. We used different time steps $\Delta t\in[0.1,1e-5]$ to simulate the orbit of the Earth around the Sun, and looked at the energy and angular momentum. From these tests we found that the Verlet algorithm is the superior since it conserved both the energies and angular momentum and gave a higher accuracy. Even though the Euler needed fewer FLOPs, the difference in CPU time between the algorithms were so small that this was negligible. That is why we used the Verlet algorithm for the rest of the project. Then we looked at the escape velocity needed for the Earth to escape the orbit around the Sun. This was found numerically by trial and error to be around 8.88250 AU/yr, which is very close to the analytical escape velocity if around 8.88577 AU/yr. Then we changed the gravitational force factor $\frac{1}{r^3}\rightarrow\frac{1}{r^{\beta}}$ to see what happened to the system when we increased $\beta$. As $\beta$ got higher, the lower the escape velocity of the Earth had to be to escape its orbit. Then we expanded to a three-body system by including Jupiter. This did not change the system much since we still had stable and smooth orbits, and the energies and angular momentum was still conserved. When we increased the mass of Jupiter to the same order as the Sun, the Verlet algorithm no longer produced reasonable results since the orbit of the Earth became chaotic. For the last expansion, the final model, we added the rest of the planets in the Solar System, including Pluto. The final model of the Solar System seemed to simulate the orbits accurate, and they seemed to be quite stable with the Verlet algorithm. Lastly we added an relativity term to the Newtonian gravitational force to test the perihelion precession of Mercury around the Sun. We got a numerically perihelion precession of around 43.088 arc seconds per century, while the observed value has been seen to be 43 arc seconds epr century. So the perihelion precession of Mercury can be explained quite well with general relativity theory.
+
+Further work could be to implements moons around the planets in the Solar System. We could also try to improve or change the numerical algorithm for simulating the Solar System, since the used Verlet algorithm is quite good but not perfect. We could also expand the system even further, by including other solar systems to the simulation
 
 \appendix
 \section{Appendix}
