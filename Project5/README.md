@@ -2,7 +2,7 @@ FYS4150 - Project 5
 
 Report: Contains the report files for the project.
 
-Data: Contains all the data files created by the C++-programs
+Data: Contains all the data files created by the C++-programs. (Missing the three text files with the positions (x,y,z) of the planets when simulating the whole Solar System, too big to upload)
 
 Figures: Contains figures produced by the Python code `plot_SolarSystem` by reading in the data from the text-files in the Data folder.
 
