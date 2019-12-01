@@ -27,7 +27,7 @@ int main(){
 // e)
     //EarthJupiter();
 // f)
-    SunEarthJupiter();
+    //SunEarthJupiter();
     //AllPlanets();
 // g)
     //Perihelion();

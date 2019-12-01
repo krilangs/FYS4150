@@ -13,3 +13,5 @@ HEADERS += \
     classes.h \
     planetsLib.h \
     utils.h
+
+QMAKE_CXXFLAGS += -Ofast
