@@ -4,7 +4,7 @@ Report: Contains the report files for the project.
 
 Data: Contains all the data files created by the C++-programs. (Missing the three text files with the positions (x,y,z) of the planets when simulating the whole Solar System, too big to upload)
 
-Figures: Contains figures produced by the Python code `plot_SolarSystem` by reading in the data from the text-files in the Data folder.
+Figures: Contains figures produced by the Python code `plot_SolarSystem.py` by reading in the data from the text-files in the Data folder.
 
 Codes: Conatins all the codes for this project. All the code was done on a Windows 10 computer with 8GB RAM. The C++ codes are done Qt Creator, and are compiled and run with the following terminal command: `c++ -floop-parallelize-all -o main.exe main.cpp classes.cpp utils.cpp SolarSystem.cpp`.
 - plot_SolarSystem.py: Creates all the figures in the Figures folder. This was done in Python 3.7 with Spyder 3.3.
